@@ -29,7 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + TABLE_NAME + " (COL0 TEXT PRIMARY KEY , " +
+
+        String createTable = "CREATE TABLE " + TABLE_NAME + " (timestamp TEXT PRIMARY KEY, " +
                 COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT  )";
         db.execSQL(createTable);
 
