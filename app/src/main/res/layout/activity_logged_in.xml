@@ -1,40 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".LoggedInActivity">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoggedInActivity">
 
     <TextView
-        android:id="@+id/currentLog"
+        android:id="@+id/CurrentLogTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="11dp"
-        android:fontFamily="casual"
+        android:layout_marginTop="31dp"
         android:text="CURRENT LOG"
         android:textSize="30sp" />
 
     <Button
-        android:id="@+id/viewLogs"
+        android:id="@+id/ViewLogsBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="78dp"
-        android:text="View logs" />
+        android:layout_marginTop="107dp"
+        android:text="View Logs" />
 
     <Button
-        android:id="@+id/newLog"
+        android:id="@+id/StartNewLogBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="176dp"
-        android:text="Start new log" />
+        android:layout_marginTop="178dp"
+        android:text="Start New Log" />
 
     <Button
         android:id="@+id/QuickCheckInBtn"
@@ -42,34 +41,15 @@ tools:context=".LoggedInActivity">
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="196dp"
-        android:text="Quick check-in" />
+        android:layout_marginBottom="216dp"
+        android:text="Quick Check In" />
 
     <Button
         android:id="@+id/QuickInputBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="104dp"
-        android:text="Quick input" />
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="29dp"
-        android:layout_marginStart="38dp"
-        android:text="Settings" />
-
-    <Button
-        android:id="@+id/tutorial"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/button5"
-        android:layout_marginEnd="36dp"
-        android:text="Tutorial" />
+        android:layout_marginBottom="145dp"
+        android:text="Quick Input" />
 </RelativeLayout>
