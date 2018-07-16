@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class LoggedInActivity extends AppCompatActivity {
     Button QuickCheckInBtn;
     DatabaseHelper logdb;
@@ -26,6 +28,18 @@ public class LoggedInActivity extends AppCompatActivity {
 
             }
         });
+
+        Button ViewLogsBtn=(Button) findViewById(R.id.ViewLogsBtn);
+        ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(LoggedInActivity.this,LogViewActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+
         logdb = new DatabaseHelper(this);
         QuickCheckInBtn= (Button) findViewById(R.id.QuickCheckInBtn);
         adddata();
