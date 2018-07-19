@@ -7,4 +7,57 @@
     android:layout_height="match_parent"
     tools:context=".QuickInputActivity">
 
+    <EditText
+        android:id="@+id/nameet"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp"
+        android:gravity="center"
+        android:text="Name"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/descriptionet"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="112dp"
+        android:gravity="center"
+        android:text="Description"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/Addimagebtn"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="110dp"
+        android:layout_marginStart="40dp"
+        android:text="IMAGE FROM FILE"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="40dp" />
+
+    <Button
+        android:id="@+id/Takeimagebtn"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/Addimagebtn"
+        android:layout_marginEnd="40dp"
+        android:text="NEW IMAGE"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp" />
+
+    <Button
+        android:id="@+id/Insertbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="31dp"
+        android:text="ADD ENTRY" />
 </RelativeLayout>

@@ -21,6 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String COL2 = "description";
     private static final String COL3 = "latitude";  //North-South
     private static final String COL4 = "longitude";   //East-West
+    private static final String COL5 = "image";
 
 
 

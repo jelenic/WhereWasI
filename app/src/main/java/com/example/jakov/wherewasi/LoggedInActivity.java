@@ -30,8 +30,8 @@ public class LoggedInActivity extends AppCompatActivity {
     static final int REQUEST_LOCATION = 1;
     LocationManager locationManager;
     LocationListener locationListener;
-    double latituded;
-    double longituded;
+    public double latituded;
+    public double longituded;
 
 
     @SuppressLint("MissingPermission")
@@ -44,6 +44,8 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoggedInActivity.this, QuickInputActivity.class);
+                intent.putExtra("latitude",latituded);
+                intent.putExtra("longitude",longituded);
                 startActivity(intent);
 
             }
