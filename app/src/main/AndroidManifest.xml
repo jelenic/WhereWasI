@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jakov.wherewasi">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +21,7 @@
         </activity>
         <activity android:name=".QuickInputActivity" />
         <activity android:name=".LogViewActivity"></activity>
+        <service android:name=".MyService" android:process=":my_service" />
     </application>
 
 </manifest>
