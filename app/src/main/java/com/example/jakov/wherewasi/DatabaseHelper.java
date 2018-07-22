@@ -5,9 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 import android.util.Log;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
-                COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT  )";
+                COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " BLOB )";
         db.execSQL(createTable);
 
     }
@@ -47,16 +48,24 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         onCreate(db);
 
     }
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return outputStream.toByteArray();
+    }
 
-    public boolean addData(String name,String description, String latitude, String longitude) {
+    public boolean addData(String name,String description, String latitude, String longitude, Bitmap img) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         Date currentTime = Calendar.getInstance().getTime();
+        byte[] image = null;
+        if (img != null)  image = getBitmapAsByteArray(img);
         contentValues.put(COL0, currentTime.toString());
         contentValues.put(COL1, name);
         contentValues.put(COL2, description);
         contentValues.put(COL3, latitude);
         contentValues.put(COL4, longitude);
+        contentValues.put(COL5, image);
 
         Log.d(TAG, "addData: Adding " + name + " to " + TABLE_NAME);
 

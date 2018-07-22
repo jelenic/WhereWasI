@@ -137,15 +137,21 @@ public class LoggedInActivity extends AppCompatActivity {
             public void onClick(View v){
                 //get langitude and longitude
                 //getLocation();
-                String latitude=Double.toString(latituded);
-                String longitude=Double.toString(longituded);
-                String name = getCompleteAddressString(latituded,longituded);
-                boolean insertlog = logdb.addData(name,null,latitude,longitude);
-                if (insertlog==true){
-                    Toast.makeText(LoggedInActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
-                }
-                else Toast.makeText(LoggedInActivity.this,"NOPE",Toast.LENGTH_LONG).show();
+                        String latitude=Double.toString(latituded);
+                        String longitude=Double.toString(longituded);
+                        String name = getCompleteAddressString(latituded,longituded);
+                        boolean insertlog = logdb.addData(name,null,latitude,longitude, null);
+                        if (insertlog==true){
+                            Toast.makeText(LoggedInActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
+
+                        }
+                        else Toast.makeText(LoggedInActivity.this,"NOPE",Toast.LENGTH_LONG).show();
+
+
+
+
+
 
             }
         });
