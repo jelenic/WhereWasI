@@ -1,12 +1,16 @@
 package com.example.jakov.wherewasi;
 
+import android.graphics.Bitmap;
+
 public class LogEntry {
     private String Timestamp;
     private String name;
     private String longitude;
     private String latitude;
+    private Bitmap image;
 
-    public LogEntry(String timestamp, String name, String longitude, String latitude) {
+    public LogEntry(String timestamp, String name, String longitude, String latitude, Bitmap img) {
+        this.image = img;
         Timestamp = timestamp;
         this.name = name;
         this.longitude = longitude;
@@ -44,5 +48,13 @@ public class LogEntry {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 }

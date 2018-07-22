@@ -28,6 +28,7 @@ public class QuickInputActivity extends AppCompatActivity {
     DatabaseHelper logdb;
     double longituded;
     double latituded;
+    Bitmap bitmap = null;
 
     private Uri mImageCaptureUri;
     private ImageView mImageView;
@@ -103,7 +104,7 @@ public class QuickInputActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
 
-        Bitmap bitmap   = null;
+        bitmap  = null;
         String path     = "";
 
         if (requestCode == PICK_FROM_FILE) {
@@ -152,12 +153,14 @@ public class QuickInputActivity extends AppCompatActivity {
                 String longitude=Double.toString(longituded);
                 String name = nameet.getText().toString();
                 String desc = descriptionet.getText().toString();
-                boolean insertlog = logdb.addData(name,desc,latitude,longitude);
+                boolean insertlog = logdb.addData(name,desc,latitude,longitude, bitmap);
                 if (insertlog==true){
                     Toast.makeText(QuickInputActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
                 }
                 else Toast.makeText(QuickInputActivity.this,"NOPE",Toast.LENGTH_LONG).show();
+
+                finish();
 
             }
         });
