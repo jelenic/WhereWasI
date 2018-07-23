@@ -34,11 +34,14 @@ public class LogViewActivity extends AppCompatActivity {
         Bitmap image = null;
         ArrayList<LogEntry> listData = new ArrayList<>();
         while(data.moveToNext()){
-            if (data.getBlob(5) != null) {
-                image = BitmapFactory.decodeByteArray(data.getBlob(5), 0, data.getBlob(5).length);
+            image = null;
+            if (data.getString(5) != null) {
+                /*image = BitmapFactory.decodeByteArray(data.getBlob(5), 0, data.getBlob(5).length);*/
+                image  = BitmapFactory.decodeFile(data.getString(5));
             }
             //get the value from the database in column 1
             //then add it to the ArrayList
+            Log.d(TAG, "adding path:" + data.getString(5));
             listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image));
         }
         //create the list adapter and set the adapter

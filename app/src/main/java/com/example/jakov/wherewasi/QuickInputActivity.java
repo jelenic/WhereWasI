@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +30,7 @@ public class QuickInputActivity extends AppCompatActivity {
     double longituded;
     double latituded;
     Bitmap bitmap = null;
-
+    String path = null;
     private Uri mImageCaptureUri;
     private ImageView mImageView;
 
@@ -40,6 +41,10 @@ public class QuickInputActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_input);
+
+        StrictMode.VmPolicy.Builder newbuilder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(newbuilder.build());
+
         Insertbtn = (Button) findViewById(R.id.Insertbtn);
         nameet= (EditText) findViewById(R.id.nameet);
         descriptionet= (EditText) findViewById(R.id.descriptionet);
@@ -105,7 +110,7 @@ public class QuickInputActivity extends AppCompatActivity {
         if (resultCode != RESULT_OK) return;
 
         bitmap  = null;
-        String path     = "";
+        path     = "";
 
         if (requestCode == PICK_FROM_FILE) {
             mImageCaptureUri = data.getData();
@@ -153,7 +158,7 @@ public class QuickInputActivity extends AppCompatActivity {
                 String longitude=Double.toString(longituded);
                 String name = nameet.getText().toString();
                 String desc = descriptionet.getText().toString();
-                boolean insertlog = logdb.addData(name,desc,latitude,longitude, bitmap);
+                boolean insertlog = logdb.addData(name,desc,latitude,longitude, path);
                 if (insertlog==true){
                     Toast.makeText(QuickInputActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
