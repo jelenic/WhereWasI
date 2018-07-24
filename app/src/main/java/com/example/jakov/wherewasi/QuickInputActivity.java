@@ -2,6 +2,7 @@ package com.example.jakov.wherewasi;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -44,6 +47,8 @@ public class QuickInputActivity extends AppCompatActivity {
 
         StrictMode.VmPolicy.Builder newbuilder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(newbuilder.build());
+
+        verifyPermissions();
 
         Insertbtn = (Button) findViewById(R.id.Insertbtn);
         nameet= (EditText) findViewById(R.id.nameet);
@@ -169,5 +174,28 @@ public class QuickInputActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void verifyPermissions(){
+        String[] permissions = {android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.CAMERA};
+
+        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[2]) == PackageManager.PERMISSION_GRANTED){
+        }else{
+            ActivityCompat.requestPermissions(QuickInputActivity.this,
+                    permissions,
+                    1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
+        verifyPermissions();
     }
 }

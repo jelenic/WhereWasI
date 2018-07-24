@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.Locale;
@@ -102,31 +101,11 @@ public class LoggedInActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
                 return;
             } else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, locationListener);
             }
         }
     }
 
-
-    /*void getLocation() {
-        if( ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-
-        } else {
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-
-            if (location != null){
-                latituded = location.getLatitude();
-                longituded = location.getLongitude();
-
-            }
-        }
-
-    }*/
 
 
 
@@ -137,16 +116,24 @@ public class LoggedInActivity extends AppCompatActivity {
             public void onClick(View v){
                 //get langitude and longitude
                 //getLocation();
-
+                Thread myThread = new Thread(new Runnable(){
+                    @Override
+                    public void run()
+                    {
                         String latitude=Double.toString(latituded);
                         String longitude=Double.toString(longituded);
                         String name = getCompleteAddressString(latituded,longituded);
                         boolean insertlog = logdb.addData(name,null,latitude,longitude, null);
+                    }
+                });
+
+                myThread.start();
+                        /*
                         if (insertlog==true){
                             Toast.makeText(LoggedInActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
                         }
-                        else Toast.makeText(LoggedInActivity.this,"NOPE",Toast.LENGTH_LONG).show();
+                        else Toast.makeText(LoggedInActivity.this,"NOPE",Toast.LENGTH_LONG).show();*/
 
 
 
@@ -192,10 +179,6 @@ public class LoggedInActivity extends AppCompatActivity {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
         }
-        /*switch (requestCode) {
-            case REQUEST_LOCATION:
-                getLocation();
-                break;
-        }*/
+
     }
 }
