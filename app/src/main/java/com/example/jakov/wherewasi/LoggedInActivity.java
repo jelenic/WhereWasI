@@ -49,6 +49,15 @@ public class LoggedInActivity extends AppCompatActivity {
 
             }
         });
+        Button StartNewLogBtn = (Button) findViewById(R.id.StartNewLogBtn);
+        StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoggedInActivity.this, StartLogActivity.class);
+                startActivity(intent);
+
+            }
+        });
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
