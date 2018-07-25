@@ -5,12 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
 
@@ -43,7 +42,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.execSQL(createTable);
         String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
                 COL1 +" TEXT , " + COL2 + " TEXT )";
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        String date = df.format(Calendar.getInstance().getTime());
+        String insertDefault = "INSERT INTO " + LOG_TABLE_NAME +  " VALUES('On install', 'Default log' , 'default desctiption' )";
         db.execSQL(createTable2);
+        db.execSQL(insertDefault);
 
     }
 
@@ -63,9 +66,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        Date currentTime = Calendar.getInstance().getTime();
-        log_name = ActiveLog.getInstance().getValue();
-        contentValues.put(COL0, currentTime.toString());
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        String date = df.format(Calendar.getInstance().getTime());
+        contentValues.put(COL0, date);
         contentValues.put(COL1, name);
         contentValues.put(COL2, description);
         contentValues.put(COL3, latitude);
@@ -88,9 +91,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public boolean addLog(String name, String description){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        Date currentTime = Calendar.getInstance().getTime();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        String date = df.format(Calendar.getInstance().getTime());
         ActiveLog.getInstance().setValue(name);
-        contentValues.put(COL0, currentTime.toString());
+        contentValues.put(COL0, date);
         contentValues.put(COL1, name);
         contentValues.put(COL2, description);
 
@@ -106,6 +110,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public Cursor getData(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
+    public Cursor getLogData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + LOG_TABLE_NAME;
         Cursor data = db.rawQuery(query, null);
         return data;
     }
