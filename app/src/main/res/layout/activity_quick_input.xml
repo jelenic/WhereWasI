@@ -15,7 +15,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="38dp"
         android:gravity="center"
-        android:text="Name"
+        android:hint="Name"
         android:textSize="24sp" />
 
     <EditText
@@ -26,7 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="112dp"
         android:gravity="center"
-        android:text="Description"
+        android:hint="Description"
         android:textSize="16sp" />
 
     <Button

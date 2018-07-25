@@ -28,6 +28,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 
 
+    public DatabaseHelper(Context context, String tablename) {
+        super(context,tablename,null,1);
+    }
+
     public DatabaseHelper(Context context) {
         super(context,TABLE_NAME,null,1);
     }
@@ -37,8 +41,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
                 COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT )";
         db.execSQL(createTable);
-        String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , "+
-                COL1 +"TEXT)";
+        String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
+                COL1 +" TEXT , " + COL2 + " TEXT )";
         db.execSQL(createTable2);
 
     }
@@ -50,22 +54,17 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP IF TABLE EXISTS " + TABLE_NAME);
+        db.execSQL("DROP IF TABLE EXISTS " + LOG_TABLE_NAME);
         onCreate(db);
 
     }
-    /*public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-        return outputStream.toByteArray();
-    }*/
+
 
     public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         Date currentTime = Calendar.getInstance().getTime();
         log_name = ActiveLog.getInstance().getValue();
-        /*byte[] image = null;
-        if (img != null)  image = getBitmapAsByteArray(img);*/
         contentValues.put(COL0, currentTime.toString());
         contentValues.put(COL1, name);
         contentValues.put(COL2, description);
@@ -86,13 +85,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 
-    public boolean addLog(String name){
+    public boolean addLog(String name, String description){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         Date currentTime = Calendar.getInstance().getTime();
         ActiveLog.getInstance().setValue(name);
         contentValues.put(COL0, currentTime.toString());
         contentValues.put(COL1, name);
+        contentValues.put(COL2, description);
 
         Log.d(TAG, "addData: Adding " + name + " to " + LOG_TABLE_NAME);
         long result = db.insert(LOG_TABLE_NAME, null, contentValues);
