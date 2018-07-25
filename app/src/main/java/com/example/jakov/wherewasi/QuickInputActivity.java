@@ -163,7 +163,7 @@ public class QuickInputActivity extends AppCompatActivity {
                 String longitude=Double.toString(longituded);
                 String name = nameet.getText().toString();
                 String desc = descriptionet.getText().toString();
-                boolean insertlog = logdb.addData(name,desc,latitude,longitude, path);
+                boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue());
                 if (insertlog==true){
                     Toast.makeText(QuickInputActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
