@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +32,7 @@ public class LoggedInActivity extends AppCompatActivity {
     LocationListener locationListener;
     public double latituded;
     public double longituded;
+    TextView currentLog;
 
 
     @SuppressLint("MissingPermission")
@@ -38,6 +40,11 @@ public class LoggedInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
+
+        currentLog = findViewById(R.id.CurrentLogTextView);
+        currentLog.setText(ActiveLog.getInstance().getValue());
+
+
         Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
         QuickInputBtn.setOnClickListener(new View.OnClickListener() {
             @Override
