@@ -141,7 +141,7 @@ public class LoggedInActivity extends AppCompatActivity {
                         String latitude=Double.toString(latituded);
                         String longitude=Double.toString(longituded);
                         String name = getCompleteAddressString(latituded,longituded);
-                        boolean insertlog = logdb.addData(name,null,latitude,longitude, null);
+                        boolean insertlog = logdb.addData(name,null,latitude,longitude, null, ActiveLog.getInstance().getValue());
                         if (insertlog==true){
                             Toast.makeText(LoggedInActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 

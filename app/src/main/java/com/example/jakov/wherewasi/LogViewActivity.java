@@ -6,14 +6,22 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LogViewActivity extends AppCompatActivity {
     private static final String TAG = "LogViewActivity";
     DatabaseHelper mDatabaseHelper;
     ListView mListView;
+    Spinner pickLog;
+    Button setActive;
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +30,16 @@ public class LogViewActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.LogsListView);
         mDatabaseHelper = new DatabaseHelper(this);
         populateListView();
+        pickLog = (Spinner) findViewById(R.id.LogsSpinner);
+        setActive = (Button) findViewById(R.id.SetActiveLog);
+        loadSpinnerData();
+        setActive.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ActiveLog.getInstance().setValue(name);
+            }
+    }
     }
 
 
@@ -50,4 +68,14 @@ public class LogViewActivity extends AppCompatActivity {
 
 
     }
+
+
+    private void loadSpinnerData() {
+        // database handler
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+
+
+
+    }
+
 }

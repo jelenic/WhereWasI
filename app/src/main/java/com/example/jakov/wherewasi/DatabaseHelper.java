@@ -17,12 +17,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String TAG = "DatabaseHelper";
 
     private static final String TABLE_NAME = "log_table";
+    private static final String LOG_TABLE_NAME = "logs_table";
     private static final String COL0 = "timestamp";
     private static final String COL1 = "name";
     private static final String COL2 = "description";
     private static final String COL3 = "latitude";  //North-South
     private static final String COL4 = "longitude";   //East-West
     private static final String COL5 = "image";
+    private static final String COL6 = "log_name";
 
 
 
@@ -33,8 +35,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
-                COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " TEXT )";
+                COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT )";
         db.execSQL(createTable);
+        String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , "+
+                COL1 +"TEXT)";
+        db.execSQL(createTable2);
 
     }
 
@@ -54,10 +59,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return outputStream.toByteArray();
     }*/
 
-    public boolean addData(String name,String description, String latitude, String longitude, String path) {
+    public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         Date currentTime = Calendar.getInstance().getTime();
+        log_name = ActiveLog.getInstance().getValue();
         /*byte[] image = null;
         if (img != null)  image = getBitmapAsByteArray(img);*/
         contentValues.put(COL0, currentTime.toString());
@@ -66,12 +72,30 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         contentValues.put(COL3, latitude);
         contentValues.put(COL4, longitude);
         contentValues.put(COL5, path);
+        contentValues.put(COL6, log_name);
 
         Log.d(TAG, "addData: Adding " + name + " to " + TABLE_NAME);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
 
         //if date as inserted incorrectly it will return -1
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean addLog(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        Date currentTime = Calendar.getInstance().getTime();
+        ActiveLog.getInstance().setValue(name);
+        contentValues.put(COL0, currentTime.toString());
+        contentValues.put(COL1, name);
+
+        Log.d(TAG, "addData: Adding " + name + " to " + LOG_TABLE_NAME);
+        long result = db.insert(LOG_TABLE_NAME, null, contentValues);
         if (result == -1) {
             return false;
         } else {
@@ -94,7 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return data;
     }
 
-    public void deleteLog(int id){
+    public void deleteEntry(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_NAME + " WHERE "
                 + COL1 + " = '" + id + "'";
@@ -102,10 +126,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Log.d(TAG, "deleteName: Deleting " + id + " from database.");
         db.execSQL(query);
     }
-
-
-
-
 
 
 }
