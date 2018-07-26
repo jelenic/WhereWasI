@@ -49,6 +49,7 @@ public class LoggedInActivity extends AppCompatActivity {
         QuickInputBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentLog.setText(ActiveLog.getInstance().getValue());
                 Intent intent = new Intent(LoggedInActivity.this, QuickInputActivity.class);
                 intent.putExtra("latitude",latituded);
                 intent.putExtra("longitude",longituded);
@@ -60,6 +61,7 @@ public class LoggedInActivity extends AppCompatActivity {
         StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentLog.setText(ActiveLog.getInstance().getValue());
                 Intent intent = new Intent(LoggedInActivity.this, StartLogActivity.class);
                 startActivity(intent);
 
@@ -96,6 +98,7 @@ public class LoggedInActivity extends AppCompatActivity {
         ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                currentLog.setText(ActiveLog.getInstance().getValue());
                 Intent intent = new Intent(LoggedInActivity.this, LogViewActivity.class);
                 startActivity(intent);
 
