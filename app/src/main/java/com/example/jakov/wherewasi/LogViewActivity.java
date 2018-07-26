@@ -6,7 +6,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,6 +29,9 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     Spinner pickLog;
     Button setActive;
     String name;
+    ArrayList<LogEntry> listData;
+    ArrayList<LogEntry> listData_selected;
+    LogListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +64,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         //get the data and append to a list
         Cursor data = mDatabaseHelper.getData();
         Bitmap image = null;
-        ArrayList<LogEntry> listData = new ArrayList<>();
+        listData = new ArrayList<>();
         while(data.moveToNext()){
             image = null;
             if (data.getString(5) != null) {
@@ -72,8 +80,38 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             }
         }
         //create the list adapter and set the adapter
-        LogListAdapter adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
+        adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
+        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                MenuInflater inflater = actionMode.getMenuInflater();
+                inflater.inflate(R.menu.context_menu,menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+
+            }
+        });
+
 
 
     }
