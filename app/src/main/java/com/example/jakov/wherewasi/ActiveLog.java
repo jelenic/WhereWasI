@@ -21,3 +21,4 @@ public class ActiveLog {
         this.val = value;
     }
 }
+
