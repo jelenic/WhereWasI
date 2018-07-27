@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
     private static final String TAG = "LogViewActivity";
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
@@ -78,7 +78,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             Log.d(TAG, "adding path:" + data.getString(5));
 
             if (data.getString(6).equals(name)) {
-                listData.add(new LogEntry(data.getString(0) + "-" +  data.getString(6),data.getString(1) , data.getString(3),data.getString(4), image));
+                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image));
             }
         }
         //create the list adapter and set the adapter
@@ -113,6 +113,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                         Toast.makeText(getBaseContext(),count+"removed",Toast.LENGTH_SHORT).show();
                         count=0;
                         actionMode.finish();
+                        adapter.notifyDataSetChanged();
                         return true;
                     default:
                         return false;
@@ -172,11 +173,22 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "you clicked");
         Log.d(TAG, name);
         Toast.makeText(parent.getContext(),name, Toast.LENGTH_SHORT).show();
+        view.setSelected(true);
+        view.setPressed(true);
+        view.setActivated(true);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        view.setSelected(true);
+        view.setPressed(true);
+        view.setActivated(true);
+    }
+
 
 }
