@@ -85,6 +85,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
 
@@ -185,9 +186,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        view.setSelected(true);
-        view.setPressed(true);
-        view.setActivated(true);
+        Toast.makeText(this, "Clicled"+ listData.get(position).getName(), Toast.LENGTH_SHORT).show();
     }
 
 
