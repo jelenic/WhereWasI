@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
     private static final String TAG = "LogViewActivity";
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
@@ -98,6 +98,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
 
@@ -127,6 +128,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                         Toast.makeText(getBaseContext(),count+"removed",Toast.LENGTH_SHORT).show();
                         count=0;
                         actionMode.finish();
+                        adapter.notifyDataSetChanged();
                         return true;
                     default:
                         return false;
@@ -186,11 +188,20 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "you clicked");
         Log.d(TAG, name);
         Toast.makeText(parent.getContext(),name, Toast.LENGTH_SHORT).show();
+        view.setSelected(true);
+        view.setPressed(true);
+        view.setActivated(true);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(this, "Clicled"+ listData.get(position).getName(), Toast.LENGTH_SHORT).show();
+    }
+
 
 }

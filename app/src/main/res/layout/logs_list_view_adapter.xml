@@ -3,7 +3,10 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="100">
+    android:weightSum="100"
+    android:focusable="false"
+    android:id="@+id/LogSingleEntry"
+    android:background="@drawable/my_selector">
 
 
     <ImageView
