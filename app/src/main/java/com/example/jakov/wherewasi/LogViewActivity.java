@@ -28,12 +28,13 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     ListView mListView;
     Spinner pickLog;
     Button setActive;
-    String name;
+    String name = ActiveLog.getInstance().getValue();
     ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
     LogListAdapter adapter;
     int count;
     String timestamp;
+    ArrayList<String> listDataSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,19 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         pickLog = (Spinner) findViewById(R.id.LogsSpinner);
 
         setActive = (Button) findViewById(R.id.SetActiveLog);
+
+        listDataSpinner = new ArrayList<>();
+        Cursor data = mDatabaseHelper2.getLogData();
+        while(data.moveToNext()){
+            Log.d(TAG, "adding DATA:" + data.getString(1));
+            listDataSpinner.add(data.getString(1));
+        }
+        int pos = listDataSpinner.indexOf(name);
         loadSpinnerData();
+        pickLog.setSelection(pos);
+
+        populateListView();
+
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
 
@@ -78,7 +91,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             Log.d(TAG, "adding path:" + data.getString(5));
 
             if (data.getString(6).equals(name)) {
-                listData.add(new LogEntry(data.getString(0) + "-" +  data.getString(6),data.getString(1) , data.getString(3),data.getString(4), image));
+                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image));
             }
         }
         //create the list adapter and set the adapter
@@ -107,6 +120,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                     case R.id.delete_id:
                         for (LogEntry item : listData_selected){
                             timestamp = item.getTimestamp();
+                            Log.d(TAG, "timestamp:" + timestamp);
                             adapter.remove(item);
                             mDatabaseHelper.deleteEntry(timestamp);
                         }
@@ -150,14 +164,14 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
     private void loadSpinnerData() {
         // database handler
+        listDataSpinner = new ArrayList<>();
         Cursor data = mDatabaseHelper2.getLogData();
-        ArrayList<String> listData = new ArrayList<>();
         while(data.moveToNext()){
             Log.d(TAG, "adding DATA:" + data.getString(1));
-            listData.add(data.getString(1));
+            listDataSpinner.add(data.getString(1));
         }
         Log.d(TAG,"listData:"+listData);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, listData);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, listDataSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pickLog.setAdapter(spinnerAdapter);
 
