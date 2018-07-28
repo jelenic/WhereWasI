@@ -1,5 +1,6 @@
 package com.example.jakov.wherewasi;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -91,7 +92,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             Log.d(TAG, "adding path:" + data.getString(5));
 
             if (data.getString(6).equals(name)) {
-                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image));
+                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2)));
             }
         }
         //create the list adapter and set the adapter
@@ -200,7 +201,17 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(this, "Clicled"+ listData.get(position).getName(), Toast.LENGTH_SHORT).show();
+        /*Toast.makeText(this, "Clicled"+ listData.get(position).getName(), Toast.LENGTH_SHORT).show();*/
+        Intent intent = new Intent(this,DialogActivity.class);
+        LogEntry entry = listData.get(position);
+
+        intent.putExtra("name",entry.getName());
+        intent.putExtra("description",entry.getDescription());
+        intent.putExtra("path",entry.getPath());
+        intent.putExtra("timestamp",entry.getTimestamp());
+        intent.putExtra("latitude",entry.getLatitude());
+        intent.putExtra("longitude",entry.getLongitude());
+        startActivity(intent);
     }
 
 

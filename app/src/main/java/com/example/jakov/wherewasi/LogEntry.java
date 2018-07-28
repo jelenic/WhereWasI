@@ -8,13 +8,17 @@ public class LogEntry {
     private String longitude;
     private String latitude;
     private Bitmap image;
+    private String path;
+    private String description;
 
-    public LogEntry(String timestamp, String name, String longitude, String latitude, Bitmap img) {
+    public LogEntry(String timestamp, String name, String longitude, String latitude, Bitmap img, String path, String description  ) {
         this.image = img;
         Timestamp = timestamp;
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.path = path;
+        this.description = description;
     }
 
     public String getTimestamp() {
@@ -56,5 +60,21 @@ public class LogEntry {
 
     public void setImage(Bitmap image) {
         this.image = image;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
