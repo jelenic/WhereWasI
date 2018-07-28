@@ -42,7 +42,7 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
         TextView tvName= (TextView) convertView.findViewById(R.id.textView2);
         TextView tvLongitude= (TextView) convertView.findViewById(R.id.textView3);
         TextView tvLatitude= (TextView) convertView.findViewById(R.id.textView4);
-        ImageView ivImage= (ImageView) convertView.findViewById(R.id.imageView1);
+        ImageView ivImage= (ImageView) convertView.findViewById(R.id.DialogImage);
 
         tvTimestamp.setText(Timestamp);
         tvName.setText(Name);
