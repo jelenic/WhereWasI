@@ -32,6 +32,8 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
     LogListAdapter adapter;
+    int count;
+    String timestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,9 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listData_selected=new ArrayList<>();
+        count=0;
+
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
@@ -98,7 +103,20 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                return false;
+                switch (menuItem.getItemId()){
+                    case R.id.delete_id:
+                        for (LogEntry item : listData_selected){
+                            timestamp = item.getTimestamp();
+                            adapter.remove(item);
+                            mDatabaseHelper.deleteEntry(timestamp);
+                        }
+                        Toast.makeText(getBaseContext(),count+"removed",Toast.LENGTH_SHORT).show();
+                        count=0;
+                        actionMode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
             }
 
             @Override
@@ -108,6 +126,19 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
             @Override
             public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+
+                if (listData_selected.contains(listData.get(i))){
+                    count = count-1;
+                    listData_selected.remove(listData.get(i));
+                    actionMode.setTitle(count + "Items selected");
+                }
+                else{
+
+                    listData_selected.add(listData.get(i));
+                    count += 1;
+                    actionMode.setTitle(count + "Items selected");
+                }
+
 
             }
         });

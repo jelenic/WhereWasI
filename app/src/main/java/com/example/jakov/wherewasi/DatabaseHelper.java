@@ -111,6 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
         Cursor data = db.rawQuery(query, null);
+
         return data;
     }
 
@@ -129,13 +130,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return data;
     }
 
-    public void deleteEntry(int id){
+    public void deleteEntry(String id){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE "
-                + COL1 + " = '" + id + "'";
-        Log.d(TAG, "deleteName: query: " + query);
+        /*String query = "DELETE FROM " + TABLE_NAME + " WHERE "
+                + COL0 + " = '" + id + "'";*/
+        //Log.d(TAG, "deleteName: query: " + query);
         Log.d(TAG, "deleteName: Deleting " + id + " from database.");
-        db.execSQL(query);
+        String todel= "'"+id+"'";
+        db.delete(TABLE_NAME, COL0 + " = " +todel, null);
+        //db.execSQL(query);
+        db.close();
     }
 
 
