@@ -33,8 +33,10 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
         String Longitude= getItem(position).getLongitude();
         String Latitude= getItem(position).getLatitude();
         Bitmap Image= getItem(position).getImage();
+        String Path = getItem(position).getPath();
+        String Description = getItem(position).getDescription();
 
-        LogEntry logEntry= new LogEntry(Timestamp,Name,Longitude,Latitude,Image);
+        LogEntry logEntry= new LogEntry(Timestamp,Name,Longitude,Latitude,Image, Path, Description);
         LayoutInflater inflater= LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource,parent,false);
 
