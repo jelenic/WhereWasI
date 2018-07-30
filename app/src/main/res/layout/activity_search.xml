@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity">
+
+    <EditText
+        android:id="@+id/searchDateToText"
+        android:layout_width="169dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/searchDateFromText"
+        android:layout_toEndOf="@+id/searchDateFromText"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Date to"
+        android:inputType="textPersonName"
+        />
+
+    <EditText
+        android:id="@+id/searchNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="61dp"
+        android:layout_marginTop="42dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        />
+
+    <EditText
+        android:id="@+id/searchDateFromText"
+        android:layout_width="169dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="121dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Date from"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/searchLocationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/searchNameText"
+        android:layout_marginTop="194dp"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Location"
+        android:inputType="textPersonName"
+         />
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:text="SEARCH" />
+
+    <CheckBox
+        android:id="@+id/nameBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/searchNameText"
+        android:layout_alignParentEnd="true"
+        android:text="-" />
+
+    <CheckBox
+        android:id="@+id/dateBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/searchDateFromText"
+        android:layout_alignParentEnd="true"
+        android:text="-" />
+
+    <CheckBox
+        android:id="@+id/locationBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/searchLocationText"
+        android:layout_alignParentEnd="true"
+        android:text="-" />
+
+</RelativeLayout>

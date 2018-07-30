@@ -29,6 +29,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     ListView mListView;
     Spinner pickLog;
     Button setActive;
+    Button searchBtn;
     String name = ActiveLog.getInstance().getValue();
     ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
@@ -48,6 +49,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         pickLog = (Spinner) findViewById(R.id.LogsSpinner);
 
         setActive = (Button) findViewById(R.id.SetActiveLog);
+        searchBtn = (Button) findViewById(R.id.searchBtn);
 
         listDataSpinner = new ArrayList<>();
         Cursor data = mDatabaseHelper2.getLogData();
@@ -68,6 +70,13 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             public void onClick(View arg0) {
 
                 ActiveLog.getInstance().setValue(name);
+            }
+        });
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(LogViewActivity.this,SearchActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -189,9 +198,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "you clicked");
         Log.d(TAG, name);
         Toast.makeText(parent.getContext(),name, Toast.LENGTH_SHORT).show();
-        view.setSelected(true);
-        view.setPressed(true);
-        view.setActivated(true);
     }
 
     @Override
