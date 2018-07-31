@@ -48,6 +48,15 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
         if (getIntent().hasExtra("datefromfilter")) dateFromm = extras.getString("datefromfilter");
         if (getIntent().hasExtra("datetofilter")) dateToo = extras.getString("datetofilter");
 
+        if(dateFromm != null){
+            if (dateFromm.isEmpty()) dateFromm = null;
+        }
+
+        if(dateToo != null){
+            if (dateToo.isEmpty()) dateToo = null;
+        }
+
+        Log.d(TAG, "name:" + nameFilter + "|   from:" + dateFromm + "|  to:" + dateToo);
         populateListView();
     }
 
@@ -72,15 +81,17 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
             int to;
             Boolean fromm = false;
             Boolean too = false;
-            int dateInt = Integer.parseInt(date.substring(0,9).replace(".",""));
+            int dateInt = Integer.parseInt(date.substring(0,10).replace(".",""));
             if (dateFromm != null) {
-                from = Integer.parseInt(dateFromm.substring(0,9).replace(".",""));
-                fromm = dateInt > from;
+                from = Integer.parseInt(dateFromm.substring(0,10).replace(".",""));
+                fromm = dateInt >= from;
+                Log.d(TAG, "dateInt:"+dateInt+"|from:"+from);
             }
             else fromm = true;
             if (dateToo != null) {
-                to = Integer.parseInt(dateToo.substring(0,9).replace(".",""));
-                too = dateInt < to;
+                to = Integer.parseInt(dateToo.substring(0,10).replace(".",""));
+                too = dateInt <= to;
+                Log.d(TAG, "dateInt:"+dateInt+"|to:"+to);
             }
             else too = true;
 
