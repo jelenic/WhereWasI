@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,12 +20,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
+    private static final String TAG = "LoggedInActivity";
     Button QuickCheckInBtn;
     DatabaseHelper logdb;
     static final int REQUEST_LOCATION = 1;
@@ -33,16 +39,53 @@ public class LoggedInActivity extends AppCompatActivity {
     public double latituded;
     public double longituded;
     TextView currentLog;
+    String activeLog;
+    Boolean putin;
+    Switch background;
+    Long minTime;
+    Float minDistance;
+    Button setMin;
 
 
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences prefs = this.getSharedPreferences("MyValues", 0);
+        SharedPreferences.Editor saveValue = prefs.edit();
+        activeLog = ActiveLog.getInstance().getValue();
+        saveValue.putString("ActiveLog", activeLog);
+        saveValue.putBoolean("Putin", putin);
+        saveValue.putLong("Time", minTime);
+        saveValue.putFloat("Distance", minDistance);
+        saveValue.commit();
+    }
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
 
+        SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
+        activeLog = prefs.getString("ActiveLog", "Default log");
+        putin = prefs.getBoolean("Putin", true);
+
+        minTime = prefs.getLong("Time", 2000);
+        minDistance = prefs.getFloat("Distance", 1);
+        Toast.makeText(LoggedInActivity.this, "time:" + minTime + "|distance:" + minDistance, Toast.LENGTH_SHORT).show();
+
         currentLog = findViewById(R.id.CurrentLogTextView);
-        currentLog.setText(ActiveLog.getInstance().getValue());
+        currentLog.setText(activeLog);
+        ActiveLog.getInstance().setValue(activeLog);
+
+        background = findViewById(R.id.putinSwitch);
+        background.setChecked(putin);
+        background.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                putin = b;
+                Toast.makeText(LoggedInActivity.this,"set putin to:" + b + "|" + putin, Toast.LENGTH_SHORT ).show();
+                Log.d(TAG, "onCheckedChanged:" + putin);
+            }
+        });
 
 
         Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
@@ -74,6 +117,11 @@ public class LoggedInActivity extends AppCompatActivity {
                 Log.d("LoggedInActivity:", location.toString());
                 latituded = location.getLatitude();
                 longituded = location.getLongitude();
+                Log.d(TAG, "onLocationChanged, putin:" + putin);
+                if (putin == true) {
+                    Log.d(TAG, "onLocationChanged: " + putin);
+                    addbackgrounddata();
+                }
 
             }
 
@@ -105,13 +153,33 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         });
 
+        final EditText timeET = findViewById(R.id.timeET);
+        final EditText distanceET = findViewById(R.id.distanceET);
+
+        setMin = findViewById(R.id.setMin);
+        setMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String minTimeSet = timeET.getText().toString();
+                String minDistSet = distanceET.getText().toString();
+                if (!minTimeSet.isEmpty()) {
+                    minTime = 1000 * Long.parseLong(minTimeSet);
+                }
+                if (!minDistSet.isEmpty()) {
+                    minDistance = Float.parseFloat(minDistSet);
+                }
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                Toast.makeText(LoggedInActivity.this, "time:" + minTimeSet + "|distance:" + minDistSet, Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         logdb = new DatabaseHelper(this);
         QuickCheckInBtn = (Button) findViewById(R.id.QuickCheckInBtn);
         adddata();
 
         if (Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
         } else {
 
 
@@ -120,7 +188,7 @@ public class LoggedInActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
                 return;
             } else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
             }
         }
     }
@@ -199,5 +267,20 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    public void addbackgrounddata(){
+        Thread bgThread = new Thread(new Runnable(){
+            @Override
+            public void run()
+            {
+                String latitude=Double.toString(latituded);
+                String longitude=Double.toString(longituded);
+                String name = getCompleteAddressString(latituded,longituded);
+                boolean insertlog = logdb.addData(name,null,latitude,longitude, null, ActiveLog.getInstance().getValue());
+            }
+        });
+
+        bgThread.start();
     }
 }

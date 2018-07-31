@@ -69,6 +69,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             public void onClick(View arg0) {
 
                 ActiveLog.getInstance().setValue(name);
+                Log.d(TAG, name + " is now active");
             }
         });
 
@@ -198,7 +199,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         populateListView();
         Log.d(TAG, "you clicked");
         Log.d(TAG, name);
-        Toast.makeText(parent.getContext(),name, Toast.LENGTH_SHORT).show();
+        /*Toast.makeText(parent.getContext(),name, Toast.LENGTH_SHORT).show();*/
     }
 
     @Override
