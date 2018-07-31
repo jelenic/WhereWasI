@@ -66,7 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         String date = df.format(Calendar.getInstance().getTime());
         contentValues.put(COL0, date);
         contentValues.put(COL1, name);

@@ -27,8 +27,8 @@
         <activity android:name=".LogViewActivity" />
         <activity android:name=".StartLogActivity" />
         <activity android:name=".DialogActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".SearchResultActivity"></activity>
+        <activity android:name=".SearchResultActivity" />
+        <activity android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>

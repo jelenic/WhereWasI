@@ -29,7 +29,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     ListView mListView;
     Spinner pickLog;
     Button setActive;
-    Button searchBtn;
     String name = ActiveLog.getInstance().getValue();
     ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
@@ -37,6 +36,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     int count;
     String timestamp;
     ArrayList<String> listDataSpinner;
+    Button searchBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         pickLog = (Spinner) findViewById(R.id.LogsSpinner);
 
         setActive = (Button) findViewById(R.id.SetActiveLog);
-        searchBtn = (Button) findViewById(R.id.searchBtn);
 
         listDataSpinner = new ArrayList<>();
         Cursor data = mDatabaseHelper2.getLogData();
@@ -72,6 +71,8 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 ActiveLog.getInstance().setValue(name);
             }
         });
+
+        searchBtn = findViewById(R.id.searchBtn);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
