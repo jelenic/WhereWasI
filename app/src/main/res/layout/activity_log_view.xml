@@ -10,17 +10,16 @@
     <ListView
         android:id="@+id/LogsListView"
         android:layout_width="match_parent"
-        android:layout_height="370dp"
+        android:layout_height="417dp"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true" />
+        android:layout_below="@+id/LogsSpinner" />
 
     <Spinner
         android:id="@+id/LogsSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="21dp" />
+        android:layout_alignParentTop="true" />
 
     <Button
         android:id="@+id/SetActiveLog"
@@ -38,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/SetActiveLog"
+        android:layout_marginBottom="12dp"
         android:layout_marginStart="43dp"
         android:text="Search" />
 </RelativeLayout>

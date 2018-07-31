@@ -42,7 +42,7 @@ public class SearchActivity extends AppCompatActivity {
                 if (nameBox.isChecked() && searchNameText.getText()!=null){
                     intent.putExtra("namefilter",searchNameText.getText().toString());
                 }
-                if (dateBox.isChecked() && (searchDateFromText.getText()!=null || searchDateToText.getText()!=null)){
+                if (dateBox.isChecked()){
                     if (searchDateFromText.getText()!=null){
                         dateFrom = searchDateFromText.getText().toString();
                     }
