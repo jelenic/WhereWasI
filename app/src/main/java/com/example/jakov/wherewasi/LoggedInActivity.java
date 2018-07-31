@@ -33,6 +33,8 @@ public class LoggedInActivity extends AppCompatActivity {
     public double latituded;
     public double longituded;
     TextView currentLog;
+    boolean putin;
+    public static String curLog;
 
 
     @SuppressLint("MissingPermission")
@@ -40,9 +42,11 @@ public class LoggedInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
+        curLog=ActiveLog.getInstance().getValue();
 
         currentLog = findViewById(R.id.CurrentLogTextView);
-        currentLog.setText(ActiveLog.getInstance().getValue());
+        currentLog.setText(curLog);
+        putin=true;
 
 
         Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
@@ -74,6 +78,9 @@ public class LoggedInActivity extends AppCompatActivity {
                 Log.d("LoggedInActivity:", location.toString());
                 latituded = location.getLatitude();
                 longituded = location.getLongitude();
+                if (putin){
+                    addbackgrounddata();
+                }
 
             }
 
@@ -199,5 +206,20 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    public void addbackgrounddata(){
+        Thread bgThread = new Thread(new Runnable(){
+            @Override
+            public void run()
+            {
+                String latitude=Double.toString(latituded);
+                String longitude=Double.toString(longituded);
+                String name = getCompleteAddressString(latituded,longituded);
+                boolean insertlog = logdb.addData(name,null,latitude,longitude, null, ActiveLog.getInstance().getValue());
+            }
+        });
+
+        bgThread.start();
     }
 }
