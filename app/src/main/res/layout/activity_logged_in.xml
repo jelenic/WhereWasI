@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="31dp"
         android:text="CURRENT LOG"
         android:textSize="30sp" />
 
@@ -21,9 +20,8 @@
         android:id="@+id/ViewLogsBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="107dp"
+        android:layout_below="@+id/CurrentLogTextView"
         android:text="View Logs" />
 
     <Button
@@ -31,34 +29,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="178dp"
+        android:layout_below="@+id/ViewLogsBtn"
         android:text="Start New Log" />
 
     <Button
         android:id="@+id/QuickCheckInBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="216dp"
+        android:layout_below="@+id/StartNewLogBtn"
         android:text="Quick Check In" />
 
     <Button
         android:id="@+id/QuickInputBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="145dp"
+        android:layout_below="@+id/QuickCheckInBtn"
         android:text="Quick Input" />
 
-    <TextView
-        android:id="@+id/tv1"
+    <Switch
+        android:id="@+id/putinSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="56dp"
-        android:text="TextView" />
+        android:layout_below="@+id/QuickInputBtn"
+        android:text="background" />
+    <EditText
+        android:id="@+id/timeET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/putinSwitch"
+        android:hint="min_time in seconds"
+        android:textSize="16sp" />
+    <EditText
+        android:id="@+id/distanceET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/timeET"
+        android:hint="min_distance in meters"
+        android:textSize="16sp" />
+    <Button
+        android:id="@+id/setMin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/distanceET"
+        android:text="SET MIN"/>
+
+
 </RelativeLayout>
