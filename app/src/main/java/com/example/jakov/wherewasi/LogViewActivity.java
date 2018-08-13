@@ -62,7 +62,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
         populateListView();
 
-
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
 
@@ -104,18 +103,19 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             Log.d(TAG, "adding path:" + data.getString(5));
 
             if (data.getString(6).equals(name)) {
-                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2)));
+                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2), data.getString(7)));
             }
         }
         //create the list adapter and set the adapter
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
-
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
-        /*mListView.setSelection(adapter.getCount() - 1);*/
+        mListView.setSelection(adapter.getCount() - 1);
+        //mListView.smoothScrollToPosition(adapter.getCount() - 1);
+
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
@@ -173,6 +173,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
             }
         });
+
 
 
 

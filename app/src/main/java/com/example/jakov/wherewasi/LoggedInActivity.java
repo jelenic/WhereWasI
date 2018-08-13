@@ -209,8 +209,8 @@ public class LoggedInActivity extends AppCompatActivity {
                     {
                         String latitude=Double.toString(latituded);
                         String longitude=Double.toString(longituded);
-                        String name = getCompleteAddressString(latituded,longituded);
-                        boolean insertlog = logdb.addData(name,null,latitude,longitude, null, ActiveLog.getInstance().getValue());
+                        String adress = getCompleteAddressString(latituded,longituded);
+                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, null, ActiveLog.getInstance().getValue(),adress);
                     }
                 });
 
@@ -276,8 +276,8 @@ public class LoggedInActivity extends AppCompatActivity {
             {
                 String latitude=Double.toString(latituded);
                 String longitude=Double.toString(longituded);
-                String name = getCompleteAddressString(latituded,longituded);
-                boolean insertlog = logdb.addData(name,null,latitude,longitude, null, ActiveLog.getInstance().getValue());
+                String adress = getCompleteAddressString(latituded,longituded);
+                boolean insertlog = logdb.addData("BCK",null,latitude,longitude, null, ActiveLog.getInstance().getValue(),adress);
             }
         });
 

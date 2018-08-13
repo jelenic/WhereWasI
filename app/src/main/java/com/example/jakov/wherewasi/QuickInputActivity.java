@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.List;
+import java.util.Locale;
 
 public class QuickInputActivity extends AppCompatActivity {
     Button Insertbtn;
@@ -163,7 +168,8 @@ public class QuickInputActivity extends AppCompatActivity {
                 String longitude=Double.toString(longituded);
                 String name = nameet.getText().toString();
                 String desc = descriptionet.getText().toString();
-                boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue());
+                String adress = getCompleteAddressString(latituded,longituded);
+                boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
                 if (insertlog==true){
                     Toast.makeText(QuickInputActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
@@ -198,4 +204,32 @@ public class QuickInputActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
         verifyPermissions();
     }
+
+
+    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+        String strAdd = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                strAdd = strReturnedAddress.toString();
+                Log.w("My Cur location address", strReturnedAddress.toString());
+            } else {
+                Log.w("My Cur location address", "No Address returned!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.w("My Cur location address", "Cant get Address!");
+        }
+        return strAdd;
+    }
+
+
+
 }

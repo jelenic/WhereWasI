@@ -15,6 +15,7 @@ public class DialogActivity extends AppCompatActivity {
     String longitude;
     String latitude;
     String timestamp;
+    String adress;
     Bitmap image;
     TextView nameTV;
     TextView descriptionTV;
@@ -36,6 +37,8 @@ public class DialogActivity extends AppCompatActivity {
             longitude = extras.getString("longitude");
             latitude = extras.getString("latitude");
             timestamp = extras.getString("timestamp");
+            adress = extras.getString("adress");
+
         }
 
         image = BitmapFactory.decodeFile(path);
