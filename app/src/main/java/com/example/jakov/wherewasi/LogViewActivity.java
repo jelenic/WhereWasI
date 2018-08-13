@@ -113,6 +113,9 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
+        mListView.setSelection(adapter.getCount() - 1);
+        //mListView.smoothScrollToPosition(adapter.getCount() - 1);
+
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
@@ -170,6 +173,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
             }
         });
+
 
 
 

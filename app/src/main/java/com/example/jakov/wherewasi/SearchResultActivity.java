@@ -111,6 +111,7 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
+        mListView.setSelection(adapter.getCount() - 1);
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
