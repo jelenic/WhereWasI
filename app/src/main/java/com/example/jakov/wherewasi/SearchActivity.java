@@ -18,8 +18,8 @@ public class SearchActivity extends AppCompatActivity {
     EditText searchDateFromText;
     EditText searchDateToText;
     EditText searchLocationText;
-    String dateFrom="00,00,00";
-    String dateTo="01,01,3000";
+    String dateFrom;
+    String dateTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

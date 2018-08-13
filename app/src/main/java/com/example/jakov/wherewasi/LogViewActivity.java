@@ -62,6 +62,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
         populateListView();
 
+
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
 
@@ -109,10 +110,12 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         //create the list adapter and set the adapter
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
+
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
+        /*mListView.setSelection(adapter.getCount() - 1);*/
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
