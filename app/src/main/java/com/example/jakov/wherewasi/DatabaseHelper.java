@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String COL4 = "longitude";   //East-West
     private static final String COL5 = "image";
     private static final String COL6 = "log_name";
+    private static final String COL7 = "adress";
 
 
 
@@ -38,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
-                COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT )";
+                COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT,"+COL7 + " TEXT  )";
         db.execSQL(createTable);
         String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
                 COL1 +" TEXT , " + COL2 + " TEXT )";
@@ -63,7 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
 
-    public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name) {
+    public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name, String adress) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -75,6 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         contentValues.put(COL4, longitude);
         contentValues.put(COL5, path);
         contentValues.put(COL6, log_name);
+        contentValues.put(COL7, adress);
 
         Log.d(TAG, "addData: Adding " + name + " to " + TABLE_NAME);
 

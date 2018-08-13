@@ -101,7 +101,7 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
 
 
             if (fromm && too && namee) {
-                listData.add(new LogEntry(date,name , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2)));
+                listData.add(new LogEntry(date,name , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2),data.getString(7)));
             }
         }
         //create the list adapter and set the adapter
