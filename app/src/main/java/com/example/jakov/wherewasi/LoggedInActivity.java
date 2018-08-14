@@ -88,6 +88,8 @@ public class LoggedInActivity extends AppCompatActivity {
         });
 
 
+
+
         Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
         QuickInputBtn.setOnClickListener(new View.OnClickListener() {
             @Override

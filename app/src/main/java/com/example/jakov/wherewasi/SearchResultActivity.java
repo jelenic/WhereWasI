@@ -187,6 +187,7 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
         intent.putExtra("timestamp",entry.getTimestamp());
         intent.putExtra("latitude",entry.getLatitude());
         intent.putExtra("longitude",entry.getLongitude());
+        intent.putExtra("adress",entry.getAdress());
         startActivity(intent);
     }
 
