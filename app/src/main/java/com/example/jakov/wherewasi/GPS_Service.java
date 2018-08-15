@@ -1,0 +1,147 @@
+package com.example.jakov.wherewasi;
+
+
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+
+import java.util.List;
+import java.util.Locale;
+
+import static com.example.jakov.wherewasi.LoggedInActivity.CHANNEL_ID;
+
+public class GPS_Service extends Service {
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    double longitude, latitude;
+    private DatabaseHelper logdb;
+    private String activeLog;
+    private boolean shouldContinue = true;
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onCreate() {
+        logdb = new DatabaseHelper(this);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d("LoggedInActivity:", location.toString());
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        activeLog = intent.getStringExtra("activeLog");
+
+        Intent notificationIntent = new Intent(this, LoggedInActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);
+
+        final Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Example Service")
+                .setSmallIcon(R.drawable.ic_android)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        startForeground(1, notification);
+
+        Thread myThread = new Thread(new Runnable(){
+            @Override
+            public void run()
+            {
+                while (shouldContinue) {
+                    addData();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        myThread.start();
+
+
+        return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("GPS_Service", "onDestroy: service stopped");
+        shouldContinue = false;
+    }
+
+    public void addData() {
+        String lat=Double.toString(latitude);
+        String longi=Double.toString(longitude);
+        String adress = getCompleteAddressString(latitude,longitude);
+        boolean insertlog = logdb.addData("Service",null,lat,longi, null, activeLog,adress);
+    }
+
+    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+        String strAdd = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                strAdd = strReturnedAddress.toString();
+                Log.w("My Cur location address", strReturnedAddress.toString());
+            } else {
+                Log.w("My Cur location address", "No Address returned!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.w("My Cur location address", "Cant get Address!");
+        }
+        return strAdd;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+
+}

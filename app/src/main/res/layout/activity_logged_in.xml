@@ -48,19 +48,12 @@
         android:layout_below="@+id/QuickCheckInBtn"
         android:text="Quick Input" />
 
-    <Switch
-        android:id="@+id/putinSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/QuickInputBtn"
-        android:text="background" />
     <EditText
         android:id="@+id/timeET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/putinSwitch"
+        android:layout_below="@+id/QuickInputBtn"
         android:hint="min_time in seconds"
         android:textSize="16sp" />
     <EditText
@@ -77,6 +70,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/distanceET"
         android:text="SET MIN"/>
+    <Button
+        android:id="@+id/startServiceBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/setMin"
+        android:text="START SERVICE"/>
+    <Button
+        android:id="@+id/stopServiceBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/startServiceBtn"
+        android:text="STOP SERVICE"/>
 
 
 
