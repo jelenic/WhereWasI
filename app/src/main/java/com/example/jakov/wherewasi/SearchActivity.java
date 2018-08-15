@@ -4,9 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -80,7 +78,7 @@ public class SearchActivity extends AppCompatActivity {
                 int year=cal.get(Calendar.YEAR);
                 int month=cal.get(Calendar.MONTH);
                 int day=cal.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dateDialog=new DatePickerDialog(SearchActivity.this,android.R.style.Theme_Holo_Light,mDateListenerFrom,year,month,day);
+                DatePickerDialog dateDialog=new DatePickerDialog(SearchActivity.this,android.R.style.Theme_Holo_Dialog_MinWidth,mDateListenerFrom,year,month,day);
                 dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dateDialog.show();
 
@@ -112,7 +110,7 @@ public class SearchActivity extends AppCompatActivity {
                 int year=cal.get(Calendar.YEAR);
                 int month=cal.get(Calendar.MONTH);
                 int day=cal.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dateDialog=new DatePickerDialog(SearchActivity.this,android.R.style.Theme_Holo_Light,mDateListenerTo,year,month,day);
+                DatePickerDialog dateDialog=new DatePickerDialog(SearchActivity.this,android.R.style.Theme_Holo_Dialog_MinWidth,mDateListenerTo,year,month,day);
                 dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dateDialog.show();
 

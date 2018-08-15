@@ -22,6 +22,7 @@ public class DialogActivity extends AppCompatActivity {
     TextView longitudeTV;
     TextView latitudeTV;
     TextView timestampTV;
+    TextView adressTV;
     ImageView imageV;
 
     @Override
@@ -40,7 +41,7 @@ public class DialogActivity extends AppCompatActivity {
             adress = extras.getString("adress");
 
         }
-
+        if (adress.isEmpty()) adress = "Unknown address";
         image = BitmapFactory.decodeFile(path);
 
         nameTV = findViewById(R.id.nameTextView);
@@ -49,6 +50,7 @@ public class DialogActivity extends AppCompatActivity {
         longitudeTV = findViewById(R.id.longitudeTextView);
         latitudeTV = findViewById(R.id.latitudeTextView);
         timestampTV = findViewById(R.id.timestampTextView);
+        adressTV = findViewById(R.id.adressTextView);
 
         nameTV.setText(name);
         descriptionTV.setText(description);
@@ -57,6 +59,7 @@ public class DialogActivity extends AppCompatActivity {
         longitudeTV.setText(longitude);
         latitudeTV.setText(latitude);
         timestampTV.setText(timestamp);
+        adressTV.setText(adress);
         imageV.setImageBitmap(image);
 
     }

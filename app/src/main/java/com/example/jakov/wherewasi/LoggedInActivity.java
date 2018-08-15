@@ -2,6 +2,8 @@ package com.example.jakov.wherewasi;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,9 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,20 +31,22 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    Button QuickCheckInBtn;
-    DatabaseHelper logdb;
+    private Button QuickCheckInBtn;
+    private DatabaseHelper logdb;
     static final int REQUEST_LOCATION = 1;
-    LocationManager locationManager;
-    LocationListener locationListener;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
     public double latituded;
     public double longituded;
-    TextView currentLog;
-    String activeLog;
-    Boolean putin;
-    Switch background;
-    Long minTime;
-    Float minDistance;
-    Button setMin;
+    private TextView currentLog;
+    private String activeLog;
+    private Boolean putin;
+    private Long minTime;
+    private Float minDistance;
+    private Button setMin;
+    private Button startServiceBtn;
+    private Button stopServiceBtn;
+    public static final String CHANNEL_ID = "GPS_Service";
 
 
     protected void onDestroy() {
@@ -57,6 +59,22 @@ public class LoggedInActivity extends AppCompatActivity {
         saveValue.putLong("Time", minTime);
         saveValue.putFloat("Distance", minDistance);
         saveValue.commit();
+    }
+
+
+
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "GPS_Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
     }
     @SuppressLint("MissingPermission")
     @Override
@@ -76,16 +94,31 @@ public class LoggedInActivity extends AppCompatActivity {
         currentLog.setText(activeLog);
         ActiveLog.getInstance().setValue(activeLog);
 
-        background = findViewById(R.id.putinSwitch);
-        background.setChecked(putin);
-        background.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+
+
+        startServiceBtn = findViewById(R.id.startServiceBtn);
+        startServiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                putin = b;
-                Toast.makeText(LoggedInActivity.this,"set putin to:" + b + "|" + putin, Toast.LENGTH_SHORT ).show();
-                Log.d(TAG, "onCheckedChanged:" + putin);
+            public void onClick(View view) {
+                Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
+                serviceIntent.putExtra("activeLog", ActiveLog.getInstance().getValue());
+                ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
+
+                Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
             }
         });
+
+        stopServiceBtn = findViewById(R.id.stopServiceBtn);
+        stopServiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
+                stopService(serviceIntent);
+                Toast.makeText(LoggedInActivity.this,"Stopped service", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
 
         Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
@@ -117,11 +150,6 @@ public class LoggedInActivity extends AppCompatActivity {
                 Log.d("LoggedInActivity:", location.toString());
                 latituded = location.getLatitude();
                 longituded = location.getLongitude();
-                Log.d(TAG, "onLocationChanged, putin:" + putin);
-                if (putin == true) {
-                    Log.d(TAG, "onLocationChanged: " + putin);
-                    addbackgrounddata();
-                }
 
             }
 
@@ -269,18 +297,5 @@ public class LoggedInActivity extends AppCompatActivity {
 
     }
 
-    public void addbackgrounddata(){
-        Thread bgThread = new Thread(new Runnable(){
-            @Override
-            public void run()
-            {
-                String latitude=Double.toString(latituded);
-                String longitude=Double.toString(longituded);
-                String adress = getCompleteAddressString(latituded,longituded);
-                boolean insertlog = logdb.addData("BCK",null,latitude,longitude, null, ActiveLog.getInstance().getValue(),adress);
-            }
-        });
 
-        bgThread.start();
-    }
 }

@@ -43,14 +43,15 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
 
         TextView tvTimestamp= (TextView) convertView.findViewById(R.id.textView1);
         TextView tvName= (TextView) convertView.findViewById(R.id.textView2);
-        TextView tvLongitude= (TextView) convertView.findViewById(R.id.textView3);
-        TextView tvLatitude= (TextView) convertView.findViewById(R.id.textView4);
+        TextView tvAdress= (TextView) convertView.findViewById(R.id.textView3);
+        TextView tvLatLong= (TextView) convertView.findViewById(R.id.textView4);
         ImageView ivImage= (ImageView) convertView.findViewById(R.id.imageView1);
 
         tvTimestamp.setText(Timestamp);
         tvName.setText(Name);
-        tvLatitude.setText(Latitude);
-        tvLongitude.setText(Longitude);
+        tvLatLong.setText(Longitude + "|" + Latitude);
+        if (Adress.isEmpty()) Adress = "Unknown address";
+        tvAdress.setText(Adress);
         if (Image!=null) ivImage.setImageBitmap(Image);
 
         return convertView;

@@ -223,6 +223,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra("timestamp",entry.getTimestamp());
         intent.putExtra("latitude",entry.getLatitude());
         intent.putExtra("longitude",entry.getLongitude());
+        intent.putExtra("adress",entry.getAdress());
         startActivity(intent);
     }
 
