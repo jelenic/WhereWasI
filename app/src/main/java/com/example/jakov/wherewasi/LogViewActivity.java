@@ -30,7 +30,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     Spinner pickLog;
     Button setActive;
     String name = ActiveLog.getInstance().getValue();
-    ArrayList<LogEntry> listData;
+    public static ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
     LogListAdapter adapter;
     int count;
@@ -224,6 +224,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         intent.putExtra("latitude",entry.getLatitude());
         intent.putExtra("longitude",entry.getLongitude());
         intent.putExtra("adress",entry.getAdress());
+        intent.putExtra("position",position);
         startActivity(intent);
     }
 
