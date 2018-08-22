@@ -3,6 +3,7 @@ package com.example.jakov.wherewasi;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -18,6 +19,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,10 +34,12 @@ public class GPS_Service extends Service {
     private DatabaseHelper logdb;
     private String activeLog;
     private boolean shouldContinue = true;
-
+    private final int NOTIF_ID = 1;
+    private NotificationManager mNotificationManager;
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate() {
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         logdb = new DatabaseHelper(this);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -71,13 +77,9 @@ public class GPS_Service extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
 
-        final Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Example Service")
-                .setSmallIcon(R.drawable.ic_android)
-                .setContentIntent(pendingIntent)
-                .build();
+        Notification notification = getMyActivityNotification("service started");
 
-        startForeground(1, notification);
+        startForeground(NOTIF_ID, notification);
 
         Thread myThread = new Thread(new Runnable(){
             @Override
@@ -85,8 +87,9 @@ public class GPS_Service extends Service {
             {
                 while (shouldContinue) {
                     addData();
+
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000*60);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -98,6 +101,18 @@ public class GPS_Service extends Service {
 
 
         return START_NOT_STICKY;
+    }
+    private Notification getMyActivityNotification (String text) {
+        Intent notificationIntent = new Intent(this, LoggedInActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);
+
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("GPS_Service")
+                .setSmallIcon(R.drawable.ic_android)
+                .setContentIntent(pendingIntent)
+                .setContentText(text)
+                .build();
     }
 
     @Override
@@ -111,6 +126,12 @@ public class GPS_Service extends Service {
         String longi=Double.toString(longitude);
         String adress = getCompleteAddressString(latitude,longitude);
         boolean insertlog = logdb.addData("Service",null,lat,longi, null, activeLog,adress);
+
+        DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        String date = df.format(Calendar.getInstance().getTime());
+        String text = date + "  " + adress;
+        Notification notification = getMyActivityNotification(text);
+        mNotificationManager.notify(NOTIF_ID, notification);
     }
 
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {

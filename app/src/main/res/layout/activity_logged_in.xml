@@ -82,6 +82,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/startServiceBtn"
         android:text="STOP SERVICE"/>
+    <Button
+        android:id="@+id/testMapsBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stopServiceBtn"
+        android:text="TEST"/>
 
 
 

@@ -26,6 +26,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -75,9 +78,12 @@ public class QuickInputActivity extends AppCompatActivity {
         builder.setAdapter( adapter, new DialogInterface.OnClickListener() {
             public void onClick( DialogInterface dialog, int item ) {
                 if (item == 0) {
+                    DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+                    String date = df.format(Calendar.getInstance().getTime());
                     Intent intent    = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File file        = new File(Environment.getExternalStorageDirectory(),
-                            "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+                    String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + ActiveLog.getInstance().getValue();
+                    File file        = new File(path,
+                            date + ".jpg");
                     mImageCaptureUri = Uri.fromFile(file);
 
                     try {

@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,6 +47,8 @@ public class LoggedInActivity extends AppCompatActivity {
     private Button setMin;
     private Button startServiceBtn;
     private Button stopServiceBtn;
+
+    private Button testMapsBtn;
     public static final String CHANNEL_ID = "GPS_Service";
 
 
@@ -82,6 +85,8 @@ public class LoggedInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
 
+        createNotificationChannel();
+
         SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
         activeLog = prefs.getString("ActiveLog", "Default log");
         putin = prefs.getBoolean("Putin", true);
@@ -94,7 +99,16 @@ public class LoggedInActivity extends AppCompatActivity {
         currentLog.setText(activeLog);
         ActiveLog.getInstance().setValue(activeLog);
 
+        testMapsBtn = findViewById(R.id.testMapsBtn);
+        testMapsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f", latituded, longituded);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
 
 
         startServiceBtn = findViewById(R.id.startServiceBtn);
