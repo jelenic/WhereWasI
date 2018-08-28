@@ -28,11 +28,7 @@
         android:layout_toEndOf="@+id/searchDateFromText"
         android:ems="10"
         android:gravity="center"
-        android:hint="Date to"
-
-        />
-
-
+        android:hint="Date to" />
 
     <TextView
         android:id="@+id/searchDateFromText"
@@ -46,18 +42,16 @@
         android:hint="Date from"
          />
 
-    <EditText
+    <TextView
         android:id="@+id/searchLocationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/searchNameText"
-        android:layout_marginTop="194dp"
-        android:ems="10"
+        android:layout_marginTop="184dp"
+        android:ems="15"
         android:gravity="center"
-        android:hint="Location"
-        android:inputType="textPersonName"
-        />
+        android:hint="Location" />
 
     <Button
         android:id="@+id/searchBtn"
@@ -91,5 +85,15 @@
         android:layout_alignBottom="@+id/searchLocationText"
         android:layout_alignParentEnd="true"
         android:text="-" />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_alignStart="@id/searchNameText"
+        android:id="@+id/radiusET"
+        android:layout_below="@id/locationBox"
+        android:gravity="center"
+        android:hint="radius (m)"/>
+
 
 </RelativeLayout>

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/delete_id"
         android:title="DeleteItems"
-        android:icon="@drawable/delicon"
+        android:icon="@drawable/delicon" />
+    <item
+        android:id="@+id/selectAll_id"
+        android:title="Select all"
+        android:icon="@drawable/select_all" />
 
-    />
+
+
 </menu>

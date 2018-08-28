@@ -36,6 +36,7 @@ public class GPS_Service extends Service {
     private boolean shouldContinue = true;
     private final int NOTIF_ID = 1;
     private NotificationManager mNotificationManager;
+    private int time;
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate() {
@@ -72,7 +73,7 @@ public class GPS_Service extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         activeLog = intent.getStringExtra("activeLog");
-
+        time = intent.getIntExtra("time",2);
         Intent notificationIntent = new Intent(this, LoggedInActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
@@ -89,7 +90,7 @@ public class GPS_Service extends Service {
                     addData();
 
                     try {
-                        Thread.sleep(1000*60);
+                        Thread.sleep(1000*time);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -125,7 +126,9 @@ public class GPS_Service extends Service {
         String lat=Double.toString(latitude);
         String longi=Double.toString(longitude);
         String adress = getCompleteAddressString(latitude,longitude);
-        boolean insertlog = logdb.addData("Service",null,lat,longi, null, activeLog,adress);
+        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
+        String path = LoggedInActivity.getPath(url);
+        boolean insertlog = logdb.addData("Service",null,lat,longi, path, activeLog,adress);
 
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         String date = df.format(Calendar.getInstance().getTime());

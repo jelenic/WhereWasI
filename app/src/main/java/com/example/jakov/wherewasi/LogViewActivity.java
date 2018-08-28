@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
     private static final String TAG = "LogViewActivity";
@@ -107,13 +108,14 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             }
         }
         //create the list adapter and set the adapter
+        Collections.reverse(listData);
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
-        mListView.setSelection(adapter.getCount() - 1);
+        //mListView.setSelection(adapter.getCount() - 1);
         //mListView.smoothScrollToPosition(adapter.getCount() - 1);
 
 
@@ -133,6 +135,8 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 switch (menuItem.getItemId()){
+                    case R.id.selectAll_id:
+
                     case R.id.delete_id:
                         for (LogEntry item : listData_selected){
                             timestamp = item.getTimestamp();
@@ -140,7 +144,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                             adapter.remove(item);
                             mDatabaseHelper.deleteEntry(timestamp);
                         }
-                        Toast.makeText(getBaseContext(),count+"removed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(),count+" removed",Toast.LENGTH_SHORT).show();
                         count=0;
                         actionMode.finish();
                         adapter.notifyDataSetChanged();
@@ -161,13 +165,13 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 if (listData_selected.contains(listData.get(i))){
                     count = count-1;
                     listData_selected.remove(listData.get(i));
-                    actionMode.setTitle(count + "Items selected");
+                    actionMode.setTitle(count + " Items selected");
                 }
                 else{
 
                     listData_selected.add(listData.get(i));
                     count += 1;
-                    actionMode.setTitle(count + "Items selected");
+                    actionMode.setTitle(count + " Items selected");
                 }
 
 

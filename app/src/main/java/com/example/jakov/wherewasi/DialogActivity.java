@@ -123,7 +123,10 @@ public class DialogActivity extends AppCompatActivity {
                 Double lati = Double.parseDouble(latitude);
                 String uri = String.format(Locale.ENGLISH, "geo:%f,%f", longi, lati);
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                startActivity(intent);
+                intent.setPackage("com.google.android.apps.maps");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
             }
         });
         nameTV = findViewById(R.id.nameTextView);

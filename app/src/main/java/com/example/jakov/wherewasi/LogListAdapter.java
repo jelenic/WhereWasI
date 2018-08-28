@@ -2,6 +2,7 @@ package com.example.jakov.wherewasi;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class LogListAdapter extends ArrayAdapter<LogEntry> {
@@ -52,7 +54,13 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
         tvLatLong.setText(Longitude + "|" + Latitude);
         if (Adress.isEmpty()) Adress = "Unknown address";
         tvAdress.setText(Adress);
-        if (Image!=null) ivImage.setImageBitmap(Image);
+        if (Image!=null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            Image.compress(Bitmap.CompressFormat.JPEG,50,stream);
+            byte[] byteArray = stream.toByteArray();
+            Image = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+            ivImage.setImageBitmap(Image);
+        }
 
         return convertView;
 

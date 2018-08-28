@@ -8,14 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,30 +29,35 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button QuickCheckInBtn;
+    private Button QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn;
+    private TextView currentLog;
+    private EditText timeET, distanceET, serviceTimeET;
+
     private DatabaseHelper logdb;
-    static final int REQUEST_LOCATION = 1;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    public double latituded;
-    public double longituded;
-    private TextView currentLog;
+    public double latituded,longituded;
+
     private String activeLog;
     private Boolean putin;
     private Long minTime;
     private Float minDistance;
-    private Button setMin;
-    private Button startServiceBtn;
-    private Button stopServiceBtn;
+    private int time;
 
-    private Button testMapsBtn;
     public static final String CHANNEL_ID = "GPS_Service";
-
+    static final int REQUEST_LOCATION = 1;
 
     protected void onDestroy() {
         super.onDestroy();
@@ -59,8 +66,9 @@ public class LoggedInActivity extends AppCompatActivity {
         activeLog = ActiveLog.getInstance().getValue();
         saveValue.putString("ActiveLog", activeLog);
         saveValue.putBoolean("Putin", putin);
-        saveValue.putLong("Time", minTime);
+        saveValue.putLong("minTime", minTime);
         saveValue.putFloat("Distance", minDistance);
+        saveValue.putInt("time", time);
         saveValue.commit();
     }
 
@@ -90,25 +98,16 @@ public class LoggedInActivity extends AppCompatActivity {
         SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
         activeLog = prefs.getString("ActiveLog", "Default log");
         putin = prefs.getBoolean("Putin", true);
-
-        minTime = prefs.getLong("Time", 2000);
+        minTime = prefs.getLong("minTime", 2000);
         minDistance = prefs.getFloat("Distance", 1);
-        Toast.makeText(LoggedInActivity.this, "time:" + minTime + "|distance:" + minDistance, Toast.LENGTH_SHORT).show();
+        time = prefs.getInt("time", 30);
 
         currentLog = findViewById(R.id.CurrentLogTextView);
         currentLog.setText(activeLog);
         ActiveLog.getInstance().setValue(activeLog);
 
-        testMapsBtn = findViewById(R.id.testMapsBtn);
-        testMapsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        serviceTimeET = findViewById(R.id.serviceTimeET);
 
-                String uri = String.format(Locale.ENGLISH, "geo:%f,%f", latituded, longituded);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                startActivity(intent);
-            }
-        });
 
 
         startServiceBtn = findViewById(R.id.startServiceBtn);
@@ -116,7 +115,12 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
+                stopService(serviceIntent);
                 serviceIntent.putExtra("activeLog", ActiveLog.getInstance().getValue());
+                String serviceTime = serviceTimeET.getText().toString();
+                if (!serviceTime.isEmpty()) time = Integer.parseInt(serviceTime);
+                serviceIntent.putExtra("time", time);
+
                 ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
 
                 Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
@@ -135,7 +139,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
 
-        Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
+        QuickInputBtn = findViewById(R.id.QuickInputBtn);
         QuickInputBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,7 +186,6 @@ public class LoggedInActivity extends AppCompatActivity {
 
             }
         };
-        //getLocation();
 
         Button ViewLogsBtn = (Button) findViewById(R.id.ViewLogsBtn);
         ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
@@ -191,12 +194,13 @@ public class LoggedInActivity extends AppCompatActivity {
                 currentLog.setText(ActiveLog.getInstance().getValue());
                 Intent intent = new Intent(LoggedInActivity.this, LogViewActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
             }
         });
 
-        final EditText timeET = findViewById(R.id.timeET);
-        final EditText distanceET = findViewById(R.id.distanceET);
+        timeET = findViewById(R.id.timeET);
+        distanceET = findViewById(R.id.distanceET);
 
         setMin = findViewById(R.id.setMin);
         setMin.setOnClickListener(new View.OnClickListener() {
@@ -237,14 +241,42 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
 
-
+    public static String getPath(String url) {
+        Bitmap image=null;
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            image = BitmapFactory.decodeStream(is);
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        String date = df.format(Calendar.getInstance().getTime());
+        String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + ActiveLog.getInstance().getValue();
+        Log.d(TAG, "getExternal:"+ path);
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        File file = new File(directory, "StaticMap " + date + ".jpg");
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            image.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String image_path = file.getPath();
+        Log.d(TAG, "run, image_path:" + image_path);
+        if (image == null) image_path = null;
+        return image_path;
+    }
 
     public void adddata(){
         QuickCheckInBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                //get langitude and longitude
-                //getLocation();
                 Thread myThread = new Thread(new Runnable(){
                     @Override
                     public void run()
@@ -252,23 +284,12 @@ public class LoggedInActivity extends AppCompatActivity {
                         String latitude=Double.toString(latituded);
                         String longitude=Double.toString(longituded);
                         String adress = getCompleteAddressString(latituded,longituded);
-                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, null, ActiveLog.getInstance().getValue(),adress);
+                        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
+                        String path = getPath(url);
+                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
                     }
                 });
-
                 myThread.start();
-                        /*
-                        if (insertlog==true){
-                            Toast.makeText(LoggedInActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
-
-                        }
-                        else Toast.makeText(LoggedInActivity.this,"NOPE",Toast.LENGTH_LONG).show();*/
-
-
-
-
-
-
             }
         });
     }
@@ -310,6 +331,4 @@ public class LoggedInActivity extends AppCompatActivity {
         }
 
     }
-
-
 }
