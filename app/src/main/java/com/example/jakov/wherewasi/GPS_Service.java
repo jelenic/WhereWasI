@@ -106,13 +106,14 @@ public class GPS_Service extends Service {
     private Notification getMyActivityNotification (String text) {
         Intent notificationIntent = new Intent(this, LoggedInActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
+                0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("GPS_Service")
                 .setSmallIcon(R.drawable.ic_android)
                 .setContentIntent(pendingIntent)
                 .setContentText(text)
+                .setOnlyAlertOnce(true)
                 .build();
     }
 
