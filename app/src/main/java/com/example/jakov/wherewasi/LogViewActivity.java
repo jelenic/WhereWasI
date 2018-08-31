@@ -136,7 +136,20 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.selectAll_id:
+                        int n = listData.size();
+                        if (listData_selected.size() == n) {
+                            for (int i=0;i < n; i++) {
+                                mListView.setItemChecked(i, false);
+                            }
 
+                        }
+                        else {
+                            for (int i=0;i < n; i++) {
+                                mListView.setItemChecked(i, true);
+                            }
+
+                        }
+                        return true;
                     case R.id.delete_id:
                         for (LogEntry item : listData_selected){
                             timestamp = item.getTimestamp();

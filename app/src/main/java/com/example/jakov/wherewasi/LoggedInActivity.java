@@ -112,7 +112,7 @@ public class LoggedInActivity extends AppCompatActivity {
             directory.mkdirs();
         }
         File file = new File(directory, latLng + ".jpg");
-
+        Log.d(TAG, "fileSize1 " + file.getPath() + ":" + file.length());
 
         if (!file.exists()) {
             Log.d(TAG, "getting image from google static maps");
@@ -133,9 +133,12 @@ public class LoggedInActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            if (image == null) image_path = null;
+
         }
         image_path = file.getPath();
+        if (file.length() == 0) {
+            file.delete();
+        }
         return image_path;
     }
 

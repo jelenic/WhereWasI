@@ -117,6 +117,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return data;
     }
 
+    public Cursor getMailData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT " + COL0 + "," + COL1 + "," + COL3 + "," + COL4 + "," + COL6 + "," + COL7  + " FROM " + TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
     public Cursor getLogData(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + LOG_TABLE_NAME;
