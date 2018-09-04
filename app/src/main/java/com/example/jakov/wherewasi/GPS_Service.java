@@ -8,17 +8,22 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,6 +41,7 @@ public class GPS_Service extends Service {
     private boolean shouldContinue = true;
     private final int NOTIF_ID = 1;
     private NotificationManager mNotificationManager;
+    private int time;
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate() {
@@ -72,10 +78,8 @@ public class GPS_Service extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         activeLog = intent.getStringExtra("activeLog");
+        time = intent.getIntExtra("time",2);
 
-        Intent notificationIntent = new Intent(this, LoggedInActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
 
         Notification notification = getMyActivityNotification("service started");
 
@@ -89,7 +93,7 @@ public class GPS_Service extends Service {
                     addData();
 
                     try {
-                        Thread.sleep(1000*60);
+                        Thread.sleep(1000*time);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -104,6 +108,7 @@ public class GPS_Service extends Service {
     }
     private Notification getMyActivityNotification (String text) {
         Intent notificationIntent = new Intent(this, LoggedInActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
 
@@ -112,6 +117,7 @@ public class GPS_Service extends Service {
                 .setSmallIcon(R.drawable.ic_android)
                 .setContentIntent(pendingIntent)
                 .setContentText(text)
+                .setOnlyAlertOnce(true)
                 .build();
     }
 
@@ -125,13 +131,67 @@ public class GPS_Service extends Service {
         String lat=Double.toString(latitude);
         String longi=Double.toString(longitude);
         String adress = getCompleteAddressString(latitude,longitude);
-        boolean insertlog = logdb.addData("Service",null,lat,longi, null, activeLog,adress);
+        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
+        final String path = LoggedInActivity.getPath(url, lat, longi);
+        boolean insertlog = logdb.addData("Service",null,lat,longi, path, activeLog,adress);
 
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-        String date = df.format(Calendar.getInstance().getTime());
+        final String date = df.format(Calendar.getInstance().getTime());
         String text = date + "  " + adress;
         Notification notification = getMyActivityNotification(text);
         mNotificationManager.notify(NOTIF_ID, notification);
+        final String recipient = "gmlnumber19@gmail.com";
+        sendMail(date, recipient);
+    }
+
+    private void sendMail(final String date, final String recipient) {
+        Thread myThread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    Cursor data = logdb.getMailData();
+                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "mailFile";
+                    File directory = new File(path);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+                    File mailFile = new File(directory, "MailFile " + date + ".txt");
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(mailFile));
+
+                    while(data.moveToNext()){
+                        String content = data.getString(0) + "|" + data.getString(1) + "|" + data.getString(2) + "|"
+                                + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5);
+                        Log.d("data from DB", "content: " + content);
+                        bw.write(content);
+
+
+                    }
+                    String pathMailFile = mailFile.getPath();
+
+                    bw.close();
+                    GMailSender sender = new GMailSender(
+
+                            "wwiapk@gmail.com",
+
+                            "wherewasi");
+
+
+                    sender.addAttachment(pathMailFile);
+
+                    sender.sendMail("GPS_SERVICE MAIL", "This mail has been sent from WhereWasI along with attachment",
+
+                            "wwiapk@gmail.com",
+
+                            recipient);
+                    Log.d("mail", "sent: " + path);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        myThread.start();
     }
 
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {

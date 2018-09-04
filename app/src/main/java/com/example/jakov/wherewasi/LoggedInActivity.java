@@ -8,14 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,30 +29,35 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button QuickCheckInBtn;
+    private Button QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn;
+    private TextView currentLog;
+    private EditText timeET, distanceET, serviceTimeET;
+
     private DatabaseHelper logdb;
-    static final int REQUEST_LOCATION = 1;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    public double latituded;
-    public double longituded;
-    private TextView currentLog;
+    public double latituded,longituded;
+
     private String activeLog;
     private Boolean putin;
     private Long minTime;
     private Float minDistance;
-    private Button setMin;
-    private Button startServiceBtn;
-    private Button stopServiceBtn;
+    private int time;
 
-    private Button testMapsBtn;
+    static DecimalFormat numberFormat = new DecimalFormat("#.0000");
+
     public static final String CHANNEL_ID = "GPS_Service";
-
+    static final int REQUEST_LOCATION = 1;
 
     protected void onDestroy() {
         super.onDestroy();
@@ -59,83 +66,176 @@ public class LoggedInActivity extends AppCompatActivity {
         activeLog = ActiveLog.getInstance().getValue();
         saveValue.putString("ActiveLog", activeLog);
         saveValue.putBoolean("Putin", putin);
-        saveValue.putLong("Time", minTime);
+        saveValue.putLong("minTime", minTime);
         saveValue.putFloat("Distance", minDistance);
+        saveValue.putInt("time", time);
         saveValue.commit();
     }
 
 
 
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "GPS_Service Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
 
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
-        }
-    }
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
 
+        findViewByID();
+
         createNotificationChannel();
 
-        SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
-        activeLog = prefs.getString("ActiveLog", "Default log");
-        putin = prefs.getBoolean("Putin", true);
+        getPrefs();
 
-        minTime = prefs.getLong("Time", 2000);
-        minDistance = prefs.getFloat("Distance", 1);
-        Toast.makeText(LoggedInActivity.this, "time:" + minTime + "|distance:" + minDistance, Toast.LENGTH_SHORT).show();
 
-        currentLog = findViewById(R.id.CurrentLogTextView);
         currentLog.setText(activeLog);
         ActiveLog.getInstance().setValue(activeLog);
+        logdb = new DatabaseHelper(this);
 
-        testMapsBtn = findViewById(R.id.testMapsBtn);
-        testMapsBtn.setOnClickListener(new View.OnClickListener() {
+        setLocationManager();
+
+
+        setListeners();
+
+
+        locationPermissions();
+    }
+
+
+    public static String getPath(String url, String lat, String lng) {
+        String latLng = numberFormat.format(Double.parseDouble(lat)) + "|" + numberFormat.format(Double.parseDouble(lng));
+        String image_path = null;
+        String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "StaticMaps";
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        File file = new File(directory, latLng + ".jpg");
+        Log.d(TAG, "fileSize1 " + file.getPath() + ":" + file.length());
+
+        if (!file.exists()) {
+            Log.d(TAG, "getting image from google static maps");
+            Bitmap image = null;
+            try {
+                InputStream is = (InputStream) new URL(url).getContent();
+                image = BitmapFactory.decodeStream(is);
+                is.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                image.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        image_path = file.getPath();
+        if (file.length() == 0) {
+            file.delete();
+        }
+        return image_path;
+    }
+
+
+
+    @SuppressLint("MissingPermission")
+    private void locationPermissions() {
+        if (Build.VERSION.SDK_INT < 23) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+        }
+        else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+                return;
+            } else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+            }
+        }
+    }
+
+    private void setListeners() {
+        startServiceListener();
+        stopServiceListener();
+        quickInputListener();
+        newLogListener();
+        viewLogsListener();
+        setMinListener();
+        quickCheckInListener();
+    }
+
+    private void quickCheckInListener() {
+        QuickCheckInBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Thread myThread = new Thread(new Runnable(){
+                    @Override
+                    public void run()
+                    {
+                        String latitude=Double.toString(latituded);
+                        String longitude=Double.toString(longituded);
+                        String adress = getCompleteAddressString(latituded,longituded);
+                        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
+                        String path = getPath(url, latitude, longitude);
+                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
+                    }
+                });
+                myThread.start();
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setMinListener() {
+        setMin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String minTimeSet = timeET.getText().toString();
+                String minDistSet = distanceET.getText().toString();
+                if (!minTimeSet.isEmpty()) {
+                    minTime = 1000 * Long.parseLong(minTimeSet);
+                }
+                if (!minDistSet.isEmpty()) {
+                    minDistance = Float.parseFloat(minDistSet);
+                }
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                Toast.makeText(LoggedInActivity.this, "time:" + minTimeSet + "|distance:" + minDistSet, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-                String uri = String.format(Locale.ENGLISH, "geo:%f,%f", latituded, longituded);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+    private void viewLogsListener() {
+        ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentLog.setText(ActiveLog.getInstance().getValue());
+                Intent intent = new Intent(LoggedInActivity.this, LogViewActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
             }
         });
+    }
 
-
-        startServiceBtn = findViewById(R.id.startServiceBtn);
-        startServiceBtn.setOnClickListener(new View.OnClickListener() {
+    private void newLogListener() {
+        StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
-                serviceIntent.putExtra("activeLog", ActiveLog.getInstance().getValue());
-                ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
+            public void onClick(View v) {
+                currentLog.setText(ActiveLog.getInstance().getValue());
+                Intent intent = new Intent(LoggedInActivity.this, StartLogActivity.class);
+                startActivity(intent);
 
-                Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        stopServiceBtn = findViewById(R.id.stopServiceBtn);
-        stopServiceBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
-                stopService(serviceIntent);
-                Toast.makeText(LoggedInActivity.this,"Stopped service", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
-        Button QuickInputBtn = (Button) findViewById(R.id.QuickInputBtn);
+    private void quickInputListener() {
         QuickInputBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,16 +247,38 @@ public class LoggedInActivity extends AppCompatActivity {
 
             }
         });
-        Button StartNewLogBtn = (Button) findViewById(R.id.StartNewLogBtn);
-        StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentLog.setText(ActiveLog.getInstance().getValue());
-                Intent intent = new Intent(LoggedInActivity.this, StartLogActivity.class);
-                startActivity(intent);
+    }
 
+    private void stopServiceListener() {
+        stopServiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
+                stopService(serviceIntent);
+                Toast.makeText(LoggedInActivity.this,"Stopped service", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void startServiceListener() {
+        startServiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
+                stopService(serviceIntent);
+                serviceIntent.putExtra("activeLog", ActiveLog.getInstance().getValue());
+                String serviceTime = serviceTimeET.getText().toString();
+                if (!serviceTime.isEmpty()) time = Integer.parseInt(serviceTime);
+                serviceIntent.putExtra("time", time);
+
+                ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
+
+                Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setLocationManager() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
@@ -182,96 +304,48 @@ public class LoggedInActivity extends AppCompatActivity {
 
             }
         };
-        //getLocation();
+    }
 
-        Button ViewLogsBtn = (Button) findViewById(R.id.ViewLogsBtn);
-        ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentLog.setText(ActiveLog.getInstance().getValue());
-                Intent intent = new Intent(LoggedInActivity.this, LogViewActivity.class);
-                startActivity(intent);
+    private void getPrefs() {
+        SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
+        activeLog = prefs.getString("ActiveLog", "Default log");
+        putin = prefs.getBoolean("Putin", true);
+        minTime = prefs.getLong("minTime", 2000);
+        minDistance = prefs.getFloat("Distance", 1);
+        time = prefs.getInt("time", 30);
+    }
 
-            }
-        });
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "GPS_Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
 
-        final EditText timeET = findViewById(R.id.timeET);
-        final EditText distanceET = findViewById(R.id.distanceET);
-
-        setMin = findViewById(R.id.setMin);
-        setMin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String minTimeSet = timeET.getText().toString();
-                String minDistSet = distanceET.getText().toString();
-                if (!minTimeSet.isEmpty()) {
-                    minTime = 1000 * Long.parseLong(minTimeSet);
-                }
-                if (!minDistSet.isEmpty()) {
-                    minDistance = Float.parseFloat(minDistSet);
-                }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                Toast.makeText(LoggedInActivity.this, "time:" + minTimeSet + "|distance:" + minDistSet, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        logdb = new DatabaseHelper(this);
-        QuickCheckInBtn = (Button) findViewById(R.id.QuickCheckInBtn);
-        adddata();
-
-        if (Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-        } else {
-
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-                return;
-            } else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-            }
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
         }
     }
 
 
-
-
-
-    public void adddata(){
-        QuickCheckInBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //get langitude and longitude
-                //getLocation();
-                Thread myThread = new Thread(new Runnable(){
-                    @Override
-                    public void run()
-                    {
-                        String latitude=Double.toString(latituded);
-                        String longitude=Double.toString(longituded);
-                        String adress = getCompleteAddressString(latituded,longituded);
-                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, null, ActiveLog.getInstance().getValue(),adress);
-                    }
-                });
-
-                myThread.start();
-                        /*
-                        if (insertlog==true){
-                            Toast.makeText(LoggedInActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
-
-                        }
-                        else Toast.makeText(LoggedInActivity.this,"NOPE",Toast.LENGTH_LONG).show();*/
-
-
-
-
-
-
-            }
-        });
+    private void findViewByID() {
+        serviceTimeET = findViewById(R.id.serviceTimeET);
+        currentLog = findViewById(R.id.CurrentLogTextView);
+        startServiceBtn = findViewById(R.id.startServiceBtn);
+        stopServiceBtn = findViewById(R.id.stopServiceBtn);
+        StartNewLogBtn = findViewById(R.id.StartNewLogBtn);
+        QuickInputBtn = findViewById(R.id.QuickInputBtn);
+        ViewLogsBtn = findViewById(R.id.ViewLogsBtn);
+        timeET = findViewById(R.id.timeET);
+        distanceET = findViewById(R.id.distanceET);
+        setMin = findViewById(R.id.setMin);
+        QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
     }
+
+
+
+
 
 
 
@@ -310,6 +384,4 @@ public class LoggedInActivity extends AppCompatActivity {
         }
 
     }
-
-
 }

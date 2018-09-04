@@ -82,12 +82,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/startServiceBtn"
         android:text="STOP SERVICE"/>
-    <Button
-        android:id="@+id/testMapsBtn"
+    <EditText
+        android:id="@+id/serviceTimeET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/stopServiceBtn"
-        android:text="TEST"/>
+        android:hint="service time in seconds"/>
 
 
 

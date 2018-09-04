@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SearchResultActivity extends AppCompatActivity implements  AdapterView.OnItemClickListener {
     private static final String TAG = "SearchResultActivity";
@@ -34,19 +36,25 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
     String dateFromm = null;
     String dateToo = null;
 
+    Float radius;
+    Location location, location2;
+    Double longitude, latitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
         mListView = (ListView) findViewById(R.id.LogsListView);
         mDatabaseHelper = new DatabaseHelper(this);
-
+        location = new Location("");
 
         Bundle extras = getIntent().getExtras();
 
         if (getIntent().hasExtra("namefilter")) nameFilter = extras.getString("namefilter");
         if (getIntent().hasExtra("datefromfilter")) dateFromm = extras.getString("datefromfilter");
-        if (getIntent().hasExtra("datetofilter")) dateToo = extras.getString("datetofilter");
+        if (getIntent().hasExtra("longitude")) longitude = extras.getDouble("longitude");
+        if (getIntent().hasExtra("latitude")) latitude = extras.getDouble("latitude");
+        if (getIntent().hasExtra("latitude")) radius = extras.getFloat("radius");
 
         if(dateFromm != null){
             if (dateFromm.isEmpty()) dateFromm = null;
@@ -55,6 +63,12 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
         if(dateToo != null){
             if (dateToo.isEmpty()) dateToo = null;
         }
+
+        if (longitude != null && latitude != null) {
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+        }
+        else location = null;
 
         Log.d(TAG, "name:" + nameFilter + "|   from:" + dateFromm + "|  to:" + dateToo);
         populateListView();
@@ -76,6 +90,8 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
             }
             String date = data.getString(0);
             String name = data.getString(1);
+            Double latitude2 = Double.parseDouble(data.getString(3));
+            Double longitude2 = Double.parseDouble(data.getString(4));
 
             int from;
             int to;
@@ -99,19 +115,31 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
             if (nameFilter != null) namee = name.startsWith(nameFilter);
             else namee = true;
 
+            Boolean distancee = false;
 
-            if (fromm && too && namee) {
+            if (location != null) {
+                location2 = new Location("");
+                location2.setLongitude(longitude2);
+                location2.setLatitude(latitude2);
+                Float distance2 = location.distanceTo(location2);
+                Log.d(TAG, "populateListView, distance2:" + distance2);
+                if (distance2 <= radius) distancee = true;
+            }
+            else distancee = true;
+
+            if (fromm && too && namee && distancee) {
                 listData.add(new LogEntry(date,name , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2),data.getString(7)));
             }
         }
         //create the list adapter and set the adapter
+        Collections.reverse(listData);
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
-        mListView.setSelection(adapter.getCount() - 1);
+        //mListView.setSelection(adapter.getCount() - 1);
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
@@ -188,6 +216,7 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
         intent.putExtra("latitude",entry.getLatitude());
         intent.putExtra("longitude",entry.getLongitude());
         intent.putExtra("adress",entry.getAdress());
+        intent.putExtra("position",position);
         startActivity(intent);
     }
 
