@@ -2,6 +2,7 @@ package com.example.jakov.wherewasi;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,9 +31,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -39,9 +45,11 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn;
+    private Button QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
     private EditText timeET, distanceET, serviceTimeET;
+    private final int PICKFILE_RESULT_CODE = 2;
+    private File source;
 
     private DatabaseHelper logdb;
     private LocationManager locationManager;
@@ -49,7 +57,7 @@ public class LoggedInActivity extends AppCompatActivity {
     public double latituded,longituded;
 
     private String activeLog;
-    private Boolean putin;
+    //private Boolean putin;
     private Long minTime;
     private Float minDistance;
     private int time;
@@ -65,7 +73,7 @@ public class LoggedInActivity extends AppCompatActivity {
         SharedPreferences.Editor saveValue = prefs.edit();
         activeLog = ActiveLog.getInstance().getValue();
         saveValue.putString("ActiveLog", activeLog);
-        saveValue.putBoolean("Putin", putin);
+        //saveValue.putBoolean("Putin", putin);
         saveValue.putLong("minTime", minTime);
         saveValue.putFloat("Distance", minDistance);
         saveValue.putInt("time", time);
@@ -168,6 +176,8 @@ public class LoggedInActivity extends AppCompatActivity {
         viewLogsListener();
         setMinListener();
         quickCheckInListener();
+        FilePickerListener();
+
     }
 
     private void quickCheckInListener() {
@@ -278,6 +288,18 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    private void FilePickerListener(){
+        GetFileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                chooseFile.setType(".txt");
+                chooseFile = Intent.createChooser(chooseFile, "Choose a file");
+                startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
+            }
+        });
+    }
+
     private void setLocationManager() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -309,7 +331,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private void getPrefs() {
         SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
         activeLog = prefs.getString("ActiveLog", "Default log");
-        putin = prefs.getBoolean("Putin", true);
+        //putin = prefs.getBoolean("Putin", true);
         minTime = prefs.getLong("minTime", 2000);
         minDistance = prefs.getFloat("Distance", 1);
         time = prefs.getInt("time", 30);
@@ -341,8 +363,47 @@ public class LoggedInActivity extends AppCompatActivity {
         distanceET = findViewById(R.id.distanceET);
         setMin = findViewById(R.id.setMin);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
+        GetFileBtn = findViewById(R.id.GetFileBtn);
+
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICKFILE_RESULT_CODE && resultCode == Activity.RESULT_OK){
+            Uri content_describer = data.getData();
+            String src = content_describer.getPath();
+            source = new File(src);
+            Log.d("src is ", source.toString());
+            String filename = content_describer.getLastPathSegment();
+            Log.d("FileName is ",filename);
+        }
+    }
+
+    public void readFromFile(final File file){
+        Thread myThread = new Thread(new Runnable(){
+            @Override
+            public void run()
+            {
+                try{
+                    InputStream fis=new FileInputStream(file);
+                    BufferedReader br=new BufferedReader(new InputStreamReader(fis));
+
+                    for (String line = br.readLine(); line != null; line = br.readLine()) {
+                        System.out.println(line);
+                        String[] separatedline=line.split("|");
+                        boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5]);
+                    }
+
+                    br.close();
+                }
+                catch(Exception e){
+                    System.err.println("Error: Target File Cannot Be Read");
+                }
+            }
+        });
+        myThread.start();
+    }
 
 
 

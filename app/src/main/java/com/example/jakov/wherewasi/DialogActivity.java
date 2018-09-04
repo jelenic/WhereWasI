@@ -95,23 +95,7 @@ public class DialogActivity extends AppCompatActivity {
         }
     }
 
-    Float x1,x2,y1,y2;
 
-    public boolean onTouchEvent(MotionEvent touchEvent) {
-        switch (touchEvent.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                x1 = touchEvent.getX();
-                y1 = touchEvent.getY();
-            case MotionEvent.ACTION_UP:
-                x2 = touchEvent.getX();
-                y2 = touchEvent.getY();
-
-                Log.d("dialog activiy", "x1:" + x1 + " x2:" + x2);
-                Log.d("dialog activiy", "y1:" + y1 + " y2:" + y2);
-
-        }
-        return false;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

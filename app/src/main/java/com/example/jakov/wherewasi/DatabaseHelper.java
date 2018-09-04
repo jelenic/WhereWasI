@@ -90,6 +90,26 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 
+    public boolean addMailData(String date,String name, String latitude, String longitude, String log_name, String adress){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL0, date);
+        contentValues.put(COL1, name);
+        contentValues.put(COL3, latitude);
+        contentValues.put(COL4, longitude);
+        contentValues.put(COL6, log_name);
+        contentValues.put(COL7, adress);
+        Log.d(TAG, "addMailData: Adding " + name + " to " + TABLE_NAME);
+        long result = db.insert(TABLE_NAME, null, contentValues);
+
+        //if date as inserted incorrectly it will return -1
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean addLog(String name, String description){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -124,6 +144,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         return data;
     }
+
+
 
     public Cursor getLogData(){
         SQLiteDatabase db = this.getWritableDatabase();

@@ -145,7 +145,9 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                         }
                         else {
                             for (int i=0;i < n; i++) {
-                                mListView.setItemChecked(i, true);
+                                if (!listData_selected.contains(listData.get(i))) {
+                                    mListView.setItemChecked(i, true);
+                                }
                             }
 
                         }
