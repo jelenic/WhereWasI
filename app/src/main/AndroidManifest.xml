@@ -28,8 +28,11 @@
         <activity android:name=".StartLogActivity" />
         <activity android:name=".DialogActivity" />
         <activity android:name=".SearchResultActivity" />
-        <activity android:name=".SearchActivity"></activity>
-        <service android:name=".GPS_Service"/>
+        <activity android:name=".SearchActivity" />
+
+        <service android:name=".GPS_Service" />
+
+        <activity android:name=".MapActivity"></activity>
     </application>
 
 </manifest>

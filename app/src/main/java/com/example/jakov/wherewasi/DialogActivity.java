@@ -1,12 +1,18 @@
 package com.example.jakov.wherewasi;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Locale;
 
 public class DialogActivity extends AppCompatActivity {
     String name;
@@ -24,6 +30,7 @@ public class DialogActivity extends AppCompatActivity {
     TextView timestampTV;
     TextView adressTV;
     ImageView imageV;
+    Button openMapsBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,17 @@ public class DialogActivity extends AppCompatActivity {
         if (adress.isEmpty()) adress = "Unknown address";
         image = BitmapFactory.decodeFile(path);
 
+        openMapsBtn = findViewById(R.id.openMapsBtn);
+        openMapsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Double longi = Double.parseDouble(longitude);
+                Double lati = Double.parseDouble(latitude);
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f", longi, lati);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
         nameTV = findViewById(R.id.nameTextView);
         descriptionTV = findViewById(R.id.descriptionTextView);
         imageV = findViewById(R.id.ImageView);
