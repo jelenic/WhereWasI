@@ -21,7 +21,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
     private static final String TAG = "LogViewActivity";
@@ -108,7 +107,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             }
         }
         //create the list adapter and set the adapter
-        Collections.reverse(listData);
+        //Collections.reverse(listData);
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -158,6 +157,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                             Log.d(TAG, "timestamp:" + timestamp);
                             adapter.remove(item);
                             mDatabaseHelper.deleteEntry(timestamp);
+
                         }
                         Toast.makeText(getBaseContext(),count+" removed",Toast.LENGTH_SHORT).show();
                         count=0;
@@ -171,7 +171,8 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
-
+                listData_selected.clear();
+                count = 0;
             }
 
             @Override

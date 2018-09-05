@@ -6,18 +6,18 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,8 +29,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
 public class QuickInputActivity extends AppCompatActivity {
     Button Insertbtn;
@@ -45,6 +43,8 @@ public class QuickInputActivity extends AppCompatActivity {
     private Uri mImageCaptureUri;
     private ImageView mImageView;
 
+    private Handler mHandler;
+
     private static final int PICK_FROM_CAMERA = 1;
     private static final int PICK_FROM_FILE = 2;
 
@@ -57,6 +57,8 @@ public class QuickInputActivity extends AppCompatActivity {
         StrictMode.setVmPolicy(newbuilder.build());
 
         verifyPermissions();
+
+        setHandler();
 
         Insertbtn = (Button) findViewById(R.id.Insertbtn);
         nameet= (EditText) findViewById(R.id.nameet);
@@ -121,6 +123,17 @@ public class QuickInputActivity extends AppCompatActivity {
 
     }
 
+    private void setHandler() {
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                String text = message.arg1 == 1 ? "INSERTED" : "FAILED";
+                Toast.makeText(QuickInputActivity.this, text, Toast.LENGTH_SHORT).show();
+
+            }
+        };
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
@@ -169,19 +182,35 @@ public class QuickInputActivity extends AppCompatActivity {
         Insertbtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                //get langitude and longitude
-                String latitude=Double.toString(latituded);
-                String longitude=Double.toString(longituded);
-                String name = nameet.getText().toString();
-                String desc = descriptionet.getText().toString();
-                String adress = getCompleteAddressString(latituded,longituded);
-                boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
-                if (insertlog==true){
-                    Toast.makeText(QuickInputActivity.this,"INSERTED",Toast.LENGTH_LONG).show();
 
-                }
-                else Toast.makeText(QuickInputActivity.this,"NOPE",Toast.LENGTH_LONG).show();
+                Thread myThread = new Thread(new Runnable(){
+                    @Override
+                    public void run()
+                    {
+                        if (path == null) path = "";
+                        String latitude=Double.toString(latituded);
+                        String longitude=Double.toString(longituded);
+                        String name = nameet.getText().toString();
+                        if (name.isEmpty()) name = "Quick Input";
+                        String desc = descriptionet.getText().toString();
+                        String adress = LoggedInActivity.getCompleteAddressString(latituded,longituded);
+                        if (path.isEmpty()) {
+                            String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
+                            path = LoggedInActivity.getPath(url, latitude, longitude);
+                        }
+                        boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
 
+
+                        Message message = mHandler.obtainMessage();
+                        message.arg1 = 0;
+                        if (insertlog) {
+                            message.arg1 = 1;
+                        }
+
+                        message.sendToTarget();
+                    }
+                });
+                myThread.start();
                 finish();
 
             }
@@ -211,30 +240,6 @@ public class QuickInputActivity extends AppCompatActivity {
         verifyPermissions();
     }
 
-
-    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
-        String strAdd = "";
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            if (addresses != null) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
-
-                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
-                }
-                strAdd = strReturnedAddress.toString();
-                Log.w("My Cur location address", strReturnedAddress.toString());
-            } else {
-                Log.w("My Cur location address", "No Address returned!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.w("My Cur location address", "Cant get Address!");
-        }
-        return strAdd;
-    }
 
 
 

@@ -20,6 +20,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -37,7 +40,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -48,7 +50,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private Button QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
     private EditText timeET, distanceET, serviceTimeET;
-    private final int PICKFILE_RESULT_CODE = 2;
+
     private File source;
 
     private DatabaseHelper logdb;
@@ -57,15 +59,19 @@ public class LoggedInActivity extends AppCompatActivity {
     public double latituded,longituded;
 
     private String activeLog;
-    //private Boolean putin;
     private Long minTime;
     private Float minDistance;
     private int time;
 
-    static DecimalFormat numberFormat = new DecimalFormat("#.0000");
+    private Handler mHandler;
 
+    private static DecimalFormat numberFormat = new DecimalFormat("#.0000");
+
+    private final int PICKFILE_RESULT_CODE = 2;
     public static final String CHANNEL_ID = "GPS_Service";
     static final int REQUEST_LOCATION = 1;
+
+    private static Geocoder geocoder;
 
     protected void onDestroy() {
         super.onDestroy();
@@ -81,7 +87,17 @@ public class LoggedInActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+    }
 
 
     @SuppressLint("MissingPermission")
@@ -96,6 +112,8 @@ public class LoggedInActivity extends AppCompatActivity {
 
         getPrefs();
 
+        setHandler();
+
 
         currentLog.setText(activeLog);
         ActiveLog.getInstance().setValue(activeLog);
@@ -108,6 +126,19 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
         locationPermissions();
+
+        geocoder = new Geocoder(this, Locale.getDefault());
+    }
+
+    private void setHandler() {
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                String text = message.arg1 == 1 ? "INSERTED" : "FAILED";
+                Toast.makeText(LoggedInActivity.this, text, Toast.LENGTH_SHORT).show();
+
+            }
+        };
     }
 
 
@@ -194,6 +225,14 @@ public class LoggedInActivity extends AppCompatActivity {
                         String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
                         String path = getPath(url, latitude, longitude);
                         boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
+
+                        Message message = mHandler.obtainMessage();
+                        message.arg1 = 0;
+                        if (insertlog) {
+                            message.arg1 = 1;
+                        }
+
+                        message.sendToTarget();
                     }
                 });
                 myThread.start();
@@ -293,7 +332,7 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-                chooseFile.setType(".txt");
+                chooseFile.setType("text/plain");
                 chooseFile = Intent.createChooser(chooseFile, "Choose a file");
                 startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
             }
@@ -377,10 +416,12 @@ public class LoggedInActivity extends AppCompatActivity {
             Log.d("src is ", source.toString());
             String filename = content_describer.getLastPathSegment();
             Log.d("FileName is ",filename);
+            readFromFile(source);
         }
     }
 
     public void readFromFile(final File file){
+        //TO-DO check if logs exist, add if they don't
         Thread myThread = new Thread(new Runnable(){
             @Override
             public void run()
@@ -390,15 +431,24 @@ public class LoggedInActivity extends AppCompatActivity {
                     BufferedReader br=new BufferedReader(new InputStreamReader(fis));
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
-                        System.out.println(line);
-                        String[] separatedline=line.split("|");
-                        boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5]);
+                        System.out.println("line:" + line);
+                        String[] separatedline = line.split("\\|");
+                        String lat, lng;
+                        lat = separatedline[2];
+                        lng = separatedline[3];
+                        String url = "http://maps.google.com/maps/api/staticmap?center=" + lat + "," + lng + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + lat + "," + lng + "&sensor=false";
+                        String path = getPath(url, lat, lng);
+                        Log.d(TAG, "path from fileRead:" + path);
+                        //String path = "";
+                        String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;
+                        Log.d(TAG, "adding:" + adding);
+                        boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5], path);
                     }
 
                     br.close();
                 }
                 catch(Exception e){
-                    System.err.println("Error: Target File Cannot Be Read");
+                    e.printStackTrace();
                 }
             }
         });
@@ -410,9 +460,8 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
 
-    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
+    public static String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
         String strAdd = "";
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
             if (addresses != null) {
