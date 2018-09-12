@@ -146,6 +146,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return data;
     }
 
+    public Cursor getGifData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT " + COL0 + "," + COL5  + " FROM " + TABLE_NAME + " ORDER BY " + COL0 + " ASC";
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
 
 
     public Cursor getLogData(){

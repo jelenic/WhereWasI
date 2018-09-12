@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -28,7 +29,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     DatabaseHelper mDatabaseHelper2;
     ListView mListView;
     Spinner pickLog;
-    Button setActive;
+    Button setActive, scrollUpBtn, scrollDownBtn;
     String name = ActiveLog.getInstance().getValue();
     public static ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
@@ -37,6 +38,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     String timestamp;
     ArrayList<String> listDataSpinner;
     Button searchBtn;
+    FloatingActionButton floatingActionDownBtn, floatingActionUpBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,36 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 startActivity(intent);
             }
         });
+
+        scrollDownBtn = findViewById(R.id.scrollDownBtn);
+        scrollDownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(adapter.getCount() - 1);
+            }
+        });
+
+        scrollUpBtn = findViewById(R.id.scrollUpBtn);
+        scrollUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(0);
+            }
+        });
+        floatingActionDownBtn = findViewById(R.id.floatingActionDownBtn);
+        floatingActionDownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(adapter.getCount() - 1);
+            }
+        });
+        floatingActionUpBtn = findViewById(R.id.floatingActionUpBtn);
+        floatingActionUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(0);
+            }
+        });
     }
 
 
@@ -89,7 +121,12 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "populateListView: Displaying data in the ListView.");
 
         //get the data and append to a list
+        long startTime = System.currentTimeMillis();
         Cursor data = mDatabaseHelper.getData();
+        long time = System.currentTimeMillis() - startTime;
+
+        Log.d(TAG, "time to load DB:" + time);
+
         Bitmap image = null;
         listData = new ArrayList<>();
         while(data.moveToNext()){

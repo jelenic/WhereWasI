@@ -47,7 +47,7 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
+    private Button gifBtn,QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
     private EditText timeET, distanceET, serviceTimeET;
 
@@ -208,7 +208,19 @@ public class LoggedInActivity extends AppCompatActivity {
         setMinListener();
         quickCheckInListener();
         FilePickerListener();
+        gifListener();
 
+    }
+
+    private void gifListener() {
+        gifBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoggedInActivity.this, GifActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
     }
 
     private void quickCheckInListener() {
@@ -403,6 +415,7 @@ public class LoggedInActivity extends AppCompatActivity {
         setMin = findViewById(R.id.setMin);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
+        gifBtn = findViewById(R.id.gifBtn);
 
     }
 
