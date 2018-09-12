@@ -391,7 +391,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
                         System.out.println(line);
-                        String[] separatedline=line.split("|");
+                        String[] separatedline=line.split( "|");
                         boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5]);
                     }
 
