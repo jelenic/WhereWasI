@@ -62,8 +62,14 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         loadSpinnerData();
         pickLog.setSelection(pos);
 
-        populateListView();
+        /*Thread myThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+            }
+        });
+        myThread.start();*/
+        populateListView();
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
 
@@ -121,14 +127,16 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "populateListView: Displaying data in the ListView.");
 
         //get the data and append to a list
-        long startTime = System.currentTimeMillis();
+        long time1 = System.currentTimeMillis();
         Cursor data = mDatabaseHelper.getData();
-        long time = System.currentTimeMillis() - startTime;
+        long time2 = System.currentTimeMillis();
+        Log.d("time", "DB time: " + (time2 - time1));
 
-        Log.d(TAG, "time to load DB:" + time);
 
         Bitmap image = null;
         listData = new ArrayList<>();
+
+
         while(data.moveToNext()){
             image = null;
             if (data.getString(5) != null) {
@@ -143,16 +151,15 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2), data.getString(7)));
             }
         }
-        //create the list adapter and set the adapter
-        //Collections.reverse(listData);
+        long time3 = System.currentTimeMillis();
+        Log.d("time", "data time: " + (time3 - time2));
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
-        //mListView.setSelection(adapter.getCount() - 1);
-        //mListView.smoothScrollToPosition(adapter.getCount() - 1);
+
 
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {

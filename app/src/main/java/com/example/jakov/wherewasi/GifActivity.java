@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class GifActivity extends AppCompatActivity {
 
     private ImageView imageView1;
-    private TextView textView;
+    private TextView textView, updateSpeedTextView;
     private DatabaseHelper db;
     private ArrayList<timeImage> timeImages;
     private Handler mHandler;
@@ -34,13 +34,14 @@ public class GifActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message message) {
+
                 if (message.arg1 == 1) {
                     timeImage tm = (timeImage) message.obj;
                     textView.setText(tm.text);
                     imageView1.setImageBitmap(BitmapFactory.decodeFile(tm.path));
                 }
 
-                else if (message.arg2 == 2) {
+                else if (message.arg1 == 2) {
                     startStopBtn.setText("START");
                 }
 
@@ -61,8 +62,31 @@ public class GifActivity extends AppCompatActivity {
         startStopBtn = findViewById(R.id.startStopBtn);
         speedBar = findViewById(R.id.seekBar);
         mPauseLock = new Object();
+        updateSpeedTextView = findViewById(R.id.updateSpeedTextView);
+        updateSpeedTextView.setText(updateSpeed + " ms");
 
         setHandler();
+
+        speedBar.setMax(2000);
+        speedBar.setProgress(updateSpeed);
+
+        speedBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                updateSpeed = i;
+                updateSpeedTextView.setText(updateSpeed + " ms");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
 
 
@@ -79,9 +103,7 @@ public class GifActivity extends AppCompatActivity {
         }
 
 
-
-
-        final Thread myThread = new Thread(new Runnable(){
+        final Runnable gifRunnable = new Runnable(){
             @Override
             public void run()
             {
@@ -114,7 +136,9 @@ public class GifActivity extends AppCompatActivity {
 
 
             }
-        });
+        };
+
+
 
         startStopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +158,7 @@ public class GifActivity extends AppCompatActivity {
 
                 }
                 else if (!started) {
+                    Thread myThread = new Thread(gifRunnable);
                     myThread.start();
                     startStopBtn.setText("STOP");
                     started = true;
