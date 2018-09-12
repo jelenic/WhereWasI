@@ -34,9 +34,15 @@ public class GifActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message message) {
-                timeImage tm = (timeImage) message.obj;
-                textView.setText(tm.text);
-                imageView1.setImageBitmap(BitmapFactory.decodeFile(tm.path));
+                if (message.arg1 == 1) {
+                    timeImage tm = (timeImage) message.obj;
+                    textView.setText(tm.text);
+                    imageView1.setImageBitmap(BitmapFactory.decodeFile(tm.path));
+                }
+
+                else if (message.arg2 == 2) {
+                    startStopBtn.setText("START");
+                }
 
 
             }
@@ -84,6 +90,7 @@ public class GifActivity extends AppCompatActivity {
 
                     Message message = mHandler.obtainMessage();
                     message.obj = tm;
+                    message.arg1 = 1;
                     message.sendToTarget();
 
                     try {
@@ -101,7 +108,9 @@ public class GifActivity extends AppCompatActivity {
 
                 }
                 started = false;
-
+                Message message = mHandler.obtainMessage();
+                message.arg1 = 2;
+                message.sendToTarget();
 
 
             }
