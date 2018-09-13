@@ -62,14 +62,13 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         loadSpinnerData();
         pickLog.setSelection(pos);
 
-        /*Thread myThread = new Thread(new Runnable() {
+        Thread myThread = new Thread(new Runnable() {
             @Override
             public void run() {
-
+                populateListView();
             }
         });
-        myThread.start();*/
-        populateListView();
+
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
 

@@ -157,7 +157,7 @@ public class GifActivity extends AppCompatActivity {
                     startStopBtn.setText("STOP");
 
                 }
-                else if (!started) {
+                else if (!started && timeImages.size() != 0) {
                     Thread myThread = new Thread(gifRunnable);
                     myThread.start();
                     startStopBtn.setText("STOP");
