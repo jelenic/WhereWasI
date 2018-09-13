@@ -90,13 +90,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 
-    public boolean addMailData(String date,String name, String latitude, String longitude, String log_name, String adress){
+    public boolean addMailData(String date,String name, String latitude, String longitude, String log_name, String adress, String path){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL0, date);
         contentValues.put(COL1, name);
         contentValues.put(COL3, latitude);
         contentValues.put(COL4, longitude);
+        contentValues.put(COL5, path);
         contentValues.put(COL6, log_name);
         contentValues.put(COL7, adress);
         Log.d(TAG, "addMailData: Adding " + name + " to " + TABLE_NAME);
@@ -131,7 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public Cursor getData(){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME;
+        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL0 + " DESC";
         Cursor data = db.rawQuery(query, null);
 
         return data;
@@ -140,6 +141,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public Cursor getMailData(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT " + COL0 + "," + COL1 + "," + COL3 + "," + COL4 + "," + COL6 + "," + COL7  + " FROM " + TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
+    public Cursor getGifData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT " + COL0 + "," + COL5  + " FROM " + TABLE_NAME + " ORDER BY " + COL0 + " ASC";
         Cursor data = db.rawQuery(query, null);
 
         return data;

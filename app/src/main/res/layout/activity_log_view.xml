@@ -24,21 +24,59 @@
 
     <Button
         android:id="@+id/SetActiveLog"
-        android:layout_width="wrap_content"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="12dp"
-        android:layout_marginEnd="44dp"
+        android:layout_marginEnd="20dp"
         android:text="SET ACTIVE" />
 
     <Button
         android:id="@+id/searchBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/SetActiveLog"
         android:layout_marginBottom="12dp"
-        android:layout_marginStart="44dp"
+        android:layout_marginStart="20dp"
         android:text="Search" />
+
+    <Button
+        android:id="@+id/scrollUpBtn"
+        android:layout_width="45dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp"
+        android:text="^"
+        android:textSize="14sp" />
+    <Button
+        android:id="@+id/scrollDownBtn"
+        android:layout_width="45dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="ˇ" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionUpBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="129dp"
+        android:layout_marginEnd="39dp"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionDownBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="79dp"
+        android:layout_marginEnd="39dp"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/arrow_down_float" />
 </RelativeLayout>

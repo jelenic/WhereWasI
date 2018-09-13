@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -21,7 +22,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class LogViewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
     private static final String TAG = "LogViewActivity";
@@ -29,7 +29,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     DatabaseHelper mDatabaseHelper2;
     ListView mListView;
     Spinner pickLog;
-    Button setActive;
+    Button setActive, scrollUpBtn, scrollDownBtn;
     String name = ActiveLog.getInstance().getValue();
     public static ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
@@ -38,6 +38,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     String timestamp;
     ArrayList<String> listDataSpinner;
     Button searchBtn;
+    FloatingActionButton floatingActionDownBtn, floatingActionUpBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,36 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 startActivity(intent);
             }
         });
+
+        scrollDownBtn = findViewById(R.id.scrollDownBtn);
+        scrollDownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(adapter.getCount() - 1);
+            }
+        });
+
+        scrollUpBtn = findViewById(R.id.scrollUpBtn);
+        scrollUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(0);
+            }
+        });
+        floatingActionDownBtn = findViewById(R.id.floatingActionDownBtn);
+        floatingActionDownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(adapter.getCount() - 1);
+            }
+        });
+        floatingActionUpBtn = findViewById(R.id.floatingActionUpBtn);
+        floatingActionUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(0);
+            }
+        });
     }
 
 
@@ -90,7 +121,12 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "populateListView: Displaying data in the ListView.");
 
         //get the data and append to a list
+        long startTime = System.currentTimeMillis();
         Cursor data = mDatabaseHelper.getData();
+        long time = System.currentTimeMillis() - startTime;
+
+        Log.d(TAG, "time to load DB:" + time);
+
         Bitmap image = null;
         listData = new ArrayList<>();
         while(data.moveToNext()){
@@ -108,7 +144,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             }
         }
         //create the list adapter and set the adapter
-        Collections.reverse(listData);
+        //Collections.reverse(listData);
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -158,6 +194,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                             Log.d(TAG, "timestamp:" + timestamp);
                             adapter.remove(item);
                             mDatabaseHelper.deleteEntry(timestamp);
+
                         }
                         Toast.makeText(getBaseContext(),count+" removed",Toast.LENGTH_SHORT).show();
                         count=0;
@@ -171,7 +208,8 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
-
+                listData_selected.clear();
+                count = 0;
             }
 
             @Override

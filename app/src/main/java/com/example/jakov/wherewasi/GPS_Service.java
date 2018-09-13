@@ -9,8 +9,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,8 +25,6 @@ import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
 import static com.example.jakov.wherewasi.LoggedInActivity.CHANNEL_ID;
 
@@ -42,11 +38,15 @@ public class GPS_Service extends Service {
     private final int NOTIF_ID = 1;
     private NotificationManager mNotificationManager;
     private int time;
+
+
+
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate() {
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         logdb = new DatabaseHelper(this);
+
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
@@ -72,9 +72,10 @@ public class GPS_Service extends Service {
 
             }
         };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         activeLog = intent.getStringExtra("activeLog");
@@ -91,12 +92,14 @@ public class GPS_Service extends Service {
             {
                 while (shouldContinue) {
                     addData();
-
                     try {
+
                         Thread.sleep(1000*time);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+
                 }
             }
         });
@@ -106,6 +109,11 @@ public class GPS_Service extends Service {
 
         return START_NOT_STICKY;
     }
+
+
+
+
+
     private Notification getMyActivityNotification (String text) {
         Intent notificationIntent = new Intent(this, LoggedInActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -130,7 +138,7 @@ public class GPS_Service extends Service {
     public void addData() {
         String lat=Double.toString(latitude);
         String longi=Double.toString(longitude);
-        String adress = getCompleteAddressString(latitude,longitude);
+        String adress = LoggedInActivity.getCompleteAddressString(latitude,longitude);
         String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
         final String path = LoggedInActivity.getPath(url, lat, longi);
         boolean insertlog = logdb.addData("Service",null,lat,longi, path, activeLog,adress);
@@ -194,29 +202,7 @@ public class GPS_Service extends Service {
         myThread.start();
     }
 
-    private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
-        String strAdd = "";
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            if (addresses != null) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
 
-                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
-                }
-                strAdd = strReturnedAddress.toString();
-                Log.w("My Cur location address", strReturnedAddress.toString());
-            } else {
-                Log.w("My Cur location address", "No Address returned!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.w("My Cur location address", "Cant get Address!");
-        }
-        return strAdd;
-    }
 
     @Nullable
     @Override

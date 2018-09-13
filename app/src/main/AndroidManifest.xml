@@ -10,22 +10,18 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".LoggedInActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".QuickInputActivity" />
         <activity android:name=".LogViewActivity" />
@@ -34,13 +30,13 @@
         <activity android:name=".SearchResultActivity" />
         <activity android:name=".SearchActivity" />
 
-
-
         <service android:name=".GPS_Service" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAV0zQ0zdT6jQviqVhhJkV-LjO3-ZnsspU"/>
+            android:value="AIzaSyAV0zQ0zdT6jQviqVhhJkV-LjO3-ZnsspU" />
+
+        <activity android:name=".GifActivity"></activity>
     </application>
 
 </manifest>
