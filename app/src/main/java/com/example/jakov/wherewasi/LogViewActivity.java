@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -37,6 +38,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     String timestamp;
     ArrayList<String> listDataSpinner;
     Button searchBtn;
+    FloatingActionButton floatingActionDownBtn, floatingActionUpBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +104,20 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 mListView.setSelection(0);
             }
         });
-
+        floatingActionDownBtn = findViewById(R.id.floatingActionDownBtn);
+        floatingActionDownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(adapter.getCount() - 1);
+            }
+        });
+        floatingActionUpBtn = findViewById(R.id.floatingActionUpBtn);
+        floatingActionUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setSelection(0);
+            }
+        });
     }
 
 
@@ -119,6 +134,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
         Bitmap image = null;
         listData = new ArrayList<>();
+
 
         while(data.moveToNext()){
             image = null;
@@ -142,8 +158,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;
-        //mListView.setSelection(adapter.getCount() - 1);
-        //mListView.smoothScrollToPosition(adapter.getCount() - 1);
+
 
 
         mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
