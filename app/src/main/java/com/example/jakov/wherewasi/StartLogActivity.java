@@ -33,12 +33,6 @@ public class StartLogActivity extends AppCompatActivity {
                 String name = nameET.getText().toString();
                 String description = descriptionET.getText().toString();
                 boolean insertlog = logdb.addLog(name, description);
-                /*switchState = SetActiveSwitch.isChecked();*/
-                /*String text = "INSERTED LOG";
-                if (switchState) {
-                    ActiveLog.getInstance().setValue(name);
-                    text += ", ACTIVE";
-                }*/
                 if (insertlog==true){
                     Toast.makeText(StartLogActivity.this,"INSERTED LOG",Toast.LENGTH_LONG).show();
 

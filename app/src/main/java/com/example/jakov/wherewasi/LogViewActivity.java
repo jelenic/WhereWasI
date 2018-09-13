@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -38,7 +37,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     String timestamp;
     ArrayList<String> listDataSpinner;
     Button searchBtn;
-    FloatingActionButton floatingActionDownBtn, floatingActionUpBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +59,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         int pos = listDataSpinner.indexOf(name);
         loadSpinnerData();
         pickLog.setSelection(pos);
-
-        Thread myThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                populateListView();
-            }
-        });
-
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
 
@@ -104,20 +94,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                 mListView.setSelection(0);
             }
         });
-        floatingActionDownBtn = findViewById(R.id.floatingActionDownBtn);
-        floatingActionDownBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListView.setSelection(adapter.getCount() - 1);
-            }
-        });
-        floatingActionUpBtn = findViewById(R.id.floatingActionUpBtn);
-        floatingActionUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListView.setSelection(0);
-            }
-        });
     }
 
 
@@ -126,11 +102,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "populateListView: Displaying data in the ListView.");
 
         //get the data and append to a list
-        long time1 = System.currentTimeMillis();
-        Cursor data = mDatabaseHelper.getData();
-        long time2 = System.currentTimeMillis();
-        Log.d("time", "DB time: " + (time2 - time1));
-
+        Cursor data = mDatabaseHelper.getData(name);
 
         Bitmap image = null;
         listData = new ArrayList<>();
@@ -139,19 +111,15 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         while(data.moveToNext()){
             image = null;
             if (data.getString(5) != null) {
-                /*image = BitmapFactory.decodeByteArray(data.getBlob(5), 0, data.getBlob(5).length);*/
                 image  = BitmapFactory.decodeFile(data.getString(5));
             }
             //get the value from the database in column 1
             //then add it to the ArrayList
             Log.d(TAG, "adding path:" + data.getString(5));
 
-            if (data.getString(6).equals(name)) {
-                listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2), data.getString(7)));
-            }
+            listData.add(new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4), image, data.getString(5), data.getString(2), data.getString(7)));
+
         }
-        long time3 = System.currentTimeMillis();
-        Log.d("time", "data time: " + (time3 - time2));
         adapter = new LogListAdapter(this, R.layout.logs_list_view_adapter, listData);
         mListView.setAdapter(adapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -183,7 +151,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                             for (int i=0;i < n; i++) {
                                 mListView.setItemChecked(i, false);
                             }
-
                         }
                         else {
                             for (int i=0;i < n; i++) {
@@ -191,7 +158,6 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
                                     mListView.setItemChecked(i, true);
                                 }
                             }
-
                         }
                         return true;
                     case R.id.delete_id:
@@ -264,9 +230,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         name = parent.getItemAtPosition(position).toString();
         populateListView();
-        Log.d(TAG, "you clicked");
-        Log.d(TAG, name);
-        /*Toast.makeText(parent.getContext(),name, Toast.LENGTH_SHORT).show();*/
+        Log.d(TAG, "you clicked:" + name);
     }
 
     @Override
