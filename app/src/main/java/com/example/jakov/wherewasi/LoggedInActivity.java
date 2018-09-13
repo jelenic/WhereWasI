@@ -96,6 +96,7 @@ public class LoggedInActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        currentLog.setText(ActiveLog.getInstance().getValue());
         Log.i(TAG, "onResume");
     }
 

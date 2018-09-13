@@ -41,8 +41,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
                 COL1 +" TEXT , " + COL2 + " TEXT, " + COL3 + " TEXT, "+ COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT,"+COL7 + " TEXT  )";
         db.execSQL(createTable);
-        String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT PRIMARY KEY , " +
-                COL1 +" TEXT , " + COL2 + " TEXT )";
+        String createTable2 = "CREATE TABLE " + LOG_TABLE_NAME + " (" + COL0 + " TEXT , " +
+                COL1 +" TEXT PRIMARY KEY , " + COL2 + " TEXT )";
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         String date = df.format(Calendar.getInstance().getTime());
         String insertDefault = "INSERT INTO " + LOG_TABLE_NAME +  " VALUES('On install', 'Default log' , 'default desctiption' )";
@@ -112,6 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public boolean addLog(String name, String description){
+        if (name.isEmpty()) return false;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -137,6 +138,15 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         return data;
     }
+
+    public Cursor getData(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " DESC";
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
 
     public Cursor getMailData(){
         SQLiteDatabase db = this.getWritableDatabase();
