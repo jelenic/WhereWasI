@@ -12,7 +12,7 @@ public class LogEntry {
     private String description;
     private String adress;
 
-    public LogEntry(String timestamp, String name, String longitude, String latitude, Bitmap img, String path, String description, String adress  ) {
+    public LogEntry(String timestamp, String name, String  longitude, String latitude, Bitmap img, String path, String description, String adress  ) {
         this.image = img;
         Timestamp = timestamp;
         this.name = name;

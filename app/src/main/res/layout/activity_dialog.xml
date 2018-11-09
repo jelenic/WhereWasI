@@ -3,16 +3,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:scrollbarStyle="insideInset"
+
     android:scrollbars="vertical">
 
     <Button
         android:id="@+id/openMapsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="OPEN IN MAPS"
-        />
+        android:layout_marginStart="31dp"
+        android:text="OPEN IN MAPS" />
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
@@ -87,5 +88,14 @@
 
 
     </ScrollView>
+
+    <Button
+        android:id="@+id/findMissingBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="31dp"
+        android:text="FIND MISSING" />
 
 </RelativeLayout>

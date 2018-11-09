@@ -74,6 +74,7 @@ public class SearchActivity extends AppCompatActivity {
         searchDateToText = findViewById(R.id.searchDateToText);
         searchLocationText = findViewById(R.id.searchLocationText);
         radiusET = findViewById(R.id.radiusET);
+        radiusET.setTransformationMethod(null);
 
 
         if(isServicesOK()){

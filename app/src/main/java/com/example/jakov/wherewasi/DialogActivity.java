@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -13,28 +16,34 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.Locale;
 
 public class DialogActivity extends AppCompatActivity {
-    String name;
-    String description;
-    String path;
-    String longitude;
-    String latitude;
-    String timestamp;
-    String adress;
+    String name, description, path, longitude, latitude, timestamp, adress;
     Bitmap image;
-    TextView nameTV;
-    TextView descriptionTV;
-    TextView longitudeTV;
-    TextView latitudeTV;
-    TextView timestampTV;
-    TextView adressTV;
+    TextView nameTV, descriptionTV, longitudeTV, latitudeTV, timestampTV, adressTV;
     ImageView imageV;
-    Button openMapsBtn;
+    Button openMapsBtn, findMissingBtn;
     Float x1,x2,y1,y2;
     int position;
+    private DatabaseHelper db;
+    private final String TAG = "dialogActivity";
+    private Handler mHandler;
+
+    private void setHandler() {
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                image = BitmapFactory.decodeFile(path);
+                adressTV.setText(adress);
+                imageV.setImageBitmap(image);
+
+            }
+        };
+    }
 
     public boolean onTouchEvent(MotionEvent touchEvent) {
         switch (touchEvent.getAction()){
@@ -114,8 +123,15 @@ public class DialogActivity extends AppCompatActivity {
             position = extras.getInt("position");
 
         }
-        if (adress.isEmpty()) adress = "Unknown address";
+        Toast.makeText(DialogActivity.this, "lat, lng:" + latitude + "," + longitude, Toast.LENGTH_SHORT).show();
+
         image = BitmapFactory.decodeFile(path);
+
+        setHandler();
+
+        Log.d(TAG, "onCreate: " + path + "|" + adress);
+
+        db = new DatabaseHelper(this);
 
         openMapsBtn = findViewById(R.id.openMapsBtn);
         openMapsBtn.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +145,42 @@ public class DialogActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
                 }
+            }
+        });
+
+        findMissingBtn = findViewById(R.id.findMissingBtn);
+        findMissingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(DialogActivity.this, "lat, lng:" + latitude + "," + longitude, Toast.LENGTH_SHORT).show();
+                Thread myThread = new Thread(new Runnable(){
+                    @Override
+                    public void run()
+                    {
+                        Log.d(TAG, "missing " + adress + "|" + path + "|");
+                        if (adress.isEmpty()) {
+                            adress = LoggedInActivity.getCompleteAddressString(Double.parseDouble(latitude),Double.parseDouble(longitude));
+                            Log.d(TAG, "findMissing1: " + adress);
+                        }
+
+                        File file = new File(path);
+                        Log.d(TAG, "file exists:" + file.exists());
+                        if (!file.exists()) {
+                            path = LoggedInActivity.getPath(longitude, latitude );
+                            Log.d(TAG, "findMissing2: " + path);
+                        }
+                        db.updateData(timestamp, path, adress);
+
+                        Message message = mHandler.obtainMessage();
+
+
+                        message.sendToTarget();
+                    }
+                });
+                myThread.start();
+
+
+
             }
         });
         nameTV = findViewById(R.id.nameTextView);

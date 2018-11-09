@@ -139,8 +139,7 @@ public class GPS_Service extends Service {
         String lat=Double.toString(latitude);
         String longi=Double.toString(longitude);
         String adress = LoggedInActivity.getCompleteAddressString(latitude,longitude);
-        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
-        final String path = LoggedInActivity.getPath(url, lat, longi);
+        final String path = LoggedInActivity.getPath(lat, longi);
         boolean insertlog = logdb.addData("Service",null,lat,longi, path, activeLog,adress);
 
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");

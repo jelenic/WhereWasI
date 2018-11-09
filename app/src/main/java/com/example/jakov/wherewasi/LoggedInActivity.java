@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button gifBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
+    private Button mapBtn,mailBackupBtn, gifBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
     private EditText serviceTimeET;
 
@@ -116,7 +117,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
         setHandler();
 
-
+        serviceTimeET.setTransformationMethod(null);
         currentLog.setText(activeLog);
         ActiveLog.getInstance().setValue(activeLog);
         logdb = new DatabaseHelper(this);
@@ -144,7 +145,8 @@ public class LoggedInActivity extends AppCompatActivity {
     }
 
 
-    public static String getPath(String url, String lat, String lng) {
+    public static String getPath(String lat, String lng) {
+        String url = "http://maps.google.com/maps/api/staticmap?center=" + lat + "," + lng + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + lat + "," + lng + "&sensor=false" + "&key=AIzaSyAV0zQ0zdT6jQviqVhhJkV-LjO3-ZnsspU";
         String latLng = numberFormat.format(Double.parseDouble(lat)) + "|" + numberFormat.format(Double.parseDouble(lng));
         String image_path = null;
         String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "StaticMaps";
@@ -159,8 +161,23 @@ public class LoggedInActivity extends AppCompatActivity {
             Log.d(TAG, "getting image from google static maps");
             Bitmap image = null;
             try {
-                InputStream is = (InputStream) new URL(url).getContent();
-                image = BitmapFactory.decodeStream(is);
+                URL urll = new URL(url);
+                InputStream is = null;
+                HttpURLConnection http = (HttpURLConnection)urll.openConnection();
+                int statusCode = http.getResponseCode();
+                Log.d(TAG, "getPath, status code:" + statusCode);
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = http.getInputStream();
+                    image = BitmapFactory.decodeStream(is);
+                }
+                else {
+                    is = http.getErrorStream();
+                    for (int i = 0; i < is.available(); i++) {
+                        System.out.println("" + is.read());
+                    }
+                }
+
                 is.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -210,7 +227,31 @@ public class LoggedInActivity extends AppCompatActivity {
         quickCheckInListener();
         FilePickerListener();
         gifListener();
+        mailBackupListener();
+        mapListener();
 
+    }
+
+    private void mapListener() {
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoggedInActivity.this, MapActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
+    }
+
+    private void mailBackupListener() {
+        mailBackupBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoggedInActivity.this, SendMailActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
     }
 
     private void gifListener() {
@@ -235,8 +276,7 @@ public class LoggedInActivity extends AppCompatActivity {
                         String latitude=Double.toString(latituded);
                         String longitude=Double.toString(longituded);
                         String adress = getCompleteAddressString(latituded,longituded);
-                        String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
-                        String path = getPath(url, latitude, longitude);
+                        String path = getPath(latitude, longitude);
                         boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
 
                         Message message = mHandler.obtainMessage();
@@ -396,6 +436,8 @@ public class LoggedInActivity extends AppCompatActivity {
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
         gifBtn = findViewById(R.id.gifBtn);
+        mailBackupBtn = findViewById(R.id.mailBackupBtn);
+        mapBtn = findViewById(R.id.mapBtn);
 
     }
 
@@ -429,8 +471,7 @@ public class LoggedInActivity extends AppCompatActivity {
                         String lat, lng;
                         lat = separatedline[2];
                         lng = separatedline[3];
-                        String url = "http://maps.google.com/maps/api/staticmap?center=" + lat + "," + lng + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + lat + "," + lng + "&sensor=false";
-                        String path = getPath(url, lat, lng);
+                        String path = getPath(lat, lng);
                         Log.d(TAG, "path from fileRead:" + path);
                         //String path = "";
                         String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;

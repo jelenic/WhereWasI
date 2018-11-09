@@ -93,6 +93,7 @@
         android:id="@+id/radiusET"
         android:layout_below="@id/locationBox"
         android:gravity="center"
+        android:inputType="numberPassword"
         android:hint="radius (m)"/>
 
 

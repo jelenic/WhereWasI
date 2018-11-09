@@ -195,8 +195,7 @@ public class QuickInputActivity extends AppCompatActivity {
                         String desc = descriptionet.getText().toString();
                         String adress = LoggedInActivity.getCompleteAddressString(latituded,longituded);
                         if (path.isEmpty()) {
-                            String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + latitude + "," + longitude + "&sensor=false";
-                            path = LoggedInActivity.getPath(url, latitude, longitude);
+                            path = LoggedInActivity.getPath(latitude, longitude);
                         }
                         boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
 

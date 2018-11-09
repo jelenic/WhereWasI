@@ -52,7 +52,6 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
         tvTimestamp.setText(Timestamp);
         tvName.setText(Name);
         tvLatLong.setText(Longitude + "|" + Latitude);
-        if (Adress.isEmpty()) Adress = "Unknown address";
         tvAdress.setText(Adress);
         if (Image!=null) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

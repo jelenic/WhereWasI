@@ -46,18 +46,14 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         mDatabaseHelper = new DatabaseHelper(this);
         mDatabaseHelper2 = new DatabaseHelper(this, "logs_table");
 
-        pickLog = (Spinner) findViewById(R.id.LogsSpinner);
+        pickLog = findViewById(R.id.LogsSpinner);
 
-        setActive = (Button) findViewById(R.id.SetActiveLog);
+        setActive = findViewById(R.id.SetActiveLog);
 
-        listDataSpinner = new ArrayList<>();
-        Cursor data = mDatabaseHelper2.getLogData();
-        while(data.moveToNext()){
-            Log.d(TAG, "adding DATA:" + data.getString(1));
-            listDataSpinner.add(data.getString(1));
-        }
-        int pos = listDataSpinner.indexOf(name);
+
+
         loadSpinnerData();
+        int pos = listDataSpinner.indexOf(name);
         pickLog.setSelection(pos);
         pickLog.setOnItemSelectedListener(this);
         setActive.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +98,12 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
         Log.d(TAG, "populateListView: Displaying data in the ListView.");
 
         //get the data and append to a list
-        Cursor data = mDatabaseHelper.getData(name);
+        Cursor data = null;
+        if (name.equals("ALL LOGS")) {
+            data = mDatabaseHelper.getData();
+        }
+        else
+            data = mDatabaseHelper.getData(name);
 
         Bitmap image = null;
         listData = new ArrayList<>();
@@ -217,7 +218,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
             Log.d(TAG, "adding DATA:" + data.getString(1));
             listDataSpinner.add(data.getString(1));
         }
-        Log.d(TAG,"listData:"+listData);
+        listDataSpinner.add("ALL LOGS");
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, listDataSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pickLog.setAdapter(spinnerAdapter);

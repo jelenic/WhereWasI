@@ -90,6 +90,23 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 
+    public void updateData(String id,String path, String adress) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String toUpd = "'"+id+"'";
+        String toPath = "'"+path+"'";
+        String toAdress = "'"+adress+"'";
+
+
+        String query = "UPDATE " + TABLE_NAME + " SET "
+                + COL5 + " = " +  toPath + ", " + COL7 + " = " + toAdress + " WHERE " + COL0 + " = " + toUpd;
+
+        Log.d(TAG, "updateData: Updating " + id + " with " + path +  ", " + adress);
+        db.execSQL(query);
+        db.close();
+
+
+    }
+
     public boolean addMailData(String date,String name, String latitude, String longitude, String log_name, String adress, String path){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -112,7 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public boolean addLog(String name, String description){
-        if (name==""){
+        if (name.isEmpty()){
             return false;
         }
         SQLiteDatabase db = this.getWritableDatabase();
@@ -144,6 +161,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public Cursor getMailData(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT " + COL0 + "," + COL1 + "," + COL3 + "," + COL4 + "," + COL6 + "," + COL7  + " FROM " + TABLE_NAME;
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
+    public Cursor getMailData(String logName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT " + COL0 + "," + COL1 + "," + COL3 + "," + COL4 + "," + COL6 + "," + COL7  + " FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + logName + "'" + " ORDER BY " + COL0 + " DESC";
         Cursor data = db.rawQuery(query, null);
 
         return data;
