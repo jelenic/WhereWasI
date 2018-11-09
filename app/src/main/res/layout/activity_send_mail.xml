@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SendMailActivity">
+
+    <Spinner
+        android:id="@+id/LogsSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <EditText
+        android:id="@+id/subjectEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/mailEditText"
+        android:ems="10"
+        android:inputType="textEmailSubject"
+        android:hint="Subject" />
+
+    <EditText
+        android:id="@+id/msgEditText"
+        android:layout_width="match_parent"
+        android:layout_height="305dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/subjectEditText"
+        android:ems="10"
+        android:hint="Message"
+        android:inputType="textMultiLine"
+        android:gravity="top"/>
+
+    <EditText
+        android:id="@+id/mailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/LogsSpinner"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:hint="Mail" />
+
+    <Button
+        android:id="@+id/sendMailBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="SEND" />
+
+</RelativeLayout>

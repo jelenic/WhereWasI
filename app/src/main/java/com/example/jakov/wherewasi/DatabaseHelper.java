@@ -112,7 +112,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public boolean addLog(String name, String description){
-        if (name.isEmpty()) return false;
+        if (name==""){
+            return false;
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -138,15 +140,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         return data;
     }
-
-    public Cursor getData(String name){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " DESC";
-        Cursor data = db.rawQuery(query, null);
-
-        return data;
-    }
-
 
     public Cursor getMailData(){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -191,6 +184,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         db.execSQL(query);
         db.close();
+    }
+
+    public Cursor getData(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " DESC";
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
     }
 
 

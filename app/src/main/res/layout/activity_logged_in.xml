@@ -48,33 +48,12 @@
         android:layout_below="@+id/QuickCheckInBtn"
         android:text="Quick Input" />
 
-    <EditText
-        android:id="@+id/timeET"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/QuickInputBtn"
-        android:hint="min_time in seconds"
-        android:textSize="16sp" />
-    <EditText
-        android:id="@+id/distanceET"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/timeET"
-        android:hint="min_distance in meters"
-        android:textSize="16sp" />
-    <Button
-        android:id="@+id/setMin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/distanceET"
-        android:text="SET MIN"/>
+
     <Button
         android:id="@+id/startServiceBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/setMin"
+        android:layout_below="@+id/QuickInputBtn"
         android:text="START SERVICE"/>
     <Button
         android:id="@+id/stopServiceBtn"

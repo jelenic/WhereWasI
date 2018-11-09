@@ -47,9 +47,9 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button gifBtn,QuickCheckInBtn, QuickInputBtn, setMin, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
+    private Button gifBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
-    private EditText timeET, distanceET, serviceTimeET;
+    private EditText serviceTimeET;
 
     private File source;
 
@@ -79,7 +79,6 @@ public class LoggedInActivity extends AppCompatActivity {
         SharedPreferences.Editor saveValue = prefs.edit();
         activeLog = ActiveLog.getInstance().getValue();
         saveValue.putString("ActiveLog", activeLog);
-        //saveValue.putBoolean("Putin", putin);
         saveValue.putLong("minTime", minTime);
         saveValue.putFloat("Distance", minDistance);
         saveValue.putInt("time", time);
@@ -98,6 +97,8 @@ public class LoggedInActivity extends AppCompatActivity {
         super.onResume();
         currentLog.setText(ActiveLog.getInstance().getValue());
         Log.i(TAG, "onResume");
+        activeLog = ActiveLog.getInstance().getValue();
+        currentLog.setText(activeLog);
     }
 
 
@@ -206,7 +207,6 @@ public class LoggedInActivity extends AppCompatActivity {
         quickInputListener();
         newLogListener();
         viewLogsListener();
-        setMinListener();
         quickCheckInListener();
         FilePickerListener();
         gifListener();
@@ -253,24 +253,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    @SuppressLint("MissingPermission")
-    private void setMinListener() {
-        setMin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String minTimeSet = timeET.getText().toString();
-                String minDistSet = distanceET.getText().toString();
-                if (!minTimeSet.isEmpty()) {
-                    minTime = 1000 * Long.parseLong(minTimeSet);
-                }
-                if (!minDistSet.isEmpty()) {
-                    minDistance = Float.parseFloat(minDistSet);
-                }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                Toast.makeText(LoggedInActivity.this, "time:" + minTimeSet + "|distance:" + minDistSet, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+
 
     private void viewLogsListener() {
         ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
@@ -383,7 +366,6 @@ public class LoggedInActivity extends AppCompatActivity {
     private void getPrefs() {
         SharedPreferences prefs= this.getSharedPreferences("MyValues", 0);
         activeLog = prefs.getString("ActiveLog", "Default log");
-        //putin = prefs.getBoolean("Putin", true);
         minTime = prefs.getLong("minTime", 2000);
         minDistance = prefs.getFloat("Distance", 1);
         time = prefs.getInt("time", 30);
@@ -411,9 +393,6 @@ public class LoggedInActivity extends AppCompatActivity {
         StartNewLogBtn = findViewById(R.id.StartNewLogBtn);
         QuickInputBtn = findViewById(R.id.QuickInputBtn);
         ViewLogsBtn = findViewById(R.id.ViewLogsBtn);
-        timeET = findViewById(R.id.timeET);
-        distanceET = findViewById(R.id.distanceET);
-        setMin = findViewById(R.id.setMin);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
         gifBtn = findViewById(R.id.gifBtn);
