@@ -72,6 +72,8 @@ public class QuickInputActivity extends AppCompatActivity {
         }
         addfulldata();
 
+
+
         final String [] items           = new String [] {"From Camera", "From SD Card"};
         ArrayAdapter<String> adapter  = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item,items);
         AlertDialog.Builder builder     = new AlertDialog.Builder(this);

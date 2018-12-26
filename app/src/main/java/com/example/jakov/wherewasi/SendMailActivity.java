@@ -1,5 +1,6 @@
 package com.example.jakov.wherewasi;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -131,7 +133,20 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
                     String pathMailFile = mailFile.getPath();
 
                     bw.close();
-                    GMailSender sender = new GMailSender(
+
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("message/rfc822");
+                    i.putExtra(Intent.EXTRA_EMAIL  , recipient);
+                    i.putExtra(Intent.EXTRA_SUBJECT, subject);
+                    i.putExtra(Intent.EXTRA_TEXT   , msg);
+                    i.putExtra(Intent.EXTRA_FROM_STORAGE, pathMailFile);
+                    try {
+                        startActivity(Intent.createChooser(i, "Send mail..."));
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Toast.makeText(SendMailActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    /*GMailSender sender = new GMailSender(
 
                             "wwiapk@gmail.com",
 
@@ -144,7 +159,7 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
 
                             "wwiapk@gmail.com",
 
-                            recipient);
+                            recipient);*/
                     Log.d("mail", "sent: " + path);
                 }
                 catch (Exception e) {

@@ -237,6 +237,8 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoggedInActivity.this, MapActivity.class);
+                intent.putExtra("lat", latituded);
+                intent.putExtra("long", longituded);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
