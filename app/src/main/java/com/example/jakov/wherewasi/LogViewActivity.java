@@ -52,7 +52,7 @@ public class LogViewActivity extends AppCompatActivity implements AdapterView.On
 
 
 
-        loadSpinnerData();
+            loadSpinnerData();
         int pos = listDataSpinner.indexOf(name);
         pickLog.setSelection(pos);
         pickLog.setOnItemSelectedListener(this);

@@ -7,6 +7,7 @@
     tools:context=".MapActivity">
 
 
+
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
@@ -14,6 +15,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.example.mapwithmarker.MapsMarkerActivity" />
+
+    <TextView
+        android:id="@+id/timeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="dfdfd"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/startAnimation"
+        android:layout_centerHorizontal="true"
+        />
 
 
 

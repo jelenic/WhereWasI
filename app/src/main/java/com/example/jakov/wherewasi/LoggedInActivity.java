@@ -48,9 +48,9 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button mapBtn,mailBackupBtn, gifBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
+    private Button mapBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
-    private EditText serviceTimeET;
+    private EditText serviceTimeET, refreshET;
 
     private File source;
 
@@ -131,6 +131,8 @@ public class LoggedInActivity extends AppCompatActivity {
         locationPermissions();
 
         geocoder = new Geocoder(this, Locale.getDefault());
+        stopServiceBtn.setEnabled(false);
+        startServiceBtn.setEnabled(true);
     }
 
     private void setHandler() {
@@ -226,7 +228,6 @@ public class LoggedInActivity extends AppCompatActivity {
         viewLogsListener();
         quickCheckInListener();
         FilePickerListener();
-        gifListener();
         mailBackupListener();
         mapListener();
 
@@ -237,8 +238,10 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoggedInActivity.this, MapActivity.class);
-                intent.putExtra("lat", latituded);
-                intent.putExtra("long", longituded);
+                String text = refreshET.getText().toString();
+                int refresh = 1000;
+                if (!text.isEmpty()) refresh = Integer.parseInt(text);
+                intent.putExtra("refresh", refresh);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -250,17 +253,6 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoggedInActivity.this, SendMailActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-        });
-    }
-
-    private void gifListener() {
-        gifBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoggedInActivity.this, GifActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -343,6 +335,8 @@ public class LoggedInActivity extends AppCompatActivity {
                 Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
                 stopService(serviceIntent);
                 Toast.makeText(LoggedInActivity.this,"Stopped service", Toast.LENGTH_SHORT).show();
+                stopServiceBtn.setEnabled(false);
+                startServiceBtn.setEnabled(true);
             }
         });
     }
@@ -361,6 +355,8 @@ public class LoggedInActivity extends AppCompatActivity {
                 ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
 
                 Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
+                stopServiceBtn.setEnabled(true);
+                startServiceBtn.setEnabled(false);
             }
         });
     }
@@ -429,6 +425,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
     private void findViewByID() {
         serviceTimeET = findViewById(R.id.serviceTimeET);
+        refreshET = findViewById(R.id.refreshET);
         currentLog = findViewById(R.id.CurrentLogTextView);
         startServiceBtn = findViewById(R.id.startServiceBtn);
         stopServiceBtn = findViewById(R.id.stopServiceBtn);
@@ -437,7 +434,6 @@ public class LoggedInActivity extends AppCompatActivity {
         ViewLogsBtn = findViewById(R.id.ViewLogsBtn);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
-        gifBtn = findViewById(R.id.gifBtn);
         mailBackupBtn = findViewById(R.id.mailBackupBtn);
         mapBtn = findViewById(R.id.mapBtn);
 

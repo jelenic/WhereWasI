@@ -65,6 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 
     public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name, String adress) {
+        if (latitude.equals("0.0") && longitude.equals("0.0")) return false;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -158,6 +159,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return data;
     }
 
+    public Cursor getDataASC(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL0 + " ASC";
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
     public Cursor getMailData(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT " + COL0 + "," + COL1 + "," + COL3 + "," + COL4 + "," + COL6 + "," + COL7  + " FROM " + TABLE_NAME;
@@ -214,6 +223,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public Cursor getData(String name){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " DESC";
+        Cursor data = db.rawQuery(query, null);
+
+        return data;
+    }
+
+    public Cursor getDataASC(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " ASC";
         Cursor data = db.rawQuery(query, null);
 
         return data;

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,33 +33,36 @@
 
     <Button
         android:id="@+id/QuickCheckInBtn"
-        android:layout_width="match_parent"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/StartNewLogBtn"
         android:text="Quick Check In" />
 
     <Button
         android:id="@+id/QuickInputBtn"
-        android:layout_width="match_parent"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/QuickCheckInBtn"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/StartNewLogBtn"
         android:text="Quick Input" />
 
 
     <Button
         android:id="@+id/startServiceBtn"
-        android:layout_width="match_parent"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/QuickInputBtn"
-        android:text="START SERVICE"/>
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/QuickCheckInBtn"
+        android:text="START SERVICE" />
+
     <Button
         android:id="@+id/stopServiceBtn"
-        android:layout_width="match_parent"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/startServiceBtn"
-        android:text="STOP SERVICE"/>
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/QuickCheckInBtn"
+        android:text="STOP SERVICE" />
     <EditText
         android:id="@+id/serviceTimeET"
         android:layout_width="match_parent"
@@ -74,24 +76,28 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/serviceTimeET"
         android:text="CHOOSE FILE"/>
-    <Button
-        android:id="@+id/gifBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/GetFileBtn"
-        android:text="GIF"/>
+
     <Button
         android:id="@+id/mailBackupBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/gifBtn"
-        android:text="MAIL BACKUP"/>
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/GetFileBtn"
+        android:text="MAIL BACKUP" />
     <Button
         android:id="@+id/mapBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mailBackupBtn"
         android:text="OPEN MAP"/>
+
+    <EditText
+        android:id="@+id/refreshET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mapBtn"
+        android:inputType="numberPassword"
+        android:hint="map refresh time"/>
 
 
 
