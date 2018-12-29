@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -141,6 +144,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (count % updateNumber == 0) {
                     CameraUpdate cu = CameraUpdateFactory.newLatLng(m.getPosition());
                     map.animateCamera(cu);
+                    CaptureMapScreen();
                 }
                 timeTV.setText(listData.get(count).getTimestamp());
                 if (count < size) {
@@ -160,4 +164,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
+    public void CaptureMapScreen()
+    {
+        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+            Bitmap bitmap;
+
+            @Override
+            public void onSnapshotReady(Bitmap snapshot) {
+                // TODO Auto-generated method stub
+                bitmap = snapshot;
+                try {
+                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "MapScreenshots";
+                    FileOutputStream out = new FileOutputStream(path + System.currentTimeMillis()
+                            + ".png");
+
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        map.snapshot(callback);
+
+
+    }
 }

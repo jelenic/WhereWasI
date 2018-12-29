@@ -148,7 +148,7 @@ public class GPS_Service extends Service {
         Notification notification = getMyActivityNotification(text);
         mNotificationManager.notify(NOTIF_ID, notification);
         final String recipient = "gmlnumber19@gmail.com";
-        sendMail(date, recipient);
+        //sendMail(date, recipient);
     }
 
     private void sendMail(final String date, final String recipient) {
