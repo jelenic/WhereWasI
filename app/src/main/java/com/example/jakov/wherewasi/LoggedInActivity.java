@@ -241,6 +241,7 @@ public class LoggedInActivity extends AppCompatActivity {
                 String text = refreshET.getText().toString();
                 int refresh = 1000;
                 if (!text.isEmpty()) refresh = Integer.parseInt(text);
+                if (refresh == 0) refresh = 1;
                 intent.putExtra("refresh", refresh);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -350,6 +351,7 @@ public class LoggedInActivity extends AppCompatActivity {
                 serviceIntent.putExtra("activeLog", ActiveLog.getInstance().getValue());
                 String serviceTime = serviceTimeET.getText().toString();
                 if (!serviceTime.isEmpty()) time = Integer.parseInt(serviceTime);
+                if (time == 0) time = 1;
                 serviceIntent.putExtra("time", time);
 
                 ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
