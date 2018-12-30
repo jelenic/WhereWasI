@@ -144,7 +144,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (count % updateNumber == 0) {
                     CameraUpdate cu = CameraUpdateFactory.newLatLng(m.getPosition());
                     map.animateCamera(cu);
-                    CaptureMapScreen();
+                    //CaptureMapScreen();
                 }
                 timeTV.setText(listData.get(count).getTimestamp());
                 if (count < size) {
