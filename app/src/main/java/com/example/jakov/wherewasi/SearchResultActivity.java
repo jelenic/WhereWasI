@@ -26,7 +26,7 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
     private static final String TAG = "SearchResultActivity";
     DatabaseHelper mDatabaseHelper;
     ListView mListView;
-    ArrayList<LogEntry> listData;
+    static ArrayList<LogEntry> listData;
     ArrayList<LogEntry> listData_selected;
     LogListAdapter adapter;
     int count;
@@ -217,6 +217,7 @@ public class SearchResultActivity extends AppCompatActivity implements  AdapterV
         intent.putExtra("longitude",entry.getLongitude());
         intent.putExtra("adress",entry.getAdress());
         intent.putExtra("position",position);
+        intent.putExtra("activity","Search");
         startActivity(intent);
     }
 

@@ -19,10 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class DialogActivity extends AppCompatActivity {
-    String name, description, path, longitude, latitude, timestamp, adress;
+    String name, description, path, longitude, latitude, timestamp, adress, activity;
     Bitmap image;
     TextView nameTV, descriptionTV, longitudeTV, latitudeTV, timestampTV, adressTV;
     ImageView imageV;
@@ -32,6 +33,7 @@ public class DialogActivity extends AppCompatActivity {
     private DatabaseHelper db;
     private final String TAG = "dialogActivity";
     private Handler mHandler;
+    ArrayList<LogEntry> listData;
 
     private void setHandler() {
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -66,10 +68,10 @@ public class DialogActivity extends AppCompatActivity {
     }
 
     private void nextEntry() {
-        int max = LogViewActivity.listData.size();
+        int max = listData.size();
         if (position + 1 <= max -1) {
             Intent intent = new Intent(this,DialogActivity.class);
-            LogEntry entry = LogViewActivity.listData.get(position+1);
+            LogEntry entry = listData.get(position+1);
 
             intent.putExtra("name",entry.getName());
             intent.putExtra("description",entry.getDescription());
@@ -79,6 +81,7 @@ public class DialogActivity extends AppCompatActivity {
             intent.putExtra("longitude",entry.getLongitude());
             intent.putExtra("adress",entry.getAdress());
             intent.putExtra("position",position+1);
+            intent.putExtra("activity",activity);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             finish();
@@ -88,7 +91,7 @@ public class DialogActivity extends AppCompatActivity {
     private void previousEntry() {
         if (position - 1 >= 0) {
             Intent intent = new Intent(this,DialogActivity.class);
-            LogEntry entry = LogViewActivity.listData.get(position-1);
+            LogEntry entry = listData.get(position-1);
 
             intent.putExtra("name",entry.getName());
             intent.putExtra("description",entry.getDescription());
@@ -98,6 +101,7 @@ public class DialogActivity extends AppCompatActivity {
             intent.putExtra("longitude",entry.getLongitude());
             intent.putExtra("adress",entry.getAdress());
             intent.putExtra("position",position-1);
+            intent.putExtra("activity",activity);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             finish();
@@ -113,6 +117,7 @@ public class DialogActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras!=null){
+
             name = extras.getString("name");
             description = extras.getString("description");
             path = extras.getString("path");
@@ -121,6 +126,15 @@ public class DialogActivity extends AppCompatActivity {
             timestamp = extras.getString("timestamp");
             adress = extras.getString("adress");
             position = extras.getInt("position");
+            activity = extras.getString("activity");
+            switch (activity) {
+                case "LogView": listData = LogViewActivity.listData;
+                                break;
+                case "Search":  listData = SearchResultActivity.listData;
+                                break;
+                case "Map":     listData = MapActivity.listData;
+                                break;
+            }
 
         }
         Toast.makeText(DialogActivity.this, "lat, lng:" + latitude + "," + longitude, Toast.LENGTH_SHORT).show();

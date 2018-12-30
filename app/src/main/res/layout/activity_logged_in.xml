@@ -68,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/stopServiceBtn"
-        android:inputType="number"
+        android:inputType="numberPassword"
         android:hint="service time in seconds"/>
     <Button
         android:id="@+id/GetFileBtn"
@@ -96,7 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mapBtn"
-        android:inputType="number"
+        android:inputType="numberPassword"
         android:hint="map refresh time"/>
 
 

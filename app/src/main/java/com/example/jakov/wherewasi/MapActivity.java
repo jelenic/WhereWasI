@@ -1,6 +1,7 @@
 package com.example.jakov.wherewasi;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,7 +31,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
     public static ArrayList<LogEntry> listData;
@@ -100,6 +101,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         map = googleMap;
+        map.setOnInfoWindowClickListener(this);
 
         googleMap.setMinZoomPreference(8);
         googleMap.setMyLocationEnabled(true);
@@ -107,14 +109,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
         markerList = new ArrayList<>();
+        int i = 0;
         for (LogEntry le : listData) {
             LatLng pos = new LatLng(Double.parseDouble(le.getLatitude()), Double.parseDouble(le.getLongitude()));
-            markerList.add(googleMap.addMarker(new MarkerOptions()
+            Marker m = googleMap.addMarker(new MarkerOptions()
                     .position(pos)
                     .anchor(0.5f, 0.5f)
                     .title(le.getName())
                     .icon(BitmapDescriptorFactory.defaultMarker(42))
-                    .snippet(le.getTimestamp() + "   " + le.getLatitude() + " " + le.getLongitude())));
+                    .snippet(le.getTimestamp() + "   " + le.getLatitude() + " " + le.getLongitude()));
+            m.setTag(i++);
+            markerList.add(m);
         }
     }
 
@@ -185,6 +190,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         };
 
         map.snapshot(callback);
+
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(this,DialogActivity.class);
+        int position = (Integer) marker.getTag();
+        LogEntry entry = listData.get(position);
+
+        intent.putExtra("name",entry.getName());
+        intent.putExtra("description",entry.getDescription());
+        intent.putExtra("path",entry.getPath());
+        intent.putExtra("timestamp",entry.getTimestamp());
+        intent.putExtra("latitude",entry.getLatitude());
+        intent.putExtra("longitude",entry.getLongitude());
+        intent.putExtra("adress",entry.getAdress());
+        intent.putExtra("position",position);
+        intent.putExtra("activity","Map");
+        startActivity(intent);
+
 
 
     }
