@@ -34,6 +34,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +55,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private Button mapBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
     private EditText serviceTimeET, refreshET;
+    private AdView simpleBannerAd;
 
     private File source;
 
@@ -108,6 +113,8 @@ public class LoggedInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
+        // My SimpleBannerAd ID: ca-app-pub-3775405938489529~5074959444
+        MobileAds.initialize(this, "ca-app-pub-3775405938489529~5074959444");
 
         findViewByID();
 
@@ -129,6 +136,10 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
         locationPermissions();
+
+        simpleBannerAd = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        simpleBannerAd.loadAd(adRequest);
 
         geocoder = new Geocoder(this, Locale.getDefault());
         stopServiceBtn.setEnabled(false);
