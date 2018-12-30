@@ -63,14 +63,13 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/QuickCheckInBtn"
         android:text="STOP SERVICE" />
-
     <EditText
         android:id="@+id/serviceTimeET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/stopServiceBtn"
-        android:hint="service time in seconds"
-        android:inputType="number" />
+        android:inputType="number"
+        android:hint="service time in seconds"/>
     <Button
         android:id="@+id/GetFileBtn"
         android:layout_width="match_parent"
@@ -97,8 +96,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mapBtn"
-        android:hint="map refresh time"
-        android:inputType="time" />
+        android:inputType="number"
+        android:hint="map refresh time"/>
+
 
 
 </RelativeLayout>

@@ -45,6 +45,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     TextView timeTV;
     Handler handler = new Handler();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +67,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startAnimation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                    mapAnimation(getIntent().getExtras().getInt("refresh"));
 
-                mapAnimation( getIntent().getExtras().getInt("refresh"));
             }
         });
 
@@ -114,18 +115,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .title(le.getName())
                     .icon(BitmapDescriptorFactory.defaultMarker(42))
                     .snippet(le.getTimestamp() + "   " + le.getLatitude() + " " + le.getLongitude())));
-
-
         }
-
-
-
     }
 
     private void mapAnimation(final long time) {
         map.clear();
         count = 0;
-        final int updateNumber = (int) Math.ceil(1500/time);
+        int updateNumberHolder = 1;
+        if (time < 1500) updateNumberHolder = (int) Math.ceil(1500/time);
+        final int updateNumber = updateNumberHolder;
         final int size = markerList.size() - 1;
 
         final Runnable updatePositions = new Runnable() {
@@ -146,7 +144,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     map.animateCamera(cu);
                     //CaptureMapScreen();
                 }
-                timeTV.setText(listData.get(count).getTimestamp());
+                String timeStamp = listData.get(count).getTimestamp();
+                timeTV.setText(timeStamp);
                 if (count < size) {
                     count++;
                     handler.postDelayed(this, time);

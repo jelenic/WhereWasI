@@ -2,6 +2,7 @@ package com.example.jakov.wherewasi;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -134,32 +135,23 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
 
                     bw.close();
 
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("message/rfc822");
-                    i.putExtra(Intent.EXTRA_EMAIL  , recipient);
-                    i.putExtra(Intent.EXTRA_SUBJECT, subject);
-                    i.putExtra(Intent.EXTRA_TEXT   , msg);
-                    i.putExtra(Intent.EXTRA_FROM_STORAGE, pathMailFile);
+                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    emailIntent.setType("text/plain");
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {recipient});
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, msg);
+                    File file = new File(pathMailFile);
+
+                    Uri uri = Uri.fromFile(file);
+                    emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+
                     try {
-                        startActivity(Intent.createChooser(i, "Send mail..."));
+                        startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"));
                     } catch (android.content.ActivityNotFoundException ex) {
                         Toast.makeText(SendMailActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                     }
 
-                    /*GMailSender sender = new GMailSender(
 
-                            "wwiapk@gmail.com",
-
-                            "wherewasi");
-
-
-                    sender.addAttachment(pathMailFile);
-
-                    sender.sendMail(subject, msg,
-
-                            "wwiapk@gmail.com",
-
-                            recipient);*/
                     Log.d("mail", "sent: " + path);
                 }
                 catch (Exception e) {
