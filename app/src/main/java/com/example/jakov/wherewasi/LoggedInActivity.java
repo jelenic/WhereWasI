@@ -438,9 +438,9 @@ public class LoggedInActivity extends AppCompatActivity {
 
     private void findViewByID() {
         serviceTimeET = findViewById(R.id.serviceTimeET);
-
+        serviceTimeET.setTransformationMethod(null);
         refreshET = findViewById(R.id.refreshET);
-
+        refreshET.setTransformationMethod(null);
         currentLog = findViewById(R.id.CurrentLogTextView);
         startServiceBtn = findViewById(R.id.startServiceBtn);
         stopServiceBtn = findViewById(R.id.stopServiceBtn);
