@@ -113,7 +113,7 @@ public class LoggedInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
-        // My SimpleBannerAd ID: ca-app-pub-3775405938489529~5074959444
+        // My App ID: ca-app-pub-3775405938489529~5074959444
         MobileAds.initialize(this, "ca-app-pub-3775405938489529~5074959444");
 
         findViewByID();
