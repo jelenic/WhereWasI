@@ -1,6 +1,7 @@
 package com.example.jakov.wherewasi;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,12 +31,12 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
     public static ArrayList<LogEntry> listData;
     ArrayList<String> listDataSpinner;
-    boolean time = true;
+    boolean time = true, moveCamera = false;
     String name = ActiveLog.getInstance().getValue();
     LatLng startLocation;
     FloatingActionButton startAnimation;
@@ -44,6 +45,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<Marker> markerList;
     TextView timeTV;
     Handler handler = new Handler();
+    Handler handler2 = new Handler();
 
 
     @Override
@@ -56,8 +58,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         getData();
 
-        LogEntry start = listData.get(0);
-        startLocation = new LatLng(Double.parseDouble(start.getLatitude()), Double.parseDouble(start.getLongitude()));
+        if (listData.size() > 0) {
+            moveCamera = true;
+            LogEntry start = listData.get(0);
+            startLocation = new LatLng(Double.parseDouble(start.getLatitude()), Double.parseDouble(start.getLongitude()));
+        }
+
 
         timeTV = findViewById(R.id.timeTV);
 
@@ -100,25 +106,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         map = googleMap;
+        map.setOnInfoWindowClickListener(this);
 
         googleMap.setMinZoomPreference(8);
         googleMap.setMyLocationEnabled(true);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 12.0f));
+        if (moveCamera) googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 12.0f));
 
 
         markerList = new ArrayList<>();
+        int i = 0;
         for (LogEntry le : listData) {
             LatLng pos = new LatLng(Double.parseDouble(le.getLatitude()), Double.parseDouble(le.getLongitude()));
-            markerList.add(googleMap.addMarker(new MarkerOptions()
+            Marker m = googleMap.addMarker(new MarkerOptions()
                     .position(pos)
                     .anchor(0.5f, 0.5f)
                     .title(le.getName())
                     .icon(BitmapDescriptorFactory.defaultMarker(42))
-                    .snippet(le.getTimestamp() + "   " + le.getLatitude() + " " + le.getLongitude())));
+                    .snippet(le.getTimestamp() + "   " + le.getLatitude() + " " + le.getLongitude()));
+            m.setTag(i++);
+            markerList.add(m);
         }
     }
 
     private void mapAnimation(final long time) {
+
         map.clear();
         count = 0;
         int updateNumberHolder = 1;
@@ -131,13 +142,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void run() {
 
                 Marker m = markerList.get(count);
-
-                map.addMarker(new MarkerOptions()
+                final Marker m2 = map.addMarker(new MarkerOptions()
                         .position(m.getPosition())
                         .anchor(0.5f, 0.5f)
                         .title(m.getTitle())
                         .icon(BitmapDescriptorFactory.defaultMarker(42))
                         .snippet(m.getSnippet()));
+                m2.setTag(count);
+
+
+                final Runnable removeMarker = new Runnable() {
+                    @Override
+                    public void run() {
+                       m2.remove();
+                    }
+                };
+                handler2.postDelayed(removeMarker, time*10);
+
 
                 if (count % updateNumber == 0) {
                     CameraUpdate cu = CameraUpdateFactory.newLatLng(m.getPosition());
@@ -185,6 +206,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         };
 
         map.snapshot(callback);
+
+
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(this,DialogActivity.class);
+        int position = (Integer) marker.getTag();
+        LogEntry entry = listData.get(position);
+
+        intent.putExtra("name",entry.getName());
+        intent.putExtra("description",entry.getDescription());
+        intent.putExtra("path",entry.getPath());
+        intent.putExtra("timestamp",entry.getTimestamp());
+        intent.putExtra("latitude",entry.getLatitude());
+        intent.putExtra("longitude",entry.getLongitude());
+        intent.putExtra("adress",entry.getAdress());
+        intent.putExtra("position",position);
+        intent.putExtra("activity","Map");
+        startActivity(intent);
+
 
 
     }

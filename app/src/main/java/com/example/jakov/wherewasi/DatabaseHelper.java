@@ -109,6 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     public boolean addMailData(String date,String name, String latitude, String longitude, String log_name, String adress, String path){
+        if (latitude.equals("0.0") && longitude.equals("0.0")) return false;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL0, date);
