@@ -36,7 +36,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     DatabaseHelper mDatabaseHelper2;
     public static ArrayList<LogEntry> listData;
     ArrayList<String> listDataSpinner;
-    boolean time = true;
+    boolean time = true, moveCamera = false;
     String name = ActiveLog.getInstance().getValue();
     LatLng startLocation;
     FloatingActionButton startAnimation;
@@ -45,6 +45,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<Marker> markerList;
     TextView timeTV;
     Handler handler = new Handler();
+    Handler handler2 = new Handler();
 
 
     @Override
@@ -57,8 +58,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         getData();
 
-        LogEntry start = listData.get(0);
-        startLocation = new LatLng(Double.parseDouble(start.getLatitude()), Double.parseDouble(start.getLongitude()));
+        if (listData.size() > 0) {
+            moveCamera = true;
+            LogEntry start = listData.get(0);
+            startLocation = new LatLng(Double.parseDouble(start.getLatitude()), Double.parseDouble(start.getLongitude()));
+        }
+
 
         timeTV = findViewById(R.id.timeTV);
 
@@ -105,7 +110,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         googleMap.setMinZoomPreference(8);
         googleMap.setMyLocationEnabled(true);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 12.0f));
+        if (moveCamera) googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 12.0f));
 
 
         markerList = new ArrayList<>();
@@ -124,6 +129,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void mapAnimation(final long time) {
+
         map.clear();
         count = 0;
         int updateNumberHolder = 1;
@@ -136,13 +142,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void run() {
 
                 Marker m = markerList.get(count);
-
-                map.addMarker(new MarkerOptions()
+                final Marker m2 = map.addMarker(new MarkerOptions()
                         .position(m.getPosition())
                         .anchor(0.5f, 0.5f)
                         .title(m.getTitle())
                         .icon(BitmapDescriptorFactory.defaultMarker(42))
                         .snippet(m.getSnippet()));
+                m2.setTag(count);
+
+
+                final Runnable removeMarker = new Runnable() {
+                    @Override
+                    public void run() {
+                       m2.remove();
+                    }
+                };
+                handler2.postDelayed(removeMarker, time*10);
+
 
                 if (count % updateNumber == 0) {
                     CameraUpdate cu = CameraUpdateFactory.newLatLng(m.getPosition());
