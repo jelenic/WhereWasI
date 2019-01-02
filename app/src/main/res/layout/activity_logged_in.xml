@@ -98,6 +98,12 @@
         android:layout_below="@+id/mapBtn"
         android:inputType="numberPassword"
         android:hint="map refresh time"/>
+    <Button
+        android:id="@+id/openViewBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/refreshET"
+        android:text="OPEN view"/>
 
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"

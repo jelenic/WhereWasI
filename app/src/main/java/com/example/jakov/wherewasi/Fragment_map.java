@@ -1,20 +1,22 @@
 package com.example.jakov.wherewasi;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Environment;
-import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import android.content.res.Resources;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,23 +25,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Random;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
-    DatabaseHelper mDatabaseHelper;
-    DatabaseHelper mDatabaseHelper2;
-    public static ArrayList<LogEntry> listData;
-    ArrayList<String> listDataSpinner;
+
+public class Fragment_map extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
     boolean moveCamera = false;
-    String name = ActiveLog.getInstance().getValue();
     LatLng startLocation;
-    FloatingActionButton startAnimation;
     GoogleMap map;
     int count = 0;
     ArrayList<Marker> markerList;
@@ -48,59 +43,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     Handler handler2 = new Handler();
 
 
+
+
+    @Nullable
+    @SuppressLint("MissingPermission")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        return view;
+
+
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
 
-        mDatabaseHelper = new DatabaseHelper(this);
-        mDatabaseHelper2 = new DatabaseHelper(this, "logs_table");
-
-        getData();
-
-        if (listData.size() > 0) {
+        if (((ViewActivity) getActivity()).getListData().size() > 0) {
             moveCamera = true;
-            LogEntry start = listData.get(0);
+            LogEntry start = ((ViewActivity) getActivity()).getListData().get(0);
             startLocation = new LatLng(Double.parseDouble(start.getLatitude()), Double.parseDouble(start.getLongitude()));
         }
 
-
-        timeTV = findViewById(R.id.timeTV);
-
-        startAnimation = findViewById(R.id.startAnimation);
-
-
-        startAnimation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    mapAnimation(getIntent().getExtras().getInt("refresh"));
-
-            }
-        });
-
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
-    private void getData() {
-        Cursor data = null;
-        if (name.equals("ALL LOGS")) {
-            data = mDatabaseHelper.getDataASC();
-        }
-        else
-            data = mDatabaseHelper.getDataASC(name);
-        listData = new ArrayList<>();
-
-
-        while(data.moveToNext()){
-            listData.add(new LogEntry(data.getString(0),data.getString(1) ,
-                    data.getString(4),data.getString(3),null , data.getString(5),
-                    data.getString(2), data.getString(7)));
-
-        }
-    }
 
     @SuppressLint("MissingPermission")
     @Override
@@ -115,7 +84,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         markerList = new ArrayList<>();
         int i = 0;
-        for (LogEntry le : listData) {
+        for (LogEntry le : ((ViewActivity) getActivity()).getListData()) {
             LatLng pos = new LatLng(Double.parseDouble(le.getLatitude()), Double.parseDouble(le.getLongitude()));
             Marker m = googleMap.addMarker(new MarkerOptions()
                     .position(pos)
@@ -154,7 +123,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 final Runnable removeMarker = new Runnable() {
                     @Override
                     public void run() {
-                       m2.remove();
+                        m2.remove();
                     }
                 };
                 handler2.postDelayed(removeMarker, time*10);
@@ -165,7 +134,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     map.animateCamera(cu);
                     //CaptureMapScreen();
                 }
-                String timeStamp = listData.get(count).getTimestamp();
+                String timeStamp = ((ViewActivity) getActivity()).getListData().get(count).getTimestamp();
                 timeTV.setText(timeStamp);
                 if (count < size) {
                     count++;
@@ -183,38 +152,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         handler.postDelayed(updatePositions, 500);
     }
 
-
-    public void CaptureMapScreen()
-    {
-        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
-            Bitmap bitmap;
-
-            @Override
-            public void onSnapshotReady(Bitmap snapshot) {
-                // TODO Auto-generated method stub
-                bitmap = snapshot;
-                try {
-                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "MapScreenshots";
-                    FileOutputStream out = new FileOutputStream(path + System.currentTimeMillis()
-                            + ".png");
-
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        map.snapshot(callback);
-
-
-    }
-
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Intent intent = new Intent(this,DialogActivity.class);
+        Intent intent = new Intent(getActivity(), DialogActivity.class);
         int position = (Integer) marker.getTag();
-        LogEntry entry = listData.get(position);
+        LogEntry entry = ((ViewActivity) getActivity()).getListData().get(position);
 
         intent.putExtra("name",entry.getName());
         intent.putExtra("description",entry.getDescription());
@@ -230,4 +172,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
     }
+
+
 }
