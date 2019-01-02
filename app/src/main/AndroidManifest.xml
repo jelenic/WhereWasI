@@ -51,13 +51,14 @@
             android:value="AIzaSyAV0zQ0zdT6jQviqVhhJkV-LjO3-ZnsspU" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3775405938489529~5074959444"/>
+            android:value="ca-app-pub-3775405938489529~5074959444" />
 
         <activity
             android:name=".GifActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".SendMailActivity" />
-        <activity android:name=".MapActivity"></activity>
+        <activity android:name=".MapActivity" />
+        <activity android:name=".ViewActivity"></activity>
     </application>
 
 </manifest>

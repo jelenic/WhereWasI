@@ -52,7 +52,7 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button mapBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
+    private Button openViewBtn, mapBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
     private TextView currentLog;
     private EditText serviceTimeET, refreshET;
     private AdView simpleBannerAd;
@@ -241,6 +241,7 @@ public class LoggedInActivity extends AppCompatActivity {
         FilePickerListener();
         mailBackupListener();
         mapListener();
+        openViewListener();
 
     }
 
@@ -265,6 +266,17 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoggedInActivity.this, SendMailActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
+    }
+
+    private void openViewListener() {
+        openViewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoggedInActivity.this, ViewActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -451,6 +463,7 @@ public class LoggedInActivity extends AppCompatActivity {
         GetFileBtn = findViewById(R.id.GetFileBtn);
         mailBackupBtn = findViewById(R.id.mailBackupBtn);
         mapBtn = findViewById(R.id.mapBtn);
+        openViewBtn = findViewById(R.id.openViewBtn);
 
     }
 
