@@ -26,7 +26,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ViewActivity extends AppCompatActivity {
+public class ViewActivity extends AppCompatActivity implements SearchDialog.SearchDialogListener{
     ArrayList<LogEntry> listData;
     ArrayList<LogEntry> databaseData;
     Location mLocation = new Location("");
@@ -36,6 +36,7 @@ public class ViewActivity extends AppCompatActivity {
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
     String name = ActiveLog.getInstance().getValue();
+    private TextView textViewName;
 
     private void setHandler() {
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -79,22 +80,12 @@ public class ViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
         setHandler();
+        textViewName=findViewById(R.id.textViewName);
         placeHolder = findViewById(R.id.placeHolder);
         placeHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "started changing" + listData.size());
-                listData.clear();
-                Log.d(TAG, "finished changing" + listData.size());
-                Log.d(TAG, "db size" + databaseData.size());
-                int i = 0;
-                for (LogEntry le : databaseData) {
-                    LogEntry le2 = new LogEntry(le.getTimestamp(),"new name " + i, le.getLatitude(), le.getLongitude(), le.getImage(), le.getPath(), le.getDescription(), le.getAdress());
-                    listData.add(le2);
-                    Log.d(TAG, le2.getName());
-                    i++;
-                }
-                Fragment_list.update();
+                openDialog();
             }
         });
 
@@ -110,6 +101,18 @@ public class ViewActivity extends AppCompatActivity {
 
 
 
+
+    }
+
+    @Override
+    public void applyText(String logName) {
+        textViewName.setText(logName);
+
+    }
+
+    public void openDialog(){
+        SearchDialog searchDialog=new SearchDialog();
+        searchDialog.show(getSupportFragmentManager(),"searchDialog");
 
     }
 
