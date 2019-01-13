@@ -105,8 +105,22 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     }
 
     @Override
-    public void applyText(String logName) {
-        textViewName.setText(logName);
+    public void applyText(String logName){
+        if (logName!=""){
+            textViewName.setText(logName);
+            listData.clear();
+            for (LogEntry entry:databaseData){
+                if (entry.getName().toLowerCase().contains(logName.toLowerCase())){
+                    listData.add(entry);
+                }
+
+            }
+
+        }
+        else{
+            databaseData.addAll(listData);
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_list()).commit();
 
     }
 
