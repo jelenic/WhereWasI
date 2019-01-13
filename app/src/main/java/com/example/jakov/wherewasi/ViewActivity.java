@@ -37,6 +37,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     DatabaseHelper mDatabaseHelper2;
     String name = ActiveLog.getInstance().getValue();
     private TextView textViewName;
+    private TextView textViewDateFrom;
+    private TextView textViewDateTo;
 
     private void setHandler() {
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -81,6 +83,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
         setContentView(R.layout.activity_view);
         setHandler();
         textViewName=findViewById(R.id.textViewName);
+        textViewDateFrom=findViewById(R.id.textViewDateFrom);
+        textViewDateTo=findViewById(R.id.textViewDateTo);
         placeHolder = findViewById(R.id.placeHolder);
         placeHolder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,13 +109,18 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     }
 
     @Override
-    public void applyText(String logName){
-        if (logName!=""){
+    public void applyText(String logName, String dateTo, String dateFrom){
+        if (logName!="" || dateTo!="" || dateFrom!=""){
             textViewName.setText(logName);
+            textViewDateFrom.setText(dateFrom);
+            textViewDateTo.setText(dateTo);
             listData.clear();
+            String cleanFrom = dateFrom.replaceAll("[^\\d]", "" );
+            String cleanTo = dateTo.replaceAll("[^\\d]", "" );
             for (LogEntry entry:databaseData){
-                if (entry.getName().toLowerCase().contains(logName.toLowerCase())){
+                if ((logName=="" || logName==null || entry.getName().toLowerCase().contains(logName.toLowerCase()))&&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))){
                     listData.add(entry);
+
                 }
 
             }

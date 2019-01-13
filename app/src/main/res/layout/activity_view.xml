@@ -9,23 +9,22 @@
 
     <Button
         android:id="@+id/placeHolder"
-        android:layout_width="wrap_content"
+        android:layout_width="122dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:text="DIALOG"
+        android:layout_centerHorizontal="true"
+        android:text="SEARCH"
         android:textAlignment="center"
         android:textSize="24sp" />
-
 
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="378dp"
         android:layout_above="@id/navigation"
-        android:layout_below="@+id/placeHolder">
-    </FrameLayout>
+        android:layout_below="@+id/placeHolder"
+        android:layout_marginTop="25dp"></FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
@@ -37,11 +36,29 @@
 
     <TextView
         android:id="@+id/textViewName"
-        android:layout_width="277dp"
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="14dp"
-        android:text="Name Filter" />
+        android:layout_below="@+id/placeHolder"
+        android:text="Name Filter"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/textViewDateFrom"
+        android:layout_width="128dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/placeHolder"
+        android:layout_centerHorizontal="true"
+        android:text="dateFrom"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/textViewDateTo"
+        android:layout_width="128dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/placeHolder"
+        android:text="dateTo"
+        android:textSize="12sp" />
 
 </RelativeLayout>

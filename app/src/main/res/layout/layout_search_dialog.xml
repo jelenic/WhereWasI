@@ -9,5 +9,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="logName"/>
-    
+
+    <EditText
+        android:id="@+id/dateFromEditText"
+        android:layout_width="169dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/nameEditText"
+        android:layout_alignTop="@+id/dateToEditText"
+        android:hint="dateFrom" />
+
+    <EditText
+        android:id="@+id/dateToEditText"
+        android:layout_width="169dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/nameEditText"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="69dp"
+        android:hint="dateTo" />
+
 </RelativeLayout>
