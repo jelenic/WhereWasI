@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,11 +37,13 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     boolean moveCamera = false;
     LatLng startLocation;
     GoogleMap map;
+    FloatingActionButton startAnimation;
+    TextView timeTV;
     int count = 0;
     ArrayList<Marker> markerList;
-    TextView timeTV;
     Handler handler = new Handler();
     Handler handler2 = new Handler();
+    boolean animation = false;
 
 
 
@@ -53,6 +56,20 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        startAnimation = view.findViewById(R.id.startAnimation);
+
+        startAnimation.setEnabled(animation);
+
+        startAnimation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapAnimation(200);
+
+            }
+        });
+
+        timeTV = view.findViewById(R.id.timeTV);
         return view;
 
 
@@ -62,8 +79,11 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         if (((ViewActivity) getActivity()).getListData().size() > 0) {
             moveCamera = true;
+            animation = true;
             LogEntry start = ((ViewActivity) getActivity()).getListData().get(0);
             startLocation = new LatLng(Double.parseDouble(start.getLatitude()), Double.parseDouble(start.getLongitude()));
         }
@@ -132,9 +152,13 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
                 if (count % updateNumber == 0) {
                     CameraUpdate cu = CameraUpdateFactory.newLatLng(m.getPosition());
                     map.animateCamera(cu);
-                    //CaptureMapScreen();
                 }
-                String timeStamp = ((ViewActivity) getActivity()).getListData().get(count).getTimestamp();
+                String timeStamp = null;
+                try {
+                    timeStamp = ((ViewActivity) getActivity()).getListData().get(count).getTimestamp();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
                 timeTV.setText(timeStamp);
                 if (count < size) {
                     count++;
