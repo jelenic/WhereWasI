@@ -63,8 +63,6 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
 
             }
 
-
-
             replaceFragment(selected);
 
             return true;
@@ -174,7 +172,20 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     }
 
     private void replaceFragment (Fragment fragment){
+        /*
+        String backStateName = fragment.getClass().getName();
+        Log.d(TAG, fragment.getClass().getName());
 
+        FragmentManager manager = getSupportFragmentManager();
+        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
+
+        if (!fragmentPopped){ //fragment not in back stack, create it.
+            Log.d(TAG, "replaceFragment: u ifu");
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.replace(R.id.fragment_container, fragment);
+            ft.addToBackStack(backStateName);
+            ft.commit();
+        }*/
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).commit();
     }
 
