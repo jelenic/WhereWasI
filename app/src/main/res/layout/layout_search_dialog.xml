@@ -10,16 +10,16 @@
         android:layout_height="wrap_content"
         android:hint="logName"/>
 
-    <EditText
-        android:id="@+id/dateFromEditText"
+    <TextView
+        android:id="@+id/dateFromTextView"
         android:layout_width="169dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/nameEditText"
-        android:layout_alignTop="@+id/dateToEditText"
+        android:layout_alignTop="@+id/dateToTextView"
         android:hint="dateFrom" />
 
-    <EditText
-        android:id="@+id/dateToEditText"
+    <TextView
+        android:id="@+id/dateToTextView"
         android:layout_width="169dp"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/nameEditText"

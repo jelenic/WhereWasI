@@ -15,6 +15,8 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -40,15 +42,6 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     private TextView textViewDateFrom;
     private TextView textViewDateTo;
 
-    private void setHandler() {
-        mHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-
-            }
-        };
-    }
-
 
     public ArrayList<LogEntry> getListData() {
         return listData;
@@ -69,7 +62,9 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
                     break;
 
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selected).commit();
+
+            replaceFragment(selected);
+
             return true;
 
 
@@ -81,7 +76,6 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
-        setHandler();
         textViewName=findViewById(R.id.textViewName);
         textViewDateFrom=findViewById(R.id.textViewDateFrom);
         textViewDateTo=findViewById(R.id.textViewDateTo);
@@ -114,10 +108,10 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
             textViewName.setText(logName);
             textViewDateFrom.setText(dateFrom);
             textViewDateTo.setText(dateTo);
+            Log.d(TAG, "applyText1: " + dateTo);
             listData.clear();
-            String cleanFrom = dateFrom.replaceAll("[^\\d]", "" );
-            String cleanTo = dateTo.replaceAll("[^\\d]", "" );
             for (LogEntry entry:databaseData){
+                Log.d(TAG, "applyText: " + Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".","")) + "+" + dateTo);
                 if ((logName=="" || logName==null || entry.getName().toLowerCase().contains(logName.toLowerCase()))&&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))){
                     listData.add(entry);
 
@@ -129,7 +123,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
         else{
             databaseData.addAll(listData);
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_list()).commit();
+        Fragment_list.update();
 
     }
 
@@ -170,6 +164,20 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
 
         }
 
+    }
+
+    private void replaceFragment (Fragment fragment){
+        String backStateName = fragment.getClass().getName();
+
+        FragmentManager manager = getSupportFragmentManager();
+        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
+
+        if (!fragmentPopped){ //fragment not in back stack, create it.
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.replace(R.id.fragment_container, fragment);
+            ft.addToBackStack(backStateName);
+            ft.commit();
+        }
     }
 
 
