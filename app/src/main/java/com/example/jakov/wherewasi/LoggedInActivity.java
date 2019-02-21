@@ -52,9 +52,9 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button openViewBtn, mapBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn, ViewLogsBtn , GetFileBtn;
+    private Button openViewBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
     private TextView currentLog;
-    private EditText serviceTimeET, refreshET;
+    private EditText serviceTimeET;
     private AdView simpleBannerAd;
 
     private File source;
@@ -236,30 +236,13 @@ public class LoggedInActivity extends AppCompatActivity {
         stopServiceListener();
         quickInputListener();
         newLogListener();
-        viewLogsListener();
         quickCheckInListener();
         FilePickerListener();
         mailBackupListener();
-        mapListener();
         openViewListener();
 
     }
 
-    private void mapListener() {
-        mapBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoggedInActivity.this, MapActivity.class);
-                String text = refreshET.getText().toString();
-                int refresh = 1000;
-                if (!text.isEmpty()) refresh = Integer.parseInt(text);
-                if (refresh == 0) refresh = 1;
-                intent.putExtra("refresh", refresh);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-        });
-    }
 
     private void mailBackupListener() {
         mailBackupBtn.setOnClickListener(new View.OnClickListener() {
@@ -312,19 +295,6 @@ public class LoggedInActivity extends AppCompatActivity {
     }
 
 
-
-    private void viewLogsListener() {
-        ViewLogsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentLog.setText(ActiveLog.getInstance().getValue());
-                Intent intent = new Intent(LoggedInActivity.this, LogViewActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-            }
-        });
-    }
 
     private void newLogListener() {
         StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
@@ -451,18 +421,14 @@ public class LoggedInActivity extends AppCompatActivity {
     private void findViewByID() {
         serviceTimeET = findViewById(R.id.serviceTimeET);
         serviceTimeET.setTransformationMethod(null);
-        refreshET = findViewById(R.id.refreshET);
-        refreshET.setTransformationMethod(null);
         currentLog = findViewById(R.id.CurrentLogTextView);
         startServiceBtn = findViewById(R.id.startServiceBtn);
         stopServiceBtn = findViewById(R.id.stopServiceBtn);
         StartNewLogBtn = findViewById(R.id.StartNewLogBtn);
         QuickInputBtn = findViewById(R.id.QuickInputBtn);
-        ViewLogsBtn = findViewById(R.id.ViewLogsBtn);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
         mailBackupBtn = findViewById(R.id.mailBackupBtn);
-        mapBtn = findViewById(R.id.mapBtn);
         openViewBtn = findViewById(R.id.openViewBtn);
 
     }

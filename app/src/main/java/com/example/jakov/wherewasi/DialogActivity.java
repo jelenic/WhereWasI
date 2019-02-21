@@ -132,8 +132,6 @@ public class DialogActivity extends AppCompatActivity {
                                 break;
                 case "Search":  listData = SearchResultActivity.listData;
                                 break;
-                case "Map":     listData = MapActivity.listData;
-                                break;
             }
 
         }
