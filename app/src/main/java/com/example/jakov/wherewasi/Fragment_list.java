@@ -47,6 +47,9 @@ public class Fragment_list extends Fragment implements  AdapterView.OnItemClickL
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         mListView = view.findViewById(R.id.mListView);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListView.setSelector(android.R.color.transparent);
+        mListView.setDivider(null);
+        mListView.setDividerHeight(35);
         mListView.setOnItemClickListener(this);
         listData_selected=new ArrayList<>();
         count=0;

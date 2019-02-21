@@ -118,7 +118,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     }
 
     private void mapAnimation(final long time) {
-
+        startAnimation.setBackgroundResource(R.drawable.ic_media_pause_light);
         map.clear();
         count = 0;
         int updateNumberHolder = 1;
