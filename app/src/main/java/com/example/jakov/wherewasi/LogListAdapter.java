@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+
+import static android.support.constraint.Constraints.TAG;
 
 public class LogListAdapter extends ArrayAdapter<LogEntry> {
     private Context mContext;
@@ -64,7 +67,6 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
             holder.tvName=  convertView.findViewById(R.id.textView2);
             holder.tvAdress=  convertView.findViewById(R.id.textView3);
             holder.tvLatLong=  convertView.findViewById(R.id.textView4);
-            holder.ivImage=  convertView.findViewById(R.id.imageView1);
 
             result = convertView;
 
@@ -86,11 +88,14 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
         holder.tvLatLong.setText(Longitude + "|" + Latitude);
         holder.tvAdress.setText(Adress);
         if (Image!=null) {
+            Log.d(TAG, "getView: slika null" + Timestamp);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            Image.compress(Bitmap.CompressFormat.JPEG,50,stream);
+            Image.compress(Bitmap.CompressFormat.JPEG,25,stream);
             byte[] byteArray = stream.toByteArray();
             Image = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+            holder.ivImage=  convertView.findViewById(R.id.imageView1);
             holder.ivImage.setImageBitmap(Image);
+            holder.ivImage.setVisibility(View.VISIBLE);
         }
 
 
