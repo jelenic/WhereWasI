@@ -2,6 +2,7 @@ package com.example.jakov.wherewasi;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -26,14 +27,22 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String COL6 = "log_name";
     private static final String COL7 = "adress";
 
+    private Context appContext;
+    SharedPreferences prefs;
+
 
 
     public DatabaseHelper(Context context, String tablename) {
         super(context,tablename,null,1);
+        this.appContext = context;
+        prefs = appContext.getSharedPreferences("MyValues", 0);
     }
 
     public DatabaseHelper(Context context) {
         super(context,TABLE_NAME,null,1);
+        this.appContext = context;
+        prefs = appContext.getSharedPreferences("MyValues", 0);
+
     }
 
     @Override
@@ -138,7 +147,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         String date = df.format(Calendar.getInstance().getTime());
-        ActiveLog.getInstance().setValue(name);
+        SharedPreferences.Editor saveValue = prefs.edit();
+        saveValue.putString("ActiveLog", name);
+        saveValue.commit();
         contentValues.put(COL0, date);
         contentValues.put(COL1, name);
         contentValues.put(COL2, description);

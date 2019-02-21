@@ -176,7 +176,7 @@ public class DialogActivity extends AppCompatActivity {
                         File file = new File(path);
                         Log.d(TAG, "file exists:" + file.exists());
                         if (!file.exists()) {
-                            path = LoggedInActivity.getPath(longitude, latitude );
+                            path = "";
                             Log.d(TAG, "findMissing2: " + path);
                         }
                         db.updateData(timestamp, path, adress);

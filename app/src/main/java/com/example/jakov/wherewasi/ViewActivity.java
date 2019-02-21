@@ -4,6 +4,7 @@ package com.example.jakov.wherewasi;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,7 +38,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     private final String TAG ="ViewActivity";
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
-    String name = ActiveLog.getInstance().getValue();
+    SharedPreferences prefs;
+    String name;
     private TextView textViewName;
     private TextView textViewDateFrom;
     private TextView textViewDateTo;
@@ -76,6 +78,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
+        prefs = this.getSharedPreferences("MyValues", 0);
+        name = prefs.getString("ActiveLog", "Default Log");
         textViewName=findViewById(R.id.textViewName);
         textViewDateFrom=findViewById(R.id.textViewDateFrom);
         textViewDateTo=findViewById(R.id.textViewDateTo);
@@ -172,20 +176,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     }
 
     private void replaceFragment (Fragment fragment){
-        /*
-        String backStateName = fragment.getClass().getName();
-        Log.d(TAG, fragment.getClass().getName());
 
-        FragmentManager manager = getSupportFragmentManager();
-        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
-
-        if (!fragmentPopped){ //fragment not in back stack, create it.
-            Log.d(TAG, "replaceFragment: u ifu");
-            FragmentTransaction ft = manager.beginTransaction();
-            ft.replace(R.id.fragment_container, fragment);
-            ft.addToBackStack(backStateName);
-            ft.commit();
-        }*/
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).commit();
     }
 

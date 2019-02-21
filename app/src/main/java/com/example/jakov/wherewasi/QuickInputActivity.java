@@ -2,6 +2,7 @@ package com.example.jakov.wherewasi;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -43,6 +44,8 @@ public class QuickInputActivity extends AppCompatActivity {
     private Uri mImageCaptureUri;
     private ImageView mImageView;
 
+    private SharedPreferences prefs;
+
     private Handler mHandler;
 
     private static final int PICK_FROM_CAMERA = 1;
@@ -55,6 +58,8 @@ public class QuickInputActivity extends AppCompatActivity {
 
         StrictMode.VmPolicy.Builder newbuilder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(newbuilder.build());
+
+        prefs = this.getSharedPreferences("MyValues",0);
 
         verifyPermissions();
 
@@ -85,7 +90,7 @@ public class QuickInputActivity extends AppCompatActivity {
                     DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
                     String date = df.format(Calendar.getInstance().getTime());
                     Intent intent    = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + ActiveLog.getInstance().getValue();
+                    String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + prefs.getString("ActiveLog", "Default Log");
                     File file        = new File(path,
                             date + ".jpg");
                     mImageCaptureUri = Uri.fromFile(file);
@@ -196,10 +201,8 @@ public class QuickInputActivity extends AppCompatActivity {
                         if (name.isEmpty()) name = "Quick Input";
                         String desc = descriptionet.getText().toString();
                         String adress = LoggedInActivity.getCompleteAddressString(latituded,longituded);
-                        if (path.isEmpty()) {
-                            path = LoggedInActivity.getPath(latitude, longitude);
-                        }
-                        boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
+
+                        boolean insertlog = logdb.addData(name,desc,latitude,longitude, path, prefs.getString("ActiveLog", "Default Log"),adress);
 
 
                         Message message = mHandler.obtainMessage();

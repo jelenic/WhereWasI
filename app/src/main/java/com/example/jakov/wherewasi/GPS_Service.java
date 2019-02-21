@@ -139,7 +139,7 @@ public class GPS_Service extends Service {
         String lat=Double.toString(latitude);
         String longi=Double.toString(longitude);
         String adress = LoggedInActivity.getCompleteAddressString(latitude,longitude);
-        final String path = LoggedInActivity.getPath(lat, longi);
+        final String path = "";
         boolean insertlog = logdb.addData("Service",null,lat,longi, path, activeLog,adress);
 
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -147,58 +147,7 @@ public class GPS_Service extends Service {
         String text = date + "  " + adress;
         Notification notification = getMyActivityNotification(text);
         mNotificationManager.notify(NOTIF_ID, notification);
-        final String recipient = "gmlnumber19@gmail.com";
-        //sendMail(date, recipient);
-    }
 
-    private void sendMail(final String date, final String recipient) {
-        Thread myThread = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    Cursor data = logdb.getMailData();
-                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "mailFile";
-                    File directory = new File(path);
-                    if (!directory.exists()) {
-                        directory.mkdirs();
-                    }
-                    File mailFile = new File(directory, "MailFile " + date + ".txt");
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(mailFile));
-
-                    while(data.moveToNext()){
-                        String content = data.getString(0) + "|" + data.getString(1) + "|" + data.getString(2) + "|"
-                                + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5);
-                        Log.d("data from DB", "content: " + content);
-                        bw.write(content);
-
-
-                    }
-                    String pathMailFile = mailFile.getPath();
-
-                    bw.close();
-                    GMailSender sender = new GMailSender(
-
-                            "wwiapk@gmail.com",
-
-                            "wherewasi");
-
-
-                    sender.addAttachment(pathMailFile);
-
-                    sender.sendMail("GPS_SERVICE MAIL", "This mail has been sent from WhereWasI along with attachment",
-
-                            "wwiapk@gmail.com",
-
-                            recipient);
-                    Log.d("mail", "sent: " + path);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        myThread.start();
     }
 
 

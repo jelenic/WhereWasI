@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -29,8 +30,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,19 +51,23 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
     private Button openViewBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
-    private TextView currentLog;
+    private Spinner pickLog;
+
+
     private EditText serviceTimeET;
     private AdView simpleBannerAd;
 
     private File source;
 
     private DatabaseHelper logdb;
+    private DatabaseHelper mDatabaseHelper2;
     private LocationManager locationManager;
     private LocationListener locationListener;
     public double latituded,longituded;
@@ -68,6 +76,8 @@ public class LoggedInActivity extends AppCompatActivity {
     private Long minTime;
     private Float minDistance;
     private int time;
+    private int check = 0;
+    private ArrayList<String> listDataSpinner;
 
     private Handler mHandler;
 
@@ -77,18 +87,14 @@ public class LoggedInActivity extends AppCompatActivity {
     public static final String CHANNEL_ID = "GPS_Service";
     static final int REQUEST_LOCATION = 1;
 
+    SharedPreferences prefs;
+
     private static Geocoder geocoder;
 
     protected void onDestroy() {
         super.onDestroy();
-        SharedPreferences prefs = this.getSharedPreferences("MyValues", 0);
-        SharedPreferences.Editor saveValue = prefs.edit();
-        activeLog = ActiveLog.getInstance().getValue();
-        saveValue.putString("ActiveLog", activeLog);
-        saveValue.putLong("minTime", minTime);
-        saveValue.putFloat("Distance", minDistance);
-        saveValue.putInt("time", time);
-        saveValue.commit();
+
+
     }
 
 
@@ -100,11 +106,11 @@ public class LoggedInActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        check = 0;
+        loadSpinnerData();
+        int pos = listDataSpinner.indexOf(activeLog);
+        pickLog.setSelection(pos);
         super.onResume();
-        currentLog.setText(ActiveLog.getInstance().getValue());
-        Log.i(TAG, "onResume");
-        activeLog = ActiveLog.getInstance().getValue();
-        currentLog.setText(activeLog);
     }
 
 
@@ -112,6 +118,7 @@ public class LoggedInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs =  this.getSharedPreferences("MyValues", 0);
         setContentView(R.layout.activity_logged_in);
         // My App ID: ca-app-pub-3775405938489529~5074959444
         MobileAds.initialize(this, "ca-app-pub-3775405938489529~5074959444");
@@ -124,10 +131,36 @@ public class LoggedInActivity extends AppCompatActivity {
 
         setHandler();
 
+
+
+
+
         serviceTimeET.setTransformationMethod(null);
-        currentLog.setText(activeLog);
-        ActiveLog.getInstance().setValue(activeLog);
         logdb = new DatabaseHelper(this);
+        mDatabaseHelper2 = new DatabaseHelper(this, "logs_table");
+
+        loadSpinnerData();
+        int pos = listDataSpinner.indexOf(activeLog);
+        pickLog.setSelection(pos);
+        pickLog.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(TAG, "onItemSelected1 " + check);
+                if (++check > 1) {
+                    String newActive = listDataSpinner.get(i);
+                    Log.d(TAG, "onItemSelected: " + i + " " + newActive);
+                    SharedPreferences.Editor saveValue = prefs.edit();
+                    saveValue.putString("ActiveLog", newActive);
+                    saveValue.apply();
+                    activeLog = newActive;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         setLocationManager();
 
@@ -155,62 +188,6 @@ public class LoggedInActivity extends AppCompatActivity {
 
             }
         };
-    }
-
-
-    public static String getPath(String lat, String lng) {
-        String url = "http://maps.google.com/maps/api/staticmap?center=" + lat + "," + lng + "&zoom=17&size=640x640&markers=color:blue%7C%7C" + lat + "," + lng + "&sensor=false" + "&key=AIzaSyAV0zQ0zdT6jQviqVhhJkV-LjO3-ZnsspU";
-        String latLng = numberFormat.format(Double.parseDouble(lat)) + "|" + numberFormat.format(Double.parseDouble(lng));
-        String image_path = null;
-        String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "StaticMaps";
-        File directory = new File(path);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        File file = new File(directory, latLng + ".jpg");
-        Log.d(TAG, "fileSize1 " + file.getPath() + ":" + file.length());
-
-        if (!file.exists()) {
-            Log.d(TAG, "getting image from google static maps");
-            Bitmap image = null;
-            try {
-                URL urll = new URL(url);
-                InputStream is = null;
-                HttpURLConnection http = (HttpURLConnection)urll.openConnection();
-                int statusCode = http.getResponseCode();
-                Log.d(TAG, "getPath, status code:" + statusCode);
-                if (statusCode >= 200 && statusCode < 400) {
-                    // Create an InputStream in order to extract the response object
-                    is = http.getInputStream();
-                    image = BitmapFactory.decodeStream(is);
-                }
-                else {
-                    is = http.getErrorStream();
-                    for (int i = 0; i < is.available(); i++) {
-                        System.out.println("" + is.read());
-                    }
-                }
-
-                is.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                FileOutputStream out = new FileOutputStream(file);
-                image.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                out.flush();
-                out.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-        }
-        image_path = file.getPath();
-        if (file.length() == 0) {
-            file.delete();
-        }
-        return image_path;
     }
 
 
@@ -277,8 +254,8 @@ public class LoggedInActivity extends AppCompatActivity {
                         String latitude=Double.toString(latituded);
                         String longitude=Double.toString(longituded);
                         String adress = getCompleteAddressString(latituded,longituded);
-                        String path = getPath(latitude, longitude);
-                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, ActiveLog.getInstance().getValue(),adress);
+                        String path = "";
+                        boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, activeLog,adress);
 
                         Message message = mHandler.obtainMessage();
                         message.arg1 = 0;
@@ -300,7 +277,6 @@ public class LoggedInActivity extends AppCompatActivity {
         StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentLog.setText(ActiveLog.getInstance().getValue());
                 Intent intent = new Intent(LoggedInActivity.this, StartLogActivity.class);
                 startActivity(intent);
 
@@ -312,7 +288,6 @@ public class LoggedInActivity extends AppCompatActivity {
         QuickInputBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentLog.setText(ActiveLog.getInstance().getValue());
                 Intent intent = new Intent(LoggedInActivity.this, QuickInputActivity.class);
                 intent.putExtra("latitude",latituded);
                 intent.putExtra("longitude",longituded);
@@ -328,6 +303,8 @@ public class LoggedInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
                 stopService(serviceIntent);
+
+                Log.d(TAG, "stops " + prefs.getString("ActiveLog", "err") + " " + activeLog );
                 Toast.makeText(LoggedInActivity.this,"Stopped service", Toast.LENGTH_SHORT).show();
                 stopServiceBtn.setEnabled(false);
                 startServiceBtn.setEnabled(true);
@@ -341,7 +318,8 @@ public class LoggedInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent serviceIntent = new Intent(LoggedInActivity.this, GPS_Service.class);
                 stopService(serviceIntent);
-                serviceIntent.putExtra("activeLog", ActiveLog.getInstance().getValue());
+                Log.d(TAG, "starts " + prefs.getString("ActiveLog", "err") + " " + activeLog );
+                serviceIntent.putExtra("activeLog", activeLog);
                 String serviceTime = serviceTimeET.getText().toString();
                 if (!serviceTime.isEmpty()) time = Integer.parseInt(serviceTime);
                 if (time == 0) time = 1;
@@ -421,7 +399,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private void findViewByID() {
         serviceTimeET = findViewById(R.id.serviceTimeET);
         serviceTimeET.setTransformationMethod(null);
-        currentLog = findViewById(R.id.CurrentLogTextView);
+        pickLog = findViewById(R.id.LogsSpinner);
         startServiceBtn = findViewById(R.id.startServiceBtn);
         stopServiceBtn = findViewById(R.id.stopServiceBtn);
         StartNewLogBtn = findViewById(R.id.StartNewLogBtn);
@@ -463,7 +441,7 @@ public class LoggedInActivity extends AppCompatActivity {
                         String lat, lng;
                         lat = separatedline[2];
                         lng = separatedline[3];
-                        String path = getPath(lat, lng);
+                        String path = "";
                         Log.d(TAG, "path from fileRead:" + path);
                         //String path = "";
                         String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;
@@ -518,6 +496,20 @@ public class LoggedInActivity extends AppCompatActivity {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
         }
+
+    }
+
+    private void loadSpinnerData() {
+        // database handler
+        listDataSpinner = new ArrayList<>();
+        Cursor data = mDatabaseHelper2.getLogData();
+        while(data.moveToNext()){
+            Log.d(TAG, "adding DATA:" + data.getString(1));
+            listDataSpinner.add(data.getString(1));
+        }
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, listDataSpinner);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pickLog.setAdapter(spinnerAdapter);
 
     }
 }
