@@ -29,9 +29,6 @@
             android:name=".QuickInputActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".LogViewActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".StartLogActivity"
             android:screenOrientation="portrait" />
         <activity

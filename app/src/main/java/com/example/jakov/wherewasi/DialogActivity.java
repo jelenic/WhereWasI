@@ -128,8 +128,6 @@ public class DialogActivity extends AppCompatActivity {
             position = extras.getInt("position");
             activity = extras.getString("activity");
             switch (activity) {
-                case "LogView": listData = LogViewActivity.listData;
-                                break;
                 case "Search":  listData = SearchResultActivity.listData;
                                 break;
             }
