@@ -3,9 +3,11 @@ package com.example.jakov.wherewasi;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -52,12 +54,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity {
     private static final String TAG = "LoggedInActivity";
-    private Button openViewBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
+    private Button deleteLogs, openViewBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
     private Spinner pickLog;
 
 
@@ -78,6 +82,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private int time;
     private int check = 0;
     private ArrayList<String> listDataSpinner;
+    private HashMap<String, String> logNameID;
 
     private Handler mHandler;
 
@@ -121,6 +126,8 @@ public class LoggedInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         prefs =  this.getSharedPreferences("MyValues", 0);
         setContentView(R.layout.activity_logged_in);
+
+        logNameID = new HashMap<>();
         // My App ID: ca-app-pub-3775405938489529~5074959444
         MobileAds.initialize(this, "ca-app-pub-3775405938489529~5074959444");
 
@@ -196,7 +203,7 @@ public class LoggedInActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void locationPermissions() {
         if (Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
         }
         else {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -204,7 +211,7 @@ public class LoggedInActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
                 return;
             } else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
             }
         }
     }
@@ -218,7 +225,60 @@ public class LoggedInActivity extends AppCompatActivity {
         FilePickerListener();
         mailBackupListener();
         openViewListener();
+        deleteLogsListener();
 
+    }
+
+    private void deleteLogsListener() {
+        deleteLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoggedInActivity.this);
+
+                final boolean[] checkedItems = new boolean[listDataSpinner.size()];
+                Arrays.fill(checkedItems, Boolean.FALSE);
+                builder.setTitle("Delete logs");
+                String[] logsArray = new String[listDataSpinner.size()];
+                logsArray = listDataSpinner.toArray(logsArray);
+                //set multichoice
+                builder.setMultiChoiceItems(logsArray, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checkedItems[which] = isChecked;
+                    }
+                });
+                // Set the positive/yes button click listener
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click positive button
+                        for (int i = 0; i<checkedItems.length; i++){
+                            boolean checked = checkedItems[i];
+                            if (checked) {
+                                String logName = listDataSpinner.get(i);
+                                Log.d(TAG, "onClick:delete " + logName);
+                                if (!logName.equals(activeLog)) mDatabaseHelper2.deleteLog(logNameID.get(logName));
+                                else {
+                                    Toast.makeText(LoggedInActivity.this, "can't delete active log", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        }
+                        loadSpinnerData();
+                    }
+                });
+                // Set the neutral/cancel button click listener
+                builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click the neutral button
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                // Display the alert dialog on interface
+                dialog.show();
+            }
+        });
     }
 
 
@@ -409,6 +469,7 @@ public class LoggedInActivity extends AppCompatActivity {
         GetFileBtn = findViewById(R.id.GetFileBtn);
         mailBackupBtn = findViewById(R.id.mailBackupBtn);
         openViewBtn = findViewById(R.id.openViewBtn);
+        deleteLogs = findViewById(R.id.deleteLogs);
 
     }
 
@@ -494,7 +555,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
         if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             }
         }
 
@@ -507,6 +568,7 @@ public class LoggedInActivity extends AppCompatActivity {
         while(data.moveToNext()){
             Log.d(TAG, "adding DATA:" + data.getString(1));
             listDataSpinner.add(data.getString(1));
+            logNameID.put(data.getString(1), data.getString(0));
         }
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, listDataSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -241,12 +241,23 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Log.d(TAG, "deleteName: Deleting " + id + " from database.");
 
         db.execSQL(query);
+
+        String query2 = "DELETE FROM " + TABLE_NAME + " WHERE "
+                + COL6 + " = " +  todel;
+        Log.d(TAG, "deleteName: query: " + query);
+        Log.d(TAG, "deleteName: Deleting " + id + " from database.");
+
+
+
+
+        db.execSQL(query2);
         db.close();
     }
 
     public Cursor getData(String name){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " DESC";
+        Log.d(TAG, "getData: " + query);
         Cursor data = db.rawQuery(query, null);
 
         return data;

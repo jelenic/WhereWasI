@@ -146,6 +146,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
 
     private void loadData() {
         Cursor data = null;
+        Log.d(TAG, "loadData: starting " + name);
+
         if (name.equals("ALL LOGS")) {
             data = mDatabaseHelper.getData();
         }
@@ -170,6 +172,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
                     image, data.getString(5), data.getString(2), data.getString(7));
             databaseData.add(le);
             listData.add(le);
+            Log.d(TAG, "loadData:data " + le.getTimestamp());
 
         }
 

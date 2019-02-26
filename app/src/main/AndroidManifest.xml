@@ -35,10 +35,7 @@
             android:name=".DialogActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SearchResultActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SearchActivity"
+            android:name=".ViewActivity"
             android:screenOrientation="portrait" />
 
         <service android:name=".GPS_Service" />
@@ -50,7 +47,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3775405938489529~5074959444" />
         <activity android:name=".SendMailActivity" />
-        <activity android:name=".ViewActivity"></activity>
+
     </application>
 
 </manifest>
