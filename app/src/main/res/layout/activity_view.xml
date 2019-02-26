@@ -9,11 +9,12 @@
 
     <Button
         android:id="@+id/placeHolder"
-        android:layout_width="122dp"
+        android:layout_width="49dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="SEARCH"
+        android:layout_marginEnd="18dp"
+        android:drawableLeft="@drawable/ic_search_white_24dp"
         android:textAlignment="center"
         android:textSize="24sp" />
 
@@ -60,5 +61,16 @@
         android:layout_below="@+id/placeHolder"
         android:text="dateTo"
         android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/textViewActiveLog"
+        android:layout_width="239dp"
+        android:layout_height="29dp"
+        android:layout_alignBaseline="@+id/placeHolder"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="39dp"
+        android:gravity="center"
+        android:text="activeLog"
+        android:textSize="18sp" />
 
 </RelativeLayout>
