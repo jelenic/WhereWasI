@@ -43,6 +43,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     private TextView textViewName;
     private TextView textViewDateFrom;
     private TextView textViewDateTo;
+    private TextView textViewActiveLog;
 
 
     public ArrayList<LogEntry> getListData() {
@@ -83,6 +84,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
         textViewName=findViewById(R.id.textViewName);
         textViewDateFrom=findViewById(R.id.textViewDateFrom);
         textViewDateTo=findViewById(R.id.textViewDateTo);
+        textViewActiveLog=findViewById(R.id.textViewActiveLog);
+        textViewActiveLog.setText(name);
         placeHolder = findViewById(R.id.placeHolder);
         placeHolder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,7 +171,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
             //then add it to the ArrayList
             Log.d(TAG, "adding path:" + data.getString(5));
 
-            LogEntry le = new LogEntry(data.getString(0),data.getString(1) , data.getString(3),data.getString(4),
+            LogEntry le = new LogEntry(data.getString(0),data.getString(1) , data.getString(3).substring(0,10),data.getString(4).substring(0,10),
                     image, data.getString(5), data.getString(2), data.getString(7));
             databaseData.add(le);
             listData.add(le);
