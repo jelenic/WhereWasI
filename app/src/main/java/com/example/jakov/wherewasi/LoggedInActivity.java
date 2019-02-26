@@ -106,6 +106,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        activeLog=prefs.getString("ActiveLog", "Default log");
         check = 0;
         loadSpinnerData();
         int pos = listDataSpinner.indexOf(activeLog);

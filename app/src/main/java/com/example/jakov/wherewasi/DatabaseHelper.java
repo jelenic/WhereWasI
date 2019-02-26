@@ -232,6 +232,18 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void deleteLog(String id){
+        String todel= "'"+id+"'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + LOG_TABLE_NAME + " WHERE "
+                + COL0 + " = " +  todel;
+        Log.d(TAG, "deleteName: query: " + query);
+        Log.d(TAG, "deleteName: Deleting " + id + " from database.");
+
+        db.execSQL(query);
+        db.close();
+    }
+
     public Cursor getData(String name){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL6 + " = '" + name + "'" + " ORDER BY " + COL0 + " DESC";
