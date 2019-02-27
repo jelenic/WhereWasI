@@ -232,7 +232,17 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void deleteLog(String id){
+    public void deleteEntryName(String logname){
+        String nametodel= "'"+logname+"'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query2 = "DELETE FROM " + TABLE_NAME + " WHERE "
+                + COL6 + " = " +  nametodel;
+        Log.d(TAG, "deleteName: query: " + query2);
+        db.execSQL(query2);
+        db.close();
+    }
+
+    public void deleteLog(String id,String name){
         String todel= "'"+id+"'";
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + LOG_TABLE_NAME + " WHERE "
@@ -241,16 +251,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         Log.d(TAG, "deleteName: Deleting " + id + " from database.");
 
         db.execSQL(query);
-
-        String query2 = "DELETE FROM " + TABLE_NAME + " WHERE "
-                + COL6 + " = " +  todel;
-        Log.d(TAG, "deleteName: query: " + query);
-        Log.d(TAG, "deleteName: Deleting " + id + " from database.");
-
-
-
-
-        db.execSQL(query2);
         db.close();
     }
 

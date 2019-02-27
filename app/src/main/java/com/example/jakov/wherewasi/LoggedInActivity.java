@@ -203,7 +203,7 @@ public class LoggedInActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void locationPermissions() {
         if (Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
         }
         else {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -211,7 +211,7 @@ public class LoggedInActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
                 return;
             } else {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
             }
         }
     }
@@ -257,7 +257,10 @@ public class LoggedInActivity extends AppCompatActivity {
                             if (checked) {
                                 String logName = listDataSpinner.get(i);
                                 Log.d(TAG, "onClick:delete " + logName);
-                                if (!logName.equals(activeLog)) mDatabaseHelper2.deleteLog(logNameID.get(logName));
+                                if (!logName.equals(activeLog)){
+                                    mDatabaseHelper2.deleteLog(logNameID.get(logName),logName);
+                                    logdb.deleteEntryName(logName);
+                                }
                                 else {
                                     Toast.makeText(LoggedInActivity.this, "can't delete active log", Toast.LENGTH_SHORT).show();
                                 }
@@ -555,7 +558,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
         if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
         }
 
