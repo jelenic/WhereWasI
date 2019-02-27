@@ -156,6 +156,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
         }
         else
             data = mDatabaseHelper.getData(name);
+        
 
         Bitmap image = null;
         databaseData = new ArrayList<>();
