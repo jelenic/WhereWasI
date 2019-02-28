@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +29,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -54,6 +59,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -120,6 +126,11 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         activeLog=prefs.getString("ActiveLog", "Default log");
         check = 0;
         loadSpinnerData();
+        Log.d(TAG, "onResume: " + prefs.getString("serviceRunning", "false"));
+        if(prefs.getString("serviceRunning", "false").equals("true")){
+            stopServiceBtn.setEnabled(true);
+            startServiceBtn.setEnabled(false);
+        }
         super.onResume();
     }
 
@@ -190,8 +201,16 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         simpleBannerAd.loadAd(adRequest);
 
         geocoder = new Geocoder(this, Locale.getDefault());
-        stopServiceBtn.setEnabled(false);
-        startServiceBtn.setEnabled(true);
+        Log.d(TAG, "onCreate:servic " + prefs.getString("serviceRunning", "false"));
+        if(prefs.getString("serviceRunning", "false").equals("true")){
+            stopServiceBtn.setEnabled(true);
+            startServiceBtn.setEnabled(false);
+        }
+        else {
+            stopServiceBtn.setEnabled(false);
+            startServiceBtn.setEnabled(true);
+        }
+
         QuickCheckInBtn.setEnabled(false);
         QuickInputBtn.setEnabled(false);
     }
@@ -228,15 +247,23 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     permissions[3]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[4]) == PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-            }else{
+                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                }
+                else{
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                }}else{
                 ActivityCompat.requestPermissions(LoggedInActivity.this,
                         permissions,
                         1);
             }
         } else {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-        }
+            if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+            }
+            else{
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+            }}
     }
 
     private void setListeners() {
@@ -397,6 +424,9 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                 Toast.makeText(LoggedInActivity.this,"Stopped service", Toast.LENGTH_SHORT).show();
                 stopServiceBtn.setEnabled(false);
                 startServiceBtn.setEnabled(true);
+                SharedPreferences.Editor saveValue = prefs.edit();
+                saveValue.putString("serviceRunning", "false");
+                saveValue.apply();
             }
         });
     }
@@ -414,11 +444,16 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                 if (time == 0) time = 1;
                 serviceIntent.putExtra("time", time);
 
+
+
                 ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
 
                 Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
                 stopServiceBtn.setEnabled(true);
                 startServiceBtn.setEnabled(false);
+                SharedPreferences.Editor saveValue = prefs.edit();
+                saveValue.putString("serviceRunning", "true");
+                saveValue.apply();
             }
         });
     }
@@ -507,25 +542,23 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICKFILE_RESULT_CODE && resultCode == Activity.RESULT_OK){
-            Uri content_describer = data.getData();
-            String src = content_describer.getPath();
-            source = new File(src);
-            Log.d("src is ", source.toString());
-            String filename = content_describer.getLastPathSegment();
-            Log.d("FileName is ",filename);
-            readFromFile(source);
+            Uri uri = data.getData();
+            Log.d(TAG, "onActivityResult: "  + uri);
+            readFromFile(uri);
         }
     }
 
-    public void readFromFile(final File file){
+
+
+    public void readFromFile(final Uri uri){
         //TO-DO check if logs exist, add if they don't
-        Log.d(TAG, "readFromFile: " + file.getAbsolutePath());
+
         Thread myThread = new Thread(new Runnable(){
             @Override
             public void run()
             {
                 try{
-                    InputStream fis=new FileInputStream(file);
+                    InputStream fis = getContentResolver().openInputStream(uri);
                     BufferedReader br=new BufferedReader(new InputStreamReader(fis));
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
@@ -586,10 +619,31 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
 
         if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            }
+                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)  && haveNetworkConnection()){
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                }
+                else{
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                }}
         }
 
+    }
+
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     private void loadSpinnerData() {

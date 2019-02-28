@@ -12,6 +12,8 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -74,7 +76,30 @@ public class GPS_Service extends Service {
 
             }
         };
+        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
+        }
+        else{
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+        }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
+    }
+
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     @SuppressLint("MissingPermission")
