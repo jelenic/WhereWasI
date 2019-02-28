@@ -38,7 +38,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="121dp"
         android:layout_marginEnd="44dp"
-        android:text="INPUT IMAGE" />
+        android:text="INPUT IMAGE"
+        android:background="@drawable/button_background_1"/>
 
     <Button
         android:id="@+id/Insertbtn"
@@ -47,7 +48,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="31dp"
-        android:text="ADD ENTRY" />
+        android:text="ADD ENTRY"
+        android:background="@drawable/button_background_1"/>
 
     <ImageView
         android:id="@+id/mImageView"

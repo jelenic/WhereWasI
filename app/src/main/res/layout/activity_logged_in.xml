@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoggedInActivity">
+    tools:context=".LoggedInActivity"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,97 +16,142 @@
         android:textAlignment="center"
         android:background="@drawable/background"
         android:orientation="horizontal"
-        android:weightSum="10">
+        android:weightSum="10"
+        android:layout_margin="4sp">
 
         <Spinner
             android:id="@+id/LogsSpinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="38dp"
             android:layout_gravity="left"
             android:layout_weight="8"
-            android:textAlignment="center"
-            />
+            android:textAlignment="center" />
 
         <Button
             android:id="@+id/deleteLogs"
-            android:layout_width="0dp"
+            android:layout_width="12dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_delete_black_24dp"/>
+            android:drawableLeft="@drawable/ic_delete_black_24dp" />
 
 
         <Button
             android:id="@+id/StartNewLogBtn"
-            android:layout_width="0dp"
+            android:layout_width="12dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_add_black_24dp"/>
+            android:drawableLeft="@drawable/ic_add_black_24dp" />
 
 
     </LinearLayout>
 
-
-
-    <Button
-        android:id="@+id/QuickCheckInBtn"
-        android:layout_width="192dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
+    <RelativeLayout
+        android:id="@+id/entrys"
+        android:layout_width="match_parent"
+        android:layout_height="182dp"
         android:layout_below="@+id/logs"
-        android:text="Quick Check In" />
+        android:layout_marginBottom="4sp"
+        android:layout_marginEnd="4sp"
+        android:layout_marginLeft="4sp"
+        android:layout_marginRight="4sp"
+        android:layout_marginStart="4sp"
+        android:layout_marginTop="4sp"
+        android:background="@drawable/background"
+        android:orientation="horizontal"
+        android:textAlignment="center"
+        android:weightSum="10">
 
-    <Button
-        android:id="@+id/QuickInputBtn"
-        android:layout_width="192dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/logs"
-        android:text="Quick Input" />
+        <Button
+            android:id="@+id/QuickCheckInBtn"
+            android:layout_width="176dp"
+            android:layout_height="55dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_below="@+id/logs"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/button_background_1"
+            android:padding="1sp"
+            android:text="Quick Check In" />
+
+        <Button
+            android:id="@+id/QuickInputBtn"
+            android:layout_width="176dp"
+            android:layout_height="55dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_below="@+id/logs"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/button_background_1"
+            android:text="Quick Input" />
 
 
-    <Button
-        android:id="@+id/startServiceBtn"
-        android:layout_width="192dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/QuickCheckInBtn"
-        android:text="START SERVICE" />
+        <Button
+            android:id="@+id/startServiceBtn"
+            android:layout_width="176dp"
+            android:layout_height="55dp"
+            android:layout_alignStart="@+id/QuickCheckInBtn"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_background_1"
+            android:text="START SERVICE" />
 
-    <Button
-        android:id="@+id/stopServiceBtn"
-        android:layout_width="192dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/QuickCheckInBtn"
-        android:text="STOP SERVICE" />
-    <EditText
-        android:id="@+id/serviceTimeET"
+        <Button
+            android:id="@+id/stopServiceBtn"
+            android:layout_width="176dp"
+            android:layout_height="55dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/startServiceBtn"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/button_background_1"
+            android:text="STOP SERVICE" />
+
+        <EditText
+            android:id="@+id/serviceTimeET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:hint="service time in seconds"
+            android:inputType="numberPassword" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/backup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/stopServiceBtn"
-        android:inputType="numberPassword"
-        android:hint="service time in seconds"/>
-    <Button
-        android:id="@+id/GetFileBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/serviceTimeET"
-        android:text="CHOOSE FILE"/>
+        android:layout_height="124dp"
+        android:layout_below="@+id/entrys"
+        android:layout_margin="4sp"
+        android:background="@drawable/background"
+        android:orientation="horizontal"
+        android:textAlignment="center"
+        android:weightSum="10">
 
-    <Button
-        android:id="@+id/mailBackupBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/GetFileBtn"
-        android:text="MAIL BACKUP" />
+        <Button
+            android:id="@+id/GetFileBtn"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_below="@+id/entrys"
+            android:background="@drawable/button_background_1"
+            android:text="CHOOSE FILE" />
+
+        <Button
+            android:id="@+id/mailBackupBtn"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/button_background_1"
+            android:text="MAIL BACKUP" />
+    </RelativeLayout>
 
     <Button
         android:id="@+id/openViewBtn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/mailBackupBtn"
-        android:text="OPEN view"/>
+        android:layout_height="55dp"
+        android:layout_below="@+id/backup"
+        android:layout_margin="6sp"
+        android:background="@drawable/button_background_1"
+        android:text="OPEN view" />
 
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"
