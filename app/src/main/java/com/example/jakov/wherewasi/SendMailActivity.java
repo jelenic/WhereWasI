@@ -140,24 +140,7 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
 
                     bw.close();
 
-                    /*Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    emailIntent.setType("text/plain");
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {recipient});
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                    emailIntent.putExtra(Intent.EXTRA_TEXT, msg);
-                    File file = new File(pathMailFile);
 
-                    Uri uri = Uri.fromFile(file);
-                    emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-
-                    try {
-                        startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"));
-                    } catch (android.content.ActivityNotFoundException ex) {
-                        Toast.makeText(SendMailActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-                    }
-
-
-                    Log.d("mail", "sent: " + path);*/
                 }
                 catch (Exception e) {
                     e.printStackTrace();

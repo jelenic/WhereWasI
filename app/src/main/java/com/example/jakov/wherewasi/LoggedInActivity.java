@@ -60,9 +60,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.AddLogDialogListener {
+public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.AddLogDialogListener, SearchDialog.SearchDialogListener {
     private static final String TAG = "LoggedInActivity";
-    private Button deleteLogs, openViewBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
+    private Button deleteLogs, openViewBtn,fileBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
     private Spinner pickLog;
 
 
@@ -241,7 +241,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         newLogListener();
         quickCheckInListener();
         FilePickerListener();
-        mailBackupListener();
+        fileBackupListener();
         openViewListener();
         deleteLogsListener();
 
@@ -303,13 +303,12 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
     }
 
 
-    private void mailBackupListener() {
-        mailBackupBtn.setOnClickListener(new View.OnClickListener() {
+    private void fileBackupListener() {
+        fileBackupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoggedInActivity.this, SendMailActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                SearchDialog searchDialog=new SearchDialog();
+                searchDialog.show(getSupportFragmentManager(),"searchDialog");
             }
         });
     }
@@ -490,7 +489,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         QuickInputBtn = findViewById(R.id.QuickInputBtn);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
-        mailBackupBtn = findViewById(R.id.mailBackupBtn);
+        fileBackupBtn = findViewById(R.id.mailBackupBtn);
         openViewBtn = findViewById(R.id.openViewBtn);
         deleteLogs = findViewById(R.id.deleteLogs);
 
@@ -609,6 +608,11 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         activeLog = prefs.getString("ActiveLog", "Default log");
         loadSpinnerData();
 
+
+    }
+
+    @Override
+    public void applyText(String name, String dateTo, String dateFrom, ArrayList<String> logs) {
 
     }
 }
