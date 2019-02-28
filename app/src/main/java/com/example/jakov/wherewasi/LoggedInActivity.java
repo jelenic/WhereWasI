@@ -32,6 +32,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -59,7 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class LoggedInActivity extends AppCompatActivity {
+public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.AddLogDialogListener {
     private static final String TAG = "LoggedInActivity";
     private Button deleteLogs, openViewBtn,mailBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
     private Spinner pickLog;
@@ -114,8 +115,6 @@ public class LoggedInActivity extends AppCompatActivity {
         activeLog=prefs.getString("ActiveLog", "Default log");
         check = 0;
         loadSpinnerData();
-        int pos = listDataSpinner.indexOf(activeLog);
-        pickLog.setSelection(pos);
         super.onResume();
     }
 
@@ -124,8 +123,13 @@ public class LoggedInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         prefs =  this.getSharedPreferences("MyValues", 0);
         setContentView(R.layout.activity_logged_in);
+
+        getSupportActionBar().hide();
+
+
 
         logNameID = new HashMap<>();
         // My App ID: ca-app-pub-3775405938489529~5074959444
@@ -148,8 +152,6 @@ public class LoggedInActivity extends AppCompatActivity {
         mDatabaseHelper2 = new DatabaseHelper(this, "logs_table");
 
         loadSpinnerData();
-        int pos = listDataSpinner.indexOf(activeLog);
-        pickLog.setSelection(pos);
         pickLog.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -176,7 +178,7 @@ public class LoggedInActivity extends AppCompatActivity {
         setListeners();
 
 
-        locationPermissions();
+        verifyPermissions();
 
         simpleBannerAd = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -185,6 +187,8 @@ public class LoggedInActivity extends AppCompatActivity {
         geocoder = new Geocoder(this, Locale.getDefault());
         stopServiceBtn.setEnabled(false);
         startServiceBtn.setEnabled(true);
+        QuickCheckInBtn.setEnabled(false);
+        QuickInputBtn.setEnabled(false);
     }
 
     private void setHandler() {
@@ -201,18 +205,32 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
     @SuppressLint("MissingPermission")
-    private void locationPermissions() {
-        if (Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-        }
-        else {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    private void verifyPermissions(){
+        if (Build.VERSION.SDK_INT >= 23) {
+            String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION};
 
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-                return;
-            } else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    permissions[0]) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    permissions[1]) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    permissions[2]) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    permissions[3]) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    permissions[4]) == PackageManager.PERMISSION_GRANTED){
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+            }else{
+                ActivityCompat.requestPermissions(LoggedInActivity.this,
+                        permissions,
+                        1);
             }
+        } else {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
         }
     }
 
@@ -257,12 +275,12 @@ public class LoggedInActivity extends AppCompatActivity {
                             if (checked) {
                                 String logName = listDataSpinner.get(i);
                                 Log.d(TAG, "onClick:delete " + logName);
-                                if (!logName.equals(activeLog)){
-                                    mDatabaseHelper2.deleteLog(logNameID.get(logName),logName);
+                                if (logName.equals("Default log")){
                                     logdb.deleteEntryName(logName);
                                 }
                                 else {
-                                    Toast.makeText(LoggedInActivity.this, "can't delete active log", Toast.LENGTH_SHORT).show();
+                                    mDatabaseHelper2.deleteLog(logNameID.get(logName),logName);
+                                    logdb.deleteEntryName(logName);
                                 }
 
                             }
@@ -315,8 +333,8 @@ public class LoggedInActivity extends AppCompatActivity {
                     @Override
                     public void run()
                     {
-                        String latitude=Double.toString(latituded);
-                        String longitude=Double.toString(longituded);
+                        String latitude=Double.toString(latituded) + "0000";
+                        String longitude=Double.toString(longituded) + "0000";
                         String adress = getCompleteAddressString(latituded,longituded);
                         String path = "";
                         boolean insertlog = logdb.addData("QCK",null,latitude,longitude, path, activeLog,adress);
@@ -341,8 +359,8 @@ public class LoggedInActivity extends AppCompatActivity {
         StartNewLogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoggedInActivity.this, StartLogActivity.class);
-                startActivity(intent);
+                AddLogDialog addLogDialog = new AddLogDialog();
+                addLogDialog.show(getSupportFragmentManager(),"addLogDialog");
 
             }
         });
@@ -416,6 +434,8 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 Log.d("LoggedInActivity:", location.toString());
+                QuickCheckInBtn.setEnabled(true);
+                QuickInputBtn.setEnabled(true);
                 latituded = location.getLatitude();
                 longituded = location.getLongitude();
 
@@ -558,7 +578,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
         if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             }
         }
 
@@ -576,6 +596,19 @@ public class LoggedInActivity extends AppCompatActivity {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, listDataSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pickLog.setAdapter(spinnerAdapter);
+
+        int pos = listDataSpinner.indexOf(activeLog);
+        pickLog.setSelection(pos);
+
+    }
+
+    @Override
+    public void addLog(String logName, boolean setActive) {
+        Log.d(TAG, "addLog: " + logName + " " + setActive);
+        mDatabaseHelper2.addLog(logName, setActive);
+        activeLog = prefs.getString("ActiveLog", "Default log");
+        loadSpinnerData();
+
 
     }
 }

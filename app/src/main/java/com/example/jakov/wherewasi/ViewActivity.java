@@ -22,7 +22,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -39,7 +41,9 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     DatabaseHelper mDatabaseHelper;
     DatabaseHelper mDatabaseHelper2;
     SharedPreferences prefs;
-    String name;
+    public static String name;
+
+    public static ArrayList<String> listDataSpinner;
     private TextView textViewName;
     private TextView textViewDateFrom;
     private TextView textViewDateTo;
@@ -79,6 +83,10 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
+
+        getSupportActionBar().hide();
+
+
         prefs = this.getSharedPreferences("MyValues", 0);
         name = prefs.getString("ActiveLog", "Default Log");
         textViewName=findViewById(R.id.textViewName);
@@ -98,6 +106,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
         mDatabaseHelper2 = new DatabaseHelper(this, "logs_table");
 
         loadData();
+        loadSpinnerData();
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -110,16 +119,16 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     }
 
     @Override
-    public void applyText(String logName, String dateTo, String dateFrom){
-        if (logName!="" || dateTo!="" || dateFrom!=""){
-            textViewName.setText(logName);
+    public void applyText(String entryName, String dateTo, String dateFrom, ArrayList<String> logs){
+        Log.d(TAG, "applyText begin " + entryName + " " + dateFrom + " " + dateTo );
+        if (!entryName.isEmpty() || !dateTo.isEmpty() || !dateFrom.isEmpty() || logs.size() > 0){
+            textViewName.setText(entryName);
             textViewDateFrom.setText(dateFrom);
             textViewDateTo.setText(dateTo);
-            Log.d(TAG, "applyText1: " + dateTo);
             listData.clear();
             for (LogEntry entry:databaseData){
-                Log.d(TAG, "applyText: " + Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".","")) + "+" + dateTo);
-                if ((logName=="" || logName==null || entry.getName().toLowerCase().contains(logName.toLowerCase()))&&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))){
+                Log.d(TAG, "applyText:2 " + entry.getName() + " " + entry.getName().toLowerCase().contains(entryName.toLowerCase()));
+                if (entry.getName().toLowerCase().contains(entryName.toLowerCase()) && (logs.size() == 0 || logs.contains("ALL LOGS") || logs.contains(entry.getLogName()))&&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))){
                     listData.add(entry);
 
                 }
@@ -127,8 +136,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
             }
 
         }
-        else{
-            databaseData.addAll(listData);
+        else {
+            loadData();
         }
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if(f instanceof Fragment_map) {
@@ -151,12 +160,7 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
         Cursor data = null;
         Log.d(TAG, "loadData: starting " + name);
 
-        if (name.equals("ALL LOGS")) {
-            data = mDatabaseHelper.getData();
-        }
-        else
-            data = mDatabaseHelper.getData(name);
-        
+        data = mDatabaseHelper.getData();
 
         Bitmap image = null;
         databaseData = new ArrayList<>();
@@ -171,20 +175,41 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
             //get the value from the database in column 1
             //then add it to the ArrayList
             Log.d(TAG, "adding path:" + data.getString(5));
+            Log.d(TAG, "entry " + data.getString(0) + data.getString(1) + data.getString(3) + data.getString(4) + data.getString(6));
 
-            LogEntry le = new LogEntry(data.getString(0),data.getString(1) , data.getString(3).substring(0,10),data.getString(4).substring(0,10),
-                    image, data.getString(5), data.getString(2), data.getString(7));
+            LogEntry le = new LogEntry(data.getString(0),data.getString(1) , subString(data.getString(3)),subString(data.getString(4)),
+                    image, data.getString(5), data.getString(2), data.getString(7), data.getString(6));
             databaseData.add(le);
-            listData.add(le);
+            if (le.getLogName().equals(name)) listData.add(le);
             Log.d(TAG, "loadData:data " + le.getTimestamp());
 
         }
 
+
+    }
+
+    private String subString(String string) {
+        if (string.length() > 10) return string.substring(0,10);
+        else return string;
     }
 
     private void replaceFragment (Fragment fragment){
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).commit();
+    }
+
+
+    private void loadSpinnerData() {
+        // database handler
+        listDataSpinner = new ArrayList<>();
+        Cursor data = mDatabaseHelper2.getLogData();
+        while(data.moveToNext()){
+            Log.d(TAG, "adding DATA:" + data.getString(1));
+            listDataSpinner.add(data.getString(1));
+        }
+        listDataSpinner.add("ALL LOGS");
+
+
     }
 
 

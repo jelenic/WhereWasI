@@ -4,18 +4,26 @@
     android:layout_width="match_parent"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/LogsTV"
+        android:hint="Choose logs"
+        />
+
     <EditText
         android:id="@+id/nameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="logName"/>
+        android:hint="Name"
+        android:layout_below="@+id/LogsTV"/>
 
     <TextView
         android:id="@+id/dateFromTextView"
         android:layout_width="169dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/nameEditText"
-        android:layout_alignTop="@+id/dateToTextView"
+        android:layout_below="@id/nameEditText"
         android:hint="dateFrom" />
 
     <TextView
@@ -23,8 +31,7 @@
         android:layout_width="169dp"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/nameEditText"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="69dp"
+        android:layout_below="@+id/nameEditText"
         android:hint="dateTo" />
 
 </RelativeLayout>

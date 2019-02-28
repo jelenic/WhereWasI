@@ -1,5 +1,8 @@
 package com.example.jakov.wherewasi;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,31 +10,43 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.StrictMode;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
+
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class QuickInputActivity extends AppCompatActivity {
+public class QuickInputActivity extends AppCompatActivity implements IPickResult {
     Button Insertbtn;
     Button imgBtn;
     EditText nameet;
@@ -56,6 +71,8 @@ public class QuickInputActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_input);
 
+        getSupportActionBar().hide();
+
         StrictMode.VmPolicy.Builder newbuilder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(newbuilder.build());
 
@@ -79,51 +96,13 @@ public class QuickInputActivity extends AppCompatActivity {
 
 
 
-        final String [] items           = new String [] {"From Camera", "From SD Card"};
-        ArrayAdapter<String> adapter  = new ArrayAdapter<String> (this, android.R.layout.select_dialog_item,items);
-        AlertDialog.Builder builder     = new AlertDialog.Builder(this);
-
-        builder.setTitle("Select Image");
-        builder.setAdapter( adapter, new DialogInterface.OnClickListener() {
-            public void onClick( DialogInterface dialog, int item ) {
-                if (item == 0) {
-                    DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-                    String date = df.format(Calendar.getInstance().getTime());
-                    Intent intent    = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + prefs.getString("ActiveLog", "Default Log");
-                    File file        = new File(path,
-                            date + ".jpg");
-                    mImageCaptureUri = Uri.fromFile(file);
-
-                    try {
-                        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
-                        intent.putExtra("return-data", true);
-
-                        startActivityForResult(intent, PICK_FROM_CAMERA);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    dialog.cancel();
-                } else {
-                    Intent intent = new Intent();
-
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                    startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
-                }
-            }
-        } );
-
-        final AlertDialog dialog = builder.create();
 
         mImageView = (ImageView) findViewById(R.id.mImageView);
 
         ((Button) findViewById(R.id.imgBtn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
+                PickImageDialog.build(new PickSetup().setTitle("Pick an image")).show(QuickInputActivity.this);
             }
         });
 
@@ -140,48 +119,6 @@ public class QuickInputActivity extends AppCompatActivity {
             }
         };
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) return;
-
-        bitmap  = null;
-        path     = "";
-
-        if (requestCode == PICK_FROM_FILE) {
-            mImageCaptureUri = data.getData();
-            path = getRealPathFromURI(mImageCaptureUri); //from Gallery
-
-            if (path == null)
-                path = mImageCaptureUri.getPath(); //from File Manager
-
-            if (path != null)
-                bitmap  = BitmapFactory.decodeFile(path);
-        } else {
-            path    = mImageCaptureUri.getPath();
-            bitmap  = BitmapFactory.decodeFile(path);
-        }
-
-        mImageView.setImageBitmap(bitmap);
-    }
-
-    public String getRealPathFromURI(Uri contentUri) {
-        String [] proj      = {MediaStore.Images.Media.DATA};
-        Cursor cursor       = managedQuery( contentUri, proj, null, null,null);
-
-        if (cursor == null) return null;
-
-        int column_index    = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-        cursor.moveToFirst();
-
-        return cursor.getString(column_index);
-    }
-
-
-
-
-
 
 
 
@@ -245,6 +182,78 @@ public class QuickInputActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onPickResult(PickResult r) {
+        if (r.getError() == null) {
+            //If you want the Uri.
+            //Mandatory to refresh image from Uri.
+            //getImageView().setImageURI(null);
+
+            //Setting the real returned image.
+            //getImageView().setImageURI(r.getUri());
+
+            //If you want the Bitmap.
+            mImageView.setImageBitmap(r.getBitmap());
+
+            //Image path
+            //r.getPath();
+            Log.d("quick input", "onPickResult: " + r.getPath());
+            /*Bitmap image = rotateImageIfRequired(this, r.getBitmap(), r.getUri());
+            r.setBitmap(image);*/
+            path = r.getPath();
+
+        } else {
+            //Handle possible errors
+            //TODO: do what you have to do with r.getError();
+            Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 
 
+    /**
+     * Rotate an image if required.
+     * @param img
+     * @param selectedImage
+     * @return
+     */
+    private static Bitmap rotateImageIfRequired(Context context,Bitmap img, Uri selectedImage) {
+
+        // Detect rotation
+        int rotation = getRotation(context, selectedImage);
+        Log.d("quick input", "rotateImageIfRequired:rot " + rotation);
+        if (rotation != 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(rotation);
+            Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
+            return rotatedImg;
+        }
+        else{
+            return img;
+        }
+    }
+
+    /**
+     * Get the rotation of the last image added.
+     * @param context
+     * @param selectedImage
+     * @return
+     */
+    private static int getRotation(Context context, Uri selectedImage) {
+
+        int rotation = 0;
+        ContentResolver content = context.getContentResolver();
+
+        Cursor mediaCursor = content.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[] { "orientation", "date_added" },
+                null, null, "date_added desc");
+
+        if (mediaCursor != null && mediaCursor.getCount() != 0) {
+            while(mediaCursor.moveToNext()){
+                rotation = mediaCursor.getInt(0);
+                break;
+            }
+        }
+        mediaCursor.close();
+        return rotation;
+    }
 }

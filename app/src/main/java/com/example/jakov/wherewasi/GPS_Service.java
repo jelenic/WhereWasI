@@ -72,7 +72,7 @@ public class GPS_Service extends Service {
 
             }
         };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
     }
 
     @SuppressLint("MissingPermission")
@@ -136,8 +136,8 @@ public class GPS_Service extends Service {
     }
 
     public void addData() {
-        String lat=Double.toString(latitude);
-        String longi=Double.toString(longitude);
+        String lat=Double.toString(latitude) + "0000";
+        String longi=Double.toString(longitude) + "0000";
         String adress = LoggedInActivity.getCompleteAddressString(latitude,longitude);
         final String path = "";
         boolean insertlog = logdb.addData("Service",null,lat,longi, path, activeLog,adress);

@@ -102,11 +102,15 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
         if (moveCamera) googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 12.0f));
 
 
+        loadMarkers();
+    }
+
+    private void loadMarkers() {
         markerList = new ArrayList<>();
         int i = 0;
         for (LogEntry le : ((ViewActivity) getActivity()).getListData()) {
             LatLng pos = new LatLng(Double.parseDouble(le.getLatitude()), Double.parseDouble(le.getLongitude()));
-            Marker m = googleMap.addMarker(new MarkerOptions()
+            Marker m = map.addMarker(new MarkerOptions()
                     .position(pos)
                     .anchor(0.5f, 0.5f)
                     .title(le.getName())
@@ -118,7 +122,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     }
 
     private void mapAnimation(final long time) {
-        startAnimation.setBackgroundResource(R.drawable.ic_media_pause_light);
+        startAnimation.setBackgroundResource(android.R.drawable.ic_media_pause);
         map.clear();
         count = 0;
         int updateNumberHolder = 1;
@@ -166,6 +170,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
                 }
                 else {
                     handler.removeCallbacks(this);
+                    loadMarkers();
                 }
 
 

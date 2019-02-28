@@ -11,8 +11,28 @@ public class LogEntry {
     private String path;
     private String description;
     private String adress;
+    private String logName;
 
-    public LogEntry(String timestamp, String name, String  latitude , String longitude, Bitmap img, String path, String description, String adress  ) {
+    public String getLogName() {
+        return logName;
+    }
+
+    public void setLogName(String logName) {
+        this.logName = logName;
+    }
+
+    public LogEntry(String timestamp, String name, String longitude, String latitude, Bitmap image, String path, String description, String adress) {
+        Timestamp = timestamp;
+        this.name = name;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.image = image;
+        this.path = path;
+        this.description = description;
+        this.adress = adress;
+    }
+
+    public LogEntry(String timestamp, String name, String  latitude , String longitude, Bitmap img, String path, String description, String adress, String logName  ) {
         this.image = img;
         Timestamp = timestamp;
         this.name = name;
@@ -21,6 +41,8 @@ public class LogEntry {
         this.path = path;
         this.description = description;
         this.adress = adress;
+        this.logName = logName;
+
     }
 
     public String getTimestamp() {

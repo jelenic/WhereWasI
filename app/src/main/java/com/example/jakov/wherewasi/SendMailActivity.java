@@ -133,9 +133,14 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
                     }
                     String pathMailFile = mailFile.getPath();
 
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    sharingIntent.setType("text/*");
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + mailFile.getAbsolutePath()));
+                    startActivity(Intent.createChooser(sharingIntent, "share file with"));
+
                     bw.close();
 
-                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    /*Intent emailIntent = new Intent(Intent.ACTION_SEND);
                     emailIntent.setType("text/plain");
                     emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {recipient});
                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -152,7 +157,7 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
                     }
 
 
-                    Log.d("mail", "sent: " + path);
+                    Log.d("mail", "sent: " + path);*/
                 }
                 catch (Exception e) {
                     e.printStackTrace();

@@ -55,8 +55,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         String date = df.format(Calendar.getInstance().getTime());
         String insertDefault = "INSERT INTO " + LOG_TABLE_NAME +  " VALUES('On install', 'Default log' , 'default desctiption' )";
+
         db.execSQL(createTable2);
         db.execSQL(insertDefault);
+
+        SharedPreferences.Editor saveValue = prefs.edit();
+        saveValue.putString("ActiveLog", "Default log");
+        saveValue.apply();
 
     }
 
@@ -74,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 
     public boolean addData(String name,String description, String latitude, String longitude, String path, String log_name, String adress) {
-        if (latitude.equals("0.0") && longitude.equals("0.0")) return false;
+        if (latitude.equals("0.00000") && longitude.equals("0.00000")) return false;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -139,7 +144,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         }
     }
 
-    public boolean addLog(String name, String description){
+    public boolean addLog(String name, boolean active){
         if (name.isEmpty()){
             return false;
         }
@@ -147,12 +152,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         ContentValues contentValues = new ContentValues();
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         String date = df.format(Calendar.getInstance().getTime());
-        SharedPreferences.Editor saveValue = prefs.edit();
-        saveValue.putString("ActiveLog", name);
-        saveValue.commit();
+        if (active) {
+            Log.d(TAG, "addLog:active " + active);
+            SharedPreferences.Editor saveValue = prefs.edit();
+            saveValue.putString("ActiveLog", name);
+            saveValue.commit();
+        }
+        Log.d(TAG, "prefs " + prefs.getString("ActiveLog", "err"));
         contentValues.put(COL0, date);
         contentValues.put(COL1, name);
-        contentValues.put(COL2, description);
+        contentValues.put(COL2, "");
 
         Log.d(TAG, "addData: Adding " + name + " to " + LOG_TABLE_NAME);
         long result = db.insert(LOG_TABLE_NAME, null, contentValues);

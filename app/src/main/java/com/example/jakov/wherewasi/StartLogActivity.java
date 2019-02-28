@@ -32,7 +32,7 @@ public class StartLogActivity extends AppCompatActivity {
             public void onClick(View v){
                 String name = nameET.getText().toString();
                 String description = descriptionET.getText().toString();
-                boolean insertlog = logdb.addLog(name, description);
+                boolean insertlog = logdb.addLog(name, false);
                 if (insertlog==true){
                     Toast.makeText(StartLogActivity.this,"INSERTED LOG",Toast.LENGTH_LONG).show();
 

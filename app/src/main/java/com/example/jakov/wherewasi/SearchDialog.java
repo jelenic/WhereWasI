@@ -12,10 +12,14 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 import static android.support.constraint.Constraints.TAG;
@@ -23,19 +27,22 @@ import static android.support.constraint.Constraints.TAG;
 public class SearchDialog extends AppCompatDialogFragment {
 
     private EditText nameEditText;
+    private TextView LogsTV;
     private TextView dateFromTextView;
     private TextView dateToTextView;
-
     private DatePickerDialog.OnDateSetListener mDateListenerFrom;
     private DatePickerDialog.OnDateSetListener mDateListenerTo;
     private SearchDialogListener listener;
+    private ArrayList<String> logs;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater=getActivity().getLayoutInflater();
         View view=inflater.inflate(R.layout.layout_search_dialog,null);
+
+        logs = new ArrayList<>();
 
 
         builder.setView(view).setTitle("Search").setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -51,13 +58,65 @@ public class SearchDialog extends AppCompatDialogFragment {
                 String dateTo=dateToTextView.getText().toString();
                 dateFrom = dateFrom.isEmpty() ? dateFrom : dateFrom.substring(0,10).replace(".","");
                 dateTo = dateTo.isEmpty() ? dateTo : dateTo.substring(0,10).replace(".","");
-                Log.d(TAG, "onClick: " + dateFrom + " " + dateTo);
-                listener.applyText(name,dateTo,dateFrom);
+                Log.d(TAG, "onClick: " + dateFrom + " " + dateTo + " " + name + " " + logs.size());
+                if (!name.isEmpty() || !dateFrom.isEmpty() || !dateTo.isEmpty() || logs.size() > 0) listener.applyText(name,dateTo,dateFrom, logs);
 
             }
         });
 
+
+
+        Log.d(TAG, "onCreateDialog: " + ViewActivity.name + " " + ViewActivity.listDataSpinner.get(0));
+
         nameEditText = view.findViewById(R.id.nameEditText);
+        LogsTV = view.findViewById(R.id.LogsTV);
+        LogsTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
+                final boolean[] checkedItems = new boolean[ViewActivity.listDataSpinner.size()];
+                Arrays.fill(checkedItems, Boolean.FALSE);
+                builder.setTitle("Delete logs");
+                String[] logsArray = new String[ViewActivity.listDataSpinner.size()];
+                logsArray = ViewActivity.listDataSpinner.toArray(logsArray);
+                //set multichoice
+                builder.setMultiChoiceItems(logsArray, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checkedItems[which] = isChecked;
+                    }
+                });
+                // Set the positive/yes button click listener
+                builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click positive button
+                        for (int i = 0; i<checkedItems.length; i++){
+                            boolean checked = checkedItems[i];
+                            if (checked) {
+                                String logName = ViewActivity.listDataSpinner.get(i);
+                                logs.add(logName);
+                                LogsTV.append(logName + " ");
+
+                            }
+                        }
+
+                    }
+                });
+                // Set the neutral/cancel button click listener
+                builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click the neutral button
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                // Display the alert dialog on interface
+                dialog.show();
+            }
+        });
         dateFromTextView = view.findViewById(R.id.dateFromTextView);
         dateFromTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +204,7 @@ public class SearchDialog extends AppCompatDialogFragment {
     }
 
     public interface SearchDialogListener{
-        void applyText(String logName, String dateTo, String dateFrom);
+        void applyText(String name, String dateTo, String dateFrom, ArrayList<String> logs);
     }
 
 }
