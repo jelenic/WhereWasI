@@ -210,50 +210,5 @@ public class QuickInputActivity extends AppCompatActivity implements IPickResult
     }
 
 
-    /**
-     * Rotate an image if required.
-     * @param img
-     * @param selectedImage
-     * @return
-     */
-    private static Bitmap rotateImageIfRequired(Context context,Bitmap img, Uri selectedImage) {
 
-        // Detect rotation
-        int rotation = getRotation(context, selectedImage);
-        Log.d("quick input", "rotateImageIfRequired:rot " + rotation);
-        if (rotation != 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotation);
-            Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
-            return rotatedImg;
-        }
-        else{
-            return img;
-        }
-    }
-
-    /**
-     * Get the rotation of the last image added.
-     * @param context
-     * @param selectedImage
-     * @return
-     */
-    private static int getRotation(Context context, Uri selectedImage) {
-
-        int rotation = 0;
-        ContentResolver content = context.getContentResolver();
-
-        Cursor mediaCursor = content.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] { "orientation", "date_added" },
-                null, null, "date_added desc");
-
-        if (mediaCursor != null && mediaCursor.getCount() != 0) {
-            while(mediaCursor.moveToNext()){
-                rotation = mediaCursor.getInt(0);
-                break;
-            }
-        }
-        mediaCursor.close();
-        return rotation;
-    }
 }

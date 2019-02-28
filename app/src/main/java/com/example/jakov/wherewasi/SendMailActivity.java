@@ -110,7 +110,7 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
                 try {
                     Cursor data = null;
                     if (logName.equals("ALL LOGS")) {
-                        data = logdb.getMailData();
+                        data = logdb.getBackupData();
                     }
                     else
                         data = logdb.getMailData(logName);
@@ -120,7 +120,7 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
-                    File mailFile = new File(directory, "MailFile " + date + ".txt");
+                    File mailFile = new File(directory, "backup " + date + ".txt");
                     BufferedWriter bw = new BufferedWriter(new FileWriter(mailFile));
 
                     while(data.moveToNext()){
@@ -131,8 +131,6 @@ public class SendMailActivity extends AppCompatActivity implements AdapterView.O
 
 
                     }
-                    String pathMailFile = mailFile.getPath();
-
                     Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                     sharingIntent.setType("text/*");
                     sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + mailFile.getAbsolutePath()));

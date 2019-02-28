@@ -46,16 +46,21 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -308,6 +313,9 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
             @Override
             public void onClick(View view) {
                 SearchDialog searchDialog=new SearchDialog();
+                Bundle args = new Bundle();
+                args.putSerializable("logs", listDataSpinner);
+                searchDialog.setArguments(args);
                 searchDialog.show(getSupportFragmentManager(),"searchDialog");
             }
         });
@@ -489,7 +497,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         QuickInputBtn = findViewById(R.id.QuickInputBtn);
         QuickCheckInBtn = findViewById(R.id.QuickCheckInBtn);
         GetFileBtn = findViewById(R.id.GetFileBtn);
-        fileBackupBtn = findViewById(R.id.mailBackupBtn);
+        fileBackupBtn = findViewById(R.id.fileBackupBtn);
         openViewBtn = findViewById(R.id.openViewBtn);
         deleteLogs = findViewById(R.id.deleteLogs);
 
@@ -511,6 +519,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
 
     public void readFromFile(final File file){
         //TO-DO check if logs exist, add if they don't
+        Log.d(TAG, "readFromFile: " + file.getAbsolutePath());
         Thread myThread = new Thread(new Runnable(){
             @Override
             public void run()
@@ -611,8 +620,69 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
 
     }
 
-    @Override
-    public void applyText(String name, String dateTo, String dateFrom, ArrayList<String> logs) {
+    private String subString(String string) {
+        if (string.length() > 10) return string.substring(0,10);
+        else return string;
+    }
 
+    @Override
+    public void applyText(final String entryName, final String dateTo, final String dateFrom, final ArrayList<String> logs) {
+        Thread myThread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    Cursor data = null;
+                    data = logdb.getBackupData();
+
+                    DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                    String date = df.format(Calendar.getInstance().getTime());
+                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "fileBackup";
+                    File directory = new File(path);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+                    final File backupFile = new File(directory, "backup " + date + ".txt");
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(backupFile));
+
+                    while(data.moveToNext()){
+                        LogEntry entry = new LogEntry(data.getString(0),data.getString(1) , subString(data.getString(2)),subString(data.getString(3)),
+                                null, "", "", data.getString(5), data.getString(4));
+                        if (entry.getName().toLowerCase().contains(entryName.toLowerCase())
+                                && (logs.size() == 0 || logs.contains("ALL LOGS") || logs.contains(entry.getLogName()))
+                                &&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))) {
+                            String content = data.getString(0) + "|" + data.getString(1) + "|" + data.getString(2) + "|"
+                                    + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5);
+                            Log.d("data from DB", "content: " + content);
+                            bw.write(content);
+                        }
+
+
+                    }
+
+                    LoggedInActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoggedInActivity.this, "created file " + backupFile.getName() + " in " + backupFile.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    sharingIntent.setType("text/*");
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + backupFile.getAbsolutePath()));
+                    startActivity(Intent.createChooser(sharingIntent, "share file with"));
+
+                    bw.close();
+
+
+
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        myThread.start();
     }
 }

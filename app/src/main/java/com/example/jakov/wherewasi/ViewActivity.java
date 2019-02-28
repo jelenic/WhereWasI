@@ -150,6 +150,9 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
 
     public void openDialog(){
         SearchDialog searchDialog=new SearchDialog();
+        Bundle args = new Bundle();
+        args.putSerializable("logs", listDataSpinner);
+        searchDialog.setArguments(args);
         searchDialog.show(getSupportFragmentManager(),"searchDialog");
 
     }

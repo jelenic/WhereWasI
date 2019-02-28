@@ -34,6 +34,10 @@ public class SearchDialog extends AppCompatDialogFragment {
     private DatePickerDialog.OnDateSetListener mDateListenerTo;
     private SearchDialogListener listener;
     private ArrayList<String> logs;
+    private ArrayList<String> logList;
+
+
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -43,6 +47,7 @@ public class SearchDialog extends AppCompatDialogFragment {
         View view=inflater.inflate(R.layout.layout_search_dialog,null);
 
         logs = new ArrayList<>();
+        logList = (ArrayList<String>) getArguments().getSerializable("logs");
 
 
         builder.setView(view).setTitle("Search").setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -66,7 +71,6 @@ public class SearchDialog extends AppCompatDialogFragment {
 
 
 
-        Log.d(TAG, "onCreateDialog: " + ViewActivity.name + " " + ViewActivity.listDataSpinner.get(0));
 
         nameEditText = view.findViewById(R.id.nameEditText);
         LogsTV = view.findViewById(R.id.LogsTV);
@@ -76,11 +80,11 @@ public class SearchDialog extends AppCompatDialogFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
 
-                final boolean[] checkedItems = new boolean[ViewActivity.listDataSpinner.size()];
+                final boolean[] checkedItems = new boolean[logList.size()];
                 Arrays.fill(checkedItems, Boolean.FALSE);
                 builder.setTitle("Delete logs");
-                String[] logsArray = new String[ViewActivity.listDataSpinner.size()];
-                logsArray = ViewActivity.listDataSpinner.toArray(logsArray);
+                String[] logsArray = new String[logList.size()];
+                logsArray = logList.toArray(logsArray);
                 //set multichoice
                 builder.setMultiChoiceItems(logsArray, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
@@ -96,7 +100,7 @@ public class SearchDialog extends AppCompatDialogFragment {
                         for (int i = 0; i<checkedItems.length; i++){
                             boolean checked = checkedItems[i];
                             if (checked) {
-                                String logName = ViewActivity.listDataSpinner.get(i);
+                                String logName = logList.get(i);
                                 logs.add(logName);
                                 LogsTV.append(logName + " ");
 
