@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoggedInActivity"
+    android:background="@drawable/back_background"
     >
 
     <LinearLayout
@@ -12,7 +13,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/logs"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
         android:textAlignment="center"
         android:background="@drawable/background"
         android:orientation="horizontal"
@@ -49,7 +50,7 @@
         android:id="@+id/entrys"
         android:layout_width="match_parent"
         android:layout_height="182dp"
-        android:layout_below="@+id/logs"
+        android:layout_below="@id/adView"
         android:layout_marginBottom="4sp"
         android:layout_marginEnd="4sp"
         android:layout_marginLeft="4sp"
@@ -118,7 +119,7 @@
     <RelativeLayout
         android:id="@+id/backup"
         android:layout_width="match_parent"
-        android:layout_height="124dp"
+        android:layout_height="130dp"
         android:layout_below="@+id/entrys"
         android:layout_margin="4sp"
         android:background="@drawable/background"
@@ -130,7 +131,8 @@
             android:id="@+id/GetFileBtn"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_below="@+id/entrys"
+            android:layout_alignParentTop="true"
+            android:layout_margin="6sp"
             android:background="@drawable/button_background_1"
             android:text="CHOOSE FILE" />
 
@@ -140,10 +142,21 @@
             android:layout_height="55dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
+            android:layout_margin="6sp"
             android:background="@drawable/button_background_1"
             android:text="BACKUP AND SHARE" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_below="@+id/backup"
+        android:layout_margin="4sp"
+        android:background="@drawable/background"
+        android:orientation="horizontal"
+        android:textAlignment="center"
+        android:weightSum="10">
     <Button
         android:id="@+id/openViewBtn"
         android:layout_width="match_parent"
@@ -152,6 +165,7 @@
         android:layout_margin="6sp"
         android:background="@drawable/button_background_1"
         android:text="OPEN view" />
+    </RelativeLayout>
 
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"
@@ -159,7 +173,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
         <!-- my simple banner id:  ca-app-pub-3775405938489529/2344676714  -->
