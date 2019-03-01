@@ -235,7 +235,6 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         if (Build.VERSION.SDK_INT >= 23) {
             String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -246,15 +245,15 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[2]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    permissions[3]) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    permissions[4]) == PackageManager.PERMISSION_GRANTED){
-                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-                }
+                    permissions[3]) == PackageManager.PERMISSION_GRANTED){
+                                    if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                                    }
+                                    else{
+                                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                                    }}
+
                 else{
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                }}else{
                 ActivityCompat.requestPermissions(LoggedInActivity.this,
                         permissions,
                         1);
@@ -344,6 +343,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                 SearchDialog searchDialog=new SearchDialog();
                 Bundle args = new Bundle();
                 args.putSerializable("logs", listDataSpinner);
+                args.putString("layout", "loggedIn");
                 searchDialog.setArguments(args);
                 searchDialog.show(getSupportFragmentManager(),"searchDialog");
             }

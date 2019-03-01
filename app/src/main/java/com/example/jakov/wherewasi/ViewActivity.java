@@ -122,6 +122,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     public void applyText(String entryName, String dateTo, String dateFrom, ArrayList<String> logs){
         Log.d(TAG, "applyText begin " + entryName + " " + dateFrom + " " + dateTo );
         if (!entryName.isEmpty() || !dateTo.isEmpty() || !dateFrom.isEmpty() || logs.size() > 0){
+            textViewActiveLog.setText("");
+            for (String s : logs) textViewActiveLog.append(s + " ");
             textViewName.setText(entryName);
             textViewDateFrom.setText(dateFrom);
             textViewDateTo.setText(dateTo);

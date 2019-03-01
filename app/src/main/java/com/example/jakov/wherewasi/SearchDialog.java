@@ -35,6 +35,7 @@ public class SearchDialog extends AppCompatDialogFragment {
     private SearchDialogListener listener;
     private ArrayList<String> logs;
     private ArrayList<String> logList;
+    private String layout = "";
 
 
 
@@ -47,15 +48,19 @@ public class SearchDialog extends AppCompatDialogFragment {
         View view=inflater.inflate(R.layout.layout_search_dialog,null);
 
         logs = new ArrayList<>();
+
+        Log.d(TAG, "onCreateDialog:1-" + layout + "-");
         logList = (ArrayList<String>) getArguments().getSerializable("logs");
+        layout = getArguments().getString("layout");
+        Log.d(TAG, "onCreateDialog:-" + layout + "-");
 
 
-        builder.setView(view).setTitle("Search").setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builder.setView(view).setTitle("Filter").setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
             }
-        }).setPositiveButton("search", new DialogInterface.OnClickListener() {
+        }).setPositiveButton(layout != null ? "OK" : "Search", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String name=nameEditText.getText().toString();
@@ -73,6 +78,7 @@ public class SearchDialog extends AppCompatDialogFragment {
 
 
         nameEditText = view.findViewById(R.id.nameEditText);
+        if (layout == null) nameEditText.setVisibility(View.VISIBLE);
         LogsTV = view.findViewById(R.id.LogsTV);
         LogsTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +135,7 @@ public class SearchDialog extends AppCompatDialogFragment {
                 int year=cal.get(Calendar.YEAR);
                 int month=cal.get(Calendar.MONTH);
                 int day=cal.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dateDialog=new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Dialog_MinWidth,mDateListenerFrom,year,month,day);
+                DatePickerDialog dateDialog=new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Light_Dialog,mDateListenerFrom,year,month,day);
                 dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dateDialog.show();
 
@@ -164,7 +170,7 @@ public class SearchDialog extends AppCompatDialogFragment {
                 int year=cal.get(Calendar.YEAR);
                 int month=cal.get(Calendar.MONTH);
                 int day=cal.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dateDialog=new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Dialog_MinWidth,mDateListenerTo,year,month,day);
+                DatePickerDialog dateDialog=new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Light_Dialog,mDateListenerTo,year,month,day);
                 dateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dateDialog.show();
 
