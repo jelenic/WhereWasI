@@ -66,10 +66,8 @@
             android:id="@+id/QuickCheckInBtn"
             android:layout_width="176dp"
             android:layout_height="55dp"
-            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_below="@+id/logs"
-            android:layout_marginStart="4dp"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/button_background_1"
             android:padding="1sp"
             android:text="Quick Check In" />
@@ -83,15 +81,17 @@
             android:layout_below="@+id/logs"
             android:layout_marginEnd="4dp"
             android:background="@drawable/button_background_1"
-            android:text="Quick Input" />
+            android:text="Quick Input"
+            android:visibility="gone"/>
 
 
         <Button
             android:id="@+id/startServiceBtn"
             android:layout_width="176dp"
             android:layout_height="55dp"
-            android:layout_alignStart="@+id/QuickCheckInBtn"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="4dp"
             android:background="@drawable/button_background_1"
             android:text="START SERVICE" />
 
