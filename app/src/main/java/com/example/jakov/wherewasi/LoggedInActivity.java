@@ -238,6 +238,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION};
 
+
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[0]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
@@ -246,17 +247,27 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     permissions[2]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[3]) == PackageManager.PERMISSION_GRANTED){
-                                    if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
-                                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-                                    }
-                                    else{
-                                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                                    }}
-
+                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                }
                 else{
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                }}else{
+
                 ActivityCompat.requestPermissions(LoggedInActivity.this,
                         permissions,
                         1);
+                if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                        permissions[2]) == PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                        permissions[3]) == PackageManager.PERMISSION_GRANTED) {
+                    if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()) {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                    } else {
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                    }
+                }
+
             }
         } else {
             if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
