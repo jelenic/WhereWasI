@@ -690,7 +690,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
 
                     DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                     String date = df.format(Calendar.getInstance().getTime());
-                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "fileBackup";
+                    String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + "fileBackup";
                     File directory = new File(path);
                     if (!directory.exists()) {
                         directory.mkdirs();
