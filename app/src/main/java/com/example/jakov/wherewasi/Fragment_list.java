@@ -142,6 +142,10 @@ public class Fragment_list extends Fragment implements  AdapterView.OnItemClickL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //openDialogActivity(position);
+    }
+
+    private void openDialogActivity(int position) {
         Intent intent = new Intent(getActivity(),DialogActivity.class);
         LogEntry entry = ((ViewActivity) getActivity()).getListData().get(position);
 

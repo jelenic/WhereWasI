@@ -88,6 +88,8 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
     private LocationListener locationListener;
     public double latituded,longituded;
 
+    private ArrayAdapter<String> spinnerAdapter;
+
     private String activeLog;
     private Long minTime;
     private Float minDistance;
@@ -561,6 +563,8 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     InputStream fis = getContentResolver().openInputStream(uri);
                     BufferedReader br=new BufferedReader(new InputStreamReader(fis));
 
+                    int i = 0;
+
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
                         System.out.println("line:" + line);
                         String[] separatedline = line.split("\\|");
@@ -573,9 +577,25 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                         String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;
                         Log.d(TAG, "adding:" + adding);
                         boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5], path);
+                        if (insertlog) i++;
+                        if (!listDataSpinner.contains(separatedline[4])) {
+                            mDatabaseHelper2.addLog(separatedline[4], false);
+
+                        }
+
                     }
 
                     br.close();
+
+                    final int finalI = i;
+                    LoggedInActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadSpinnerData();
+                            toast("Importing from file finished. Added " + finalI + " entries");
+                        }
+                    });
+
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -583,6 +603,10 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
             }
         });
         myThread.start();
+    }
+
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -655,8 +679,9 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
             listDataSpinner.add(data.getString(1));
             logNameID.put(data.getString(1), data.getString(0));
         }
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, listDataSpinner);
+        spinnerAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, listDataSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         pickLog.setAdapter(spinnerAdapter);
 
         int pos = listDataSpinner.indexOf(activeLog);
@@ -690,7 +715,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
 
                     DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                     String date = df.format(Calendar.getInstance().getTime());
-                    String path = Environment.getExternalStorageDirectory() + File.separator + ".WhereWasI" + File.separator + "fileBackup";
+                    String path = Environment.getExternalStorageDirectory() + File.separator + "WhereWasI" + File.separator + "fileBackup";
                     File directory = new File(path);
                     if (!directory.exists()) {
                         directory.mkdirs();

@@ -54,6 +54,10 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
         String Description = getItem(position).getDescription();
         String Adress = getItem(position).getAdress();
 
+        boolean image = Image==null;
+
+        Log.d(TAG, "getView:begin " + Timestamp + "-" + Path + "-" + image);
+
         final View result;
 
         ViewHolder holder;

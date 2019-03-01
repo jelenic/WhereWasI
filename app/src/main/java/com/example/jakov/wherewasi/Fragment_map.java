@@ -31,9 +31,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
-public class Fragment_map extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class Fragment_map extends Fragment implements OnMapReadyCallback {
     boolean moveCamera = false;
     LatLng startLocation;
     GoogleMap map;
@@ -95,7 +96,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         map = googleMap;
-        map.setOnInfoWindowClickListener(this);
+
 
         googleMap.setMinZoomPreference(8);
         googleMap.setMyLocationEnabled(true);
@@ -119,6 +120,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
             m.setTag(i++);
             markerList.add(m);
         }
+        Collections.reverse(markerList);
     }
 
     private void mapAnimation(final long time) {
@@ -181,8 +183,9 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
         handler.postDelayed(updatePositions, 500);
     }
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
+
+
+    private void openDialogActivity(Marker marker) {
         Intent intent = new Intent(getActivity(), DialogActivity.class);
         int position = (Integer) marker.getTag();
         LogEntry entry = ((ViewActivity) getActivity()).getListData().get(position);
@@ -197,9 +200,6 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
         intent.putExtra("position",position);
         intent.putExtra("activity","Map");
         startActivity(intent);
-
-
-
     }
 
 
