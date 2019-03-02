@@ -122,6 +122,8 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
     public void applyText(String entryName, String dateTo, String dateFrom, ArrayList<String> logs){
         Log.d(TAG, "applyText begin " + entryName + " " + dateFrom + " " + dateTo );
         if (!entryName.isEmpty() || !dateTo.isEmpty() || !dateFrom.isEmpty() || logs.size() > 0){
+            textViewActiveLog.setText("");
+            for (String s : logs) textViewActiveLog.append(s + " ");
             textViewName.setText(entryName);
             textViewDateFrom.setText(dateFrom);
             textViewDateTo.setText(dateTo);
@@ -172,11 +174,10 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
 
         while(data.moveToNext()){
             image = null;
-            if (data.getString(5) != null) {
+            Log.d(TAG, "loadData:pic " + data.getString(5));
+            if (data.getString(5) != null && !data.getString(5).isEmpty()) {
                 image  = BitmapFactory.decodeFile(data.getString(5));
             }
-            //get the value from the database in column 1
-            //then add it to the ArrayList
             Log.d(TAG, "adding path:" + data.getString(5));
             Log.d(TAG, "entry " + data.getString(0) + data.getString(1) + data.getString(3) + data.getString(4) + data.getString(6));
 

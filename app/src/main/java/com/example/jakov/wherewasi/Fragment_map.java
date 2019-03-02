@@ -31,9 +31,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
+import static android.support.constraint.Constraints.TAG;
 
 
-public class Fragment_map extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+public class Fragment_map extends Fragment implements OnMapReadyCallback {
     boolean moveCamera = false;
     LatLng startLocation;
     GoogleMap map;
@@ -43,7 +46,11 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     ArrayList<Marker> markerList;
     Handler handler = new Handler();
     Handler handler2 = new Handler();
+    Handler handler3 = new Handler();
     boolean animation = false;
+    boolean running = false;
+    boolean started = false;
+
 
 
 
@@ -65,6 +72,22 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onClick(View view) {
                 mapAnimation(200);
+                /*if (!running && !started) {
+                    startAnimation.setImageResource(android.R.drawable.ic_media_pause);
+                    mapAnimation(200);
+                    running = true;
+                    started = true;
+                }
+                else if (running && started) {
+                    running = false;
+                    startAnimation.setImageResource(android.R.drawable.ic_media_play);
+                }
+
+                else if (!running && started){
+                    running = true;
+                    startAnimation.setImageResource(android.R.drawable.ic_media_pause);
+                }*/
+
 
             }
         });
@@ -95,7 +118,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         map = googleMap;
-        map.setOnInfoWindowClickListener(this);
+
 
         googleMap.setMinZoomPreference(8);
         googleMap.setMyLocationEnabled(true);
@@ -119,10 +142,11 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
             m.setTag(i++);
             markerList.add(m);
         }
+        Collections.reverse(markerList);
+
     }
 
     private void mapAnimation(final long time) {
-        startAnimation.setBackgroundResource(android.R.drawable.ic_media_pause);
         map.clear();
         count = 0;
         int updateNumberHolder = 1;
@@ -159,7 +183,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
                 }
                 String timeStamp = null;
                 try {
-                    timeStamp = ((ViewActivity) getActivity()).getListData().get(count).getTimestamp();
+                    timeStamp = m.getSnippet().substring(0,20);
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -170,7 +194,16 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
                 }
                 else {
                     handler.removeCallbacks(this);
-                    loadMarkers();
+                    final Runnable loadMarkers = new Runnable() {
+                        @Override
+                        public void run() {
+                            loadMarkers();
+                            /*startAnimation.setImageResource(android.R.drawable.ic_media_play);
+                            running = false;
+                            started = false;*/
+                        }
+                    };
+                    handler3.postDelayed(loadMarkers, 500);
                 }
 
 
@@ -181,8 +214,9 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
         handler.postDelayed(updatePositions, 500);
     }
 
-    @Override
-    public void onInfoWindowClick(Marker marker) {
+
+
+    private void openDialogActivity(Marker marker) {
         Intent intent = new Intent(getActivity(), DialogActivity.class);
         int position = (Integer) marker.getTag();
         LogEntry entry = ((ViewActivity) getActivity()).getListData().get(position);
@@ -197,9 +231,6 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback, Google
         intent.putExtra("position",position);
         intent.putExtra("activity","Map");
         startActivity(intent);
-
-
-
     }
 
 
