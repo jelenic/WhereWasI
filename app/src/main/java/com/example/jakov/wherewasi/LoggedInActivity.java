@@ -236,7 +236,7 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION};
-
+Log.d("permissionLog","1");
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[0]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
@@ -247,17 +247,21 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                     permissions[3]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[4]) == PackageManager.PERMISSION_GRANTED){
+                Log.d("permissionLog","2");
                 if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
                 }
                 else{
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                }}else{
+                }
+                }else{
                 ActivityCompat.requestPermissions(LoggedInActivity.this,
                         permissions,
                         1);
+                Log.d("permissionLog","3");
             }
         } else {
+            Log.d("permissionLog","4");
             if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
             }
@@ -265,6 +269,27 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
             }}
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d("grantRessult",grantResults.toString());
+
+        if(grantResults.length>0 /*&& grantResults[0]==PackageManager.PERMISSION_GRANTED*/){
+            if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED
+                    ||ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+                Log.d("permissionLog","5");
+                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)  && haveNetworkConnection()){
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+                }
+                else{
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+                }}
+        }
+
+    }
+
+
 
     private void setListeners() {
         startServiceListener();
@@ -613,21 +638,6 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         return strAdd;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)  && haveNetworkConnection()){
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-                }
-                else{
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                }}
-        }
-
-    }
 
     private boolean haveNetworkConnection() {
         boolean haveConnectedWifi = false;
