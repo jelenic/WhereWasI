@@ -161,14 +161,14 @@ public class QuickInputActivity extends AppCompatActivity implements IPickResult
     private void verifyPermissions(){
         String[] permissions = {android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA};
+                /*android.Manifest.permission.CAMERA*/};
 
         if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 permissions[0]) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 permissions[1]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                permissions[2]) == PackageManager.PERMISSION_GRANTED){
+                /*&& ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[2]) == PackageManager.PERMISSION_GRANTED*/){
         }else{
             ActivityCompat.requestPermissions(QuickInputActivity.this,
                     permissions,
