@@ -78,7 +78,9 @@ public class SearchDialog extends AppCompatDialogFragment {
 
 
         nameEditText = view.findViewById(R.id.nameEditText);
-        if (layout == null) nameEditText.setVisibility(View.VISIBLE);
+        nameEditText.setVisibility(View.VISIBLE);
+        boolean booly = layout == null;
+        Log.d(TAG, "onCreateDialog:booly " + booly);
         LogsTV = view.findViewById(R.id.LogsTV);
         LogsTV.setOnClickListener(new View.OnClickListener() {
             @Override

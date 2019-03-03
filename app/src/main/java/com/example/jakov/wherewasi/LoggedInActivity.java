@@ -364,6 +364,7 @@ Log.d("permissionLog","1");
                 SearchDialog searchDialog=new SearchDialog();
                 Bundle args = new Bundle();
                 args.putSerializable("logs", listDataSpinner);
+                args.putString("layout", "filter");
                 searchDialog.setArguments(args);
                 searchDialog.show(getSupportFragmentManager(),"searchDialog");
             }
@@ -582,6 +583,7 @@ Log.d("permissionLog","1");
                 try{
                     InputStream fis = getContentResolver().openInputStream(uri);
                     BufferedReader br=new BufferedReader(new InputStreamReader(fis));
+                    int i = 0;
 
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
@@ -596,9 +598,23 @@ Log.d("permissionLog","1");
                         String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;
                         Log.d(TAG, "adding:" + adding);
                         boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5], path);
+                        if (insertlog) i++;
+                        if (!listDataSpinner.contains(separatedline[4])) {
+                            mDatabaseHelper2.addLog(separatedline[4], false);
+
+                        }
                     }
 
                     br.close();
+
+                    final int finalI = i;
+                    LoggedInActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadSpinnerData();
+                            toast("Importing from file finished. Added " + finalI + " entries");
+                        }
+                    });
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -606,6 +622,10 @@ Log.d("permissionLog","1");
             }
         });
         myThread.start();
+    }
+
+    private void toast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 
