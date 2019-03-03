@@ -37,9 +37,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
+        <!--<activity
             android:name=".QuickInputActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" /> -->
         <activity
             android:name=".StartLogActivity"
             android:screenOrientation="portrait" />
