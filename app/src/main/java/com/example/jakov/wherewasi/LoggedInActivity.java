@@ -233,7 +233,6 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         if (Build.VERSION.SDK_INT >= 23) {
             String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION};
 Log.d("permissionLog","1");
@@ -244,9 +243,7 @@ Log.d("permissionLog","1");
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[2]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    permissions[3]) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    permissions[4]) == PackageManager.PERMISSION_GRANTED){
+                    permissions[3]) == PackageManager.PERMISSION_GRANTED ){
                 Log.d("permissionLog","2");
                 if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
@@ -585,6 +582,7 @@ Log.d("permissionLog","1");
                 try{
                     InputStream fis = getContentResolver().openInputStream(uri);
                     BufferedReader br=new BufferedReader(new InputStreamReader(fis));
+
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
                         System.out.println("line:" + line);
