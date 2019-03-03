@@ -4,12 +4,17 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.jakov.wherewasi"
-        minSdkVersion 16
+        minSdkVersion 23
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+        ignoreWarnings true //false
     }
     buildTypes {
         release {
