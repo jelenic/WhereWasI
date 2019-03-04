@@ -588,7 +588,9 @@ Log.d("permissionLog","1");
 
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
+
                         System.out.println("line:finalI " + line);
+                        if (line.isEmpty()) continue;
                         String[] separatedline = line.split("\\|");
                         String lat, lng;
                         lat = separatedline[2];
@@ -735,8 +737,9 @@ Log.d("permissionLog","1");
                         if (entry.getName().toLowerCase().contains(entryName.toLowerCase())
                                 && (logs.size() == 0 || logs.contains("ALL LOGS") || logs.contains(entry.getLogName()))
                                 &&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))) {
+
                             String content = data.getString(0) + "|" + data.getString(1) + "|" + data.getString(2) + "|"
-                                    + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5);
+                                    + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5) + "\n";
                             Log.d("data from DB", "content: " + content);
                             bw.write(content);
                         }

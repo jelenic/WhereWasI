@@ -105,6 +105,8 @@ public class SearchDialog extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Do something when click positive button
+                        logs.clear();
+                        LogsTV.setText("");
                         for (int i = 0; i<checkedItems.length; i++){
                             boolean checked = checkedItems[i];
                             if (checked) {
