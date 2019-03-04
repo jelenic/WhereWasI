@@ -581,22 +581,23 @@ Log.d("permissionLog","1");
             public void run()
             {
                 try{
+                    Log.d(TAG, "run:finalI started");
                     InputStream fis = getContentResolver().openInputStream(uri);
                     BufferedReader br=new BufferedReader(new InputStreamReader(fis));
                     int i = 0;
 
 
                     for (String line = br.readLine(); line != null; line = br.readLine()) {
-                        System.out.println("line:" + line);
+                        System.out.println("line:finalI " + line);
                         String[] separatedline = line.split("\\|");
                         String lat, lng;
                         lat = separatedline[2];
                         lng = separatedline[3];
                         String path = "";
-                        Log.d(TAG, "path from fileRead:" + path);
+                        Log.d(TAG, "finalI path from fileRead:" + path);
                         //String path = "";
                         String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;
-                        Log.d(TAG, "adding:" + adding);
+                        Log.d(TAG, "adding:finalI " + adding);
                         boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5], path);
                         if (insertlog) i++;
                         if (!listDataSpinner.contains(separatedline[4])) {
@@ -608,9 +609,11 @@ Log.d("permissionLog","1");
                     br.close();
 
                     final int finalI = i;
+                    Log.d(TAG, "run:finalI " + finalI);
                     LoggedInActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            Log.d(TAG, "run:uithreadfinalI " + finalI);
                             loadSpinnerData();
                             toast("Importing from file finished. Added " + finalI + " entries");
                         }

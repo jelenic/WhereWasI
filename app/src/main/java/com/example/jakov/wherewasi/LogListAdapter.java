@@ -89,7 +89,7 @@ public class LogListAdapter extends ArrayAdapter<LogEntry> {
 
         holder.tvTimestamp.setText(Timestamp);
         holder.tvName.setText(Name);
-        holder.tvLatLong.setText(Longitude + "|" + Latitude);
+        holder.tvLatLong.setText(Latitude + " | " + Longitude);
         holder.tvAdress.setText(Adress);
         if (Image!=null) {
             Log.d(TAG, "getView: slika null" + Timestamp);

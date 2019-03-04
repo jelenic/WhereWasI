@@ -125,12 +125,16 @@ public class ViewActivity extends AppCompatActivity implements SearchDialog.Sear
             textViewActiveLog.setText("");
             for (String s : logs) textViewActiveLog.append(s + " ");
             textViewName.setText(entryName);
-            textViewDateFrom.setText(dateFrom);
-            textViewDateTo.setText(dateTo);
+            String datef = "";
+            String datet = "";
+            if (!dateFrom.isEmpty()) datef = dateFrom.substring(0,4) + "." + dateFrom.substring(4,6) + "." + dateFrom.substring(6) + ".";
+            if (!dateTo.isEmpty()) datet = dateTo.substring(0,4) + "." + dateTo.substring(4,6) + "." + dateTo.substring(6) + ".";
+            textViewDateFrom.setText(datef);
+            textViewDateTo.setText(datet);
             listData.clear();
             for (LogEntry entry:databaseData){
                 Log.d(TAG, "applyText:2 " + entry.getName() + " " + entry.getName().toLowerCase().contains(entryName.toLowerCase()));
-                if (entry.getName().toLowerCase().contains(entryName.toLowerCase()) && (logs.size() == 0 || logs.contains("ALL LOGS") || logs.contains(entry.getLogName()))&&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))){
+                if (entry.getName().toLowerCase().contains(entryName.toLowerCase()) && (logs.size() == 0 || logs.contains("ALL LOGS") || logs.contains(entry.getLogName()))&&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>=Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<=Integer.parseInt(dateTo))){
                     listData.add(entry);
 
                 }

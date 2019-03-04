@@ -7,25 +7,89 @@
     android:layout_height="match_parent"
     tools:context=".ViewActivity">
 
-    <Button
-        android:id="@+id/placeHolder"
-        android:layout_width="49dp"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="18dp"
-        android:drawableLeft="@drawable/ic_search_white_24dp"
-        android:textAlignment="center"
-        android:textSize="24sp" />
+        android:orientation="vertical"
+        android:id="@+id/filterSearch"
+        android:layout_alignParentTop="true">
+
+
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="11">
+
+
+            <TextView
+                android:id="@+id/textViewActiveLog"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:gravity="center"
+                android:text="activeLog"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/placeHolder"
+                android:layout_width="15dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_search_white_24dp"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/filters"
+            android:layout_below="@+id/topBar"
+            android:weightSum="15">
+
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Name Filter"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textViewDateFrom"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="dateFrom"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textViewDateTo"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="dateTo"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="378dp"
+        android:layout_height="381dp"
         android:layout_above="@id/navigation"
-        android:layout_below="@+id/placeHolder"
-        android:layout_marginTop="25dp"></FrameLayout>
+        android:layout_below="@+id/filterSearch"
+        android:layout_marginTop="2dp"></FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
@@ -35,42 +99,10 @@
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
 
-    <TextView
-        android:id="@+id/textViewName"
-        android:layout_width="128dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/placeHolder"
-        android:text="Name Filter"
-        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/textViewDateFrom"
-        android:layout_width="128dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/placeHolder"
-        android:layout_centerHorizontal="true"
-        android:text="dateFrom"
-        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/textViewDateTo"
-        android:layout_width="128dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/placeHolder"
-        android:text="dateTo"
-        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/textViewActiveLog"
-        android:layout_width="239dp"
-        android:layout_height="29dp"
-        android:layout_alignBaseline="@+id/placeHolder"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="39dp"
-        android:gravity="center"
-        android:text="activeLog"
-        android:textSize="18sp" />
+
+
 
 </RelativeLayout>
