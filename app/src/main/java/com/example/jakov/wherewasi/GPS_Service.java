@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
@@ -40,6 +41,7 @@ public class GPS_Service extends Service {
     private final int NOTIF_ID = 1;
     private NotificationManager mNotificationManager;
     private int time;
+    private String provider = "";
 
 
 
@@ -76,13 +78,26 @@ public class GPS_Service extends Service {
 
             }
         };
-        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
+
+        if (provider.equals("Network")) {
+            if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
+            }
+            else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+            }
         }
-        else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+        else {
+            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+            }
+            else if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+            }
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
+
+
+
     }
 
     private boolean haveNetworkConnection() {
@@ -107,6 +122,7 @@ public class GPS_Service extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         activeLog = intent.getStringExtra("activeLog");
         time = intent.getIntExtra("time",2);
+        provider = intent.getStringExtra("provider");
 
 
         Notification notification = getMyActivityNotification("service started");

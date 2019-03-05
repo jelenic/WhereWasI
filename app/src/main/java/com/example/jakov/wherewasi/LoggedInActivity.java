@@ -43,6 +43,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,8 +75,9 @@ import java.util.Locale;
 
 public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.AddLogDialogListener, SearchDialog.SearchDialogListener {
     private static final String TAG = "LoggedInActivity";
-    private Button deleteLogs, openViewBtn,fileBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn, StartNewLogBtn,GetFileBtn;
+    private Button settingsBtn, openViewBtn,fileBackupBtn,QuickCheckInBtn, QuickInputBtn, startServiceBtn, stopServiceBtn,GetFileBtn;
     private Spinner pickLog;
+    private ImageButton deleteLogs, StartNewLogBtn, helpDialogBtn;
 
 
     private EditText serviceTimeET;
@@ -121,6 +123,9 @@ public class LoggedInActivity extends AppCompatActivity implements AddLogDialog.
         super.onPause();
         Log.i(TAG, "onPause");
     }
+
+
+
 
     @Override
     protected void onResume() {
@@ -245,14 +250,9 @@ Log.d("permissionLog","1");
                     permissions[2]) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     permissions[3]) == PackageManager.PERMISSION_GRANTED ){
-                Log.d("permissionLog","2");
-                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-                }
-                else{
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                }
-                }else{
+                    Log.d("permissionLog","2");
+                startRequestingLocationUpdates();
+            }else{
                 ActivityCompat.requestPermissions(LoggedInActivity.this,
                         permissions,
                         1);
@@ -260,12 +260,8 @@ Log.d("permissionLog","1");
             }
         } else {
             Log.d("permissionLog","4");
-            if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-            }
-            else{
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-            }}
+            startRequestingLocationUpdates();
+        }
     }
 
     @Override
@@ -277,16 +273,32 @@ Log.d("permissionLog","1");
             if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED
                     ||ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED){
                 Log.d("permissionLog","5");
-                if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)  && haveNetworkConnection()){
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
-                }
-                else{
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
-                }}
+                startRequestingLocationUpdates();
+            }
         }
 
     }
 
+    @SuppressLint("MissingPermission")
+    private void startRequestingLocationUpdates() {
+        Log.d(TAG, "startRequestingLocationUpdates: " + prefs.getString("Provider", "Network") + "---" + locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER + "---" + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)));
+        if (prefs.getString("Provider", "Network").equals("Network")) {
+            if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*time, 0, locationListener);
+            }
+            else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+            }
+        }
+        else {
+            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+            }
+            else if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && haveNetworkConnection()){
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000*time, 0, locationListener);
+            }
+        }
+    }
 
 
     private void setListeners() {
@@ -299,7 +311,29 @@ Log.d("permissionLog","1");
         fileBackupListener();
         openViewListener();
         deleteLogsListener();
+        settingsListener();
+        helpDialogListener();
 
+    }
+
+    private void helpDialogListener() {
+        helpDialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HelpDialog helpDialog = new HelpDialog();
+                helpDialog.show(getSupportFragmentManager(),"helpDialog");
+            }
+        });
+    }
+
+    private void settingsListener() {
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SettingsDialog settingsDialog = new SettingsDialog();
+                settingsDialog.show(getSupportFragmentManager(),"settingsDialog");
+            }
+        });
     }
 
     private void deleteLogsListener() {
@@ -463,16 +497,18 @@ Log.d("permissionLog","1");
                 stopService(serviceIntent);
                 Log.d(TAG, "starts " + prefs.getString("ActiveLog", "err") + " " + activeLog );
                 serviceIntent.putExtra("activeLog", activeLog);
-                String serviceTime = serviceTimeET.getText().toString();
-                if (!serviceTime.isEmpty()) time = Integer.parseInt(serviceTime);
-                if (time == 0) time = 1;
+                time = prefs.getInt("Service time" , 15);
+
                 serviceIntent.putExtra("time", time);
+
+                String provider = prefs.getString("Provider", "Network");
+                serviceIntent.putExtra("provider", provider);
 
 
 
                 ContextCompat.startForegroundService(LoggedInActivity.this, serviceIntent);
 
-                Toast.makeText(LoggedInActivity.this,"Started service", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoggedInActivity.this,"Started service, time: " + time, Toast.LENGTH_SHORT).show();
                 stopServiceBtn.setEnabled(true);
                 startServiceBtn.setEnabled(false);
                 SharedPreferences.Editor saveValue = prefs.edit();
@@ -509,17 +545,19 @@ Log.d("permissionLog","1");
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
+                //toast("status changed " + provider + "---" + status);
 
             }
 
             @Override
             public void onProviderEnabled(String provider) {
+                //toast("enabled " + provider);
 
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                //toast("disabled " + provider);
             }
         };
     }
@@ -559,6 +597,8 @@ Log.d("permissionLog","1");
         fileBackupBtn = findViewById(R.id.fileBackupBtn);
         openViewBtn = findViewById(R.id.openViewBtn);
         deleteLogs = findViewById(R.id.deleteLogs);
+        settingsBtn = findViewById(R.id.settingsBtn);
+        helpDialogBtn = findViewById(R.id.helpDialogBtn);
 
     }
 
@@ -599,9 +639,13 @@ Log.d("permissionLog","1");
                         String path = "";
                         Log.d(TAG, "finalI path from fileRead:" + path);
                         //String path = "";
-                        String adding = separatedline[0]+separatedline[1]+separatedline[2]+separatedline[3]+ separatedline[4]+ separatedline[5]+ path;
+                        String address = separatedline[5];
+                        if (address.isEmpty() || address.equals("unknown address")) {
+                            address = getCompleteAddressString(Double.parseDouble(lat), Double.parseDouble(lng));
+                        }
+                        String adding = separatedline[0]+"|"+separatedline[1]+"|"+separatedline[2]+"|"+separatedline[3]+"|"+ separatedline[4]+"|"+ separatedline[5]+"|"+ path;
                         Log.d(TAG, "adding:finalI " + adding);
-                        boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], separatedline[5], path);
+                        boolean insertlog = logdb.addMailData(separatedline[0],separatedline[1],separatedline[2],separatedline[3], separatedline[4], address, path);
                         if (insertlog) i++;
                         if (!listDataSpinner.contains(separatedline[4])) {
                             mDatabaseHelper2.addLog(separatedline[4], false);
@@ -746,7 +790,7 @@ Log.d("permissionLog","1");
                                 &&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))) {
 
                             String content = data.getString(0) + "|" + data.getString(1) + "|" + data.getString(2) + "|"
-                                    + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5);
+                                    + data.getString(3) + "|" + data.getString(4) + "|" + (data.getString(5).isEmpty() ? "unknown address" : data.getString(5));
                             Log.d("data from DB", "content: " + content);
                             bw.write(content);
                             bw.newLine();

@@ -3,6 +3,7 @@ package com.example.jakov.wherewasi;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
@@ -50,6 +51,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback {
     boolean animation = false;
     boolean running = false;
     boolean started = false;
+    SharedPreferences prefs;
 
 
 
@@ -64,6 +66,8 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback {
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        prefs = getActivity().getSharedPreferences("MyValues",0);
+
         startAnimation = view.findViewById(R.id.startAnimation);
 
         startAnimation.setEnabled(animation);
@@ -71,7 +75,7 @@ public class Fragment_map extends Fragment implements OnMapReadyCallback {
         startAnimation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapAnimation(200);
+                mapAnimation(prefs.getInt("mapTime", 200));
                 /*if (!running && !started) {
                     startAnimation.setImageResource(android.R.drawable.ic_media_pause);
                     mapAnimation(200);
