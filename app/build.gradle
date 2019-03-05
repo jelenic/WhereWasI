@@ -5,8 +5,8 @@ android {
     defaultConfig {
         applicationId "com.getodevs.jakov.wherewasi"
         minSdkVersion 23
-        targetSdkVersion 23
-        versionCode 3
+        targetSdkVersion 26
+        versionCode 4
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

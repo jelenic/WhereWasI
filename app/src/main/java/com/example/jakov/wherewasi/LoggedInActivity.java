@@ -34,6 +34,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -728,9 +729,15 @@ Log.d("permissionLog","1");
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
-                    final File backupFile = new File(directory, "backup " + date + ".txt");
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(backupFile));
 
+
+                    final File backupFile = new File(directory, "backup " + date + ".txt");
+
+                    Uri irr = FileProvider.getUriForFile(LoggedInActivity.this, "com.getodevs.WWIFileprovider", backupFile);
+
+
+
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(backupFile));
                     while(data.moveToNext()){
                         LogEntry entry = new LogEntry(data.getString(0),data.getString(1) , subString(data.getString(2)),subString(data.getString(3)),
                                 null, "", "", data.getString(5), data.getString(4));
@@ -739,24 +746,27 @@ Log.d("permissionLog","1");
                                 &&(dateFrom==""  || dateFrom==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))>Integer.parseInt(dateFrom))&&(dateTo==""|| dateTo==null || Integer.parseInt(entry.getTimestamp().substring(0,10).replace(".",""))<Integer.parseInt(dateTo))) {
 
                             String content = data.getString(0) + "|" + data.getString(1) + "|" + data.getString(2) + "|"
-                                    + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5) + "\n";
+                                    + data.getString(3) + "|" + data.getString(4) + "|" + data.getString(5);
                             Log.d("data from DB", "content: " + content);
                             bw.write(content);
+                            bw.newLine();
                         }
 
 
                     }
+                    Log.d(TAG, "file info " + backupFile.exists() + "--" + backupFile.canRead() + "--" + backupFile.canWrite()) ;
 
                     LoggedInActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(LoggedInActivity.this, "created file " + backupFile.getName() + " in " + backupFile.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoggedInActivity.this, "created file " + backupFile.getName() + " in " + backupFile.getAbsolutePath() + " size: " + backupFile.length()/1024 + " KB", Toast.LENGTH_SHORT).show();
                         }
                     });
 
                     Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                     sharingIntent.setType("text/*");
-                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + backupFile.getAbsolutePath()));
+                    sharingIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(LoggedInActivity.this, "com.getodevs.WWIFileprovider", backupFile));
                     startActivity(Intent.createChooser(sharingIntent, "share file with"));
 
                     bw.close();
