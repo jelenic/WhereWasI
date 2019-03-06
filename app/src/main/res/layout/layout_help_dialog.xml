@@ -12,7 +12,24 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:lines="50"
-        android:text="dfdfdfdf\ndfdfdhf" />
+        android:scrollbars="vertical"
+        android:text="Location providers:\n
+GPS provider is by default used if there is no internet connection\n
+Network provider is used by default if there is a connection\n
+GPS provider can have difficulties getting location if user is located inside a concrete building\n
+
+Quick check in:\n
+Immediately creates an entry at user current location\n
+Start Service:\n
+Starts a service that runs in the background and automatically stores location every few seconds.Precise number of seconds is set in the settings.\n
+Choose file:\n
+Select a text file from the phone to insert backed up logs in your app. Selecting a non valid format might result in the app crashing.\n
+Backup and share:\n
+After selecting what logs you would like to backup , app will generate a text file. Said text file can be shared with some other service installed on your phone. Said file can be inserted in the app via choose file button.\n
+Open view:\n
+Lists all entries in a log with the option to view them on the map. Map comes with a play button that loads entries one at the time replaying movements of the user. Load speed is set in the settings.\n
+Settings:\n
+Manually adjust service time in seconds, type of provider and map playback speed" />
 
 
 

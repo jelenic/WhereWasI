@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -47,7 +48,7 @@ public class HelpDialog extends AppCompatDialogFragment {
 
         helpTV = view.findViewById(R.id.helpTV);
 
-
+        helpTV.setMovementMethod(new ScrollingMovementMethod());
         return builder.create();
 
 
