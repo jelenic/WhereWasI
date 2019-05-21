@@ -55,10 +55,10 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAV0zQ0zdT6jQviqVhhJkV-LjO3-ZnsspU" />
+            android:value="KeyKeyKeyKeyKeyKeyKeyKeyKeyKeyKeyKey" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3775405938489529~5074959444" />
+            android:value="IDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDID" />
         <activity android:name=".SendMailActivity" />
 
     </application>
